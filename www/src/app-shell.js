@@ -84,6 +84,9 @@ class AppShell extends LitElement {
 
   static properties = {
     currentView: { type: String },
+    currentLocationData: { type: Object }, // To store data for the 'game' view
+    playerInventory: { type: Array },     // To store player's collected items
+    allPois: { type: Array, state: true } // To store all POIs for navigation
   };
 
   constructor() {
@@ -99,9 +102,30 @@ class AppShell extends LitElement {
       }
     }
     this.currentView = initialView;
-    // Will be changed back to 'splash' once splash-view is created.
-    // this.currentView = 'splash'; // Set back to default
+    this.currentView = 'splash';
+    this.currentLocationData = null;
+    this.playerInventory = [];
+    this.allPois = [];
+    this._loadAllPois(); // Load POI data when the app shell is created
     this._boundHandleHashChange = this._handleHashChange.bind(this);
+  }
+
+  async _loadAllPois() {
+    try {
+      // Assuming pois.json is in www/data/ and app-shell.js is in www/src/
+      // The path ../www/data/pois.json implies 'www' is a sibling to 'src's parent.
+      // If your webroot is 'www' and 'data' is a direct child, 'data/pois.json' or '/data/pois.json' might be more typical.
+      // Using the path convention from map-view.js for consistency.
+      const response = await fetch('../www/data/pois.json');
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      this.allPois = await response.json();
+      console.log('AppShell: All POIs loaded:', this.allPois);
+    } catch (error) {
+      console.error("AppShell: Could not load Points of Interest:", error);
+      this.allPois = [];
+    }
   }
 
   connectedCallback() {
@@ -142,16 +166,57 @@ class AppShell extends LitElement {
 
   _handleNavClick(event, viewName) {
     event.preventDefault(); // Prevent default anchor tag behavior
+    if (viewName === 'game' && !this.currentLocationData && this.allPois.length > 0) {
+      // If navigating to 'game' from top nav and no specific location, go to the first POI as a default
+      // Or, you might want to disable this link or make it go to a "select location" screen
+      this.currentLocationData = this.allPois[0];
+    } else if (viewName !== 'game') {
+      // Clear location data if not navigating to game view, to avoid stale data
+      // this.currentLocationData = null; // Or keep it if you want to return to the same spot
+    }
     this.currentView = viewName;
     window.location.hash = viewName;
     console.log(`AppShell: Top nav click to view: ${viewName}`);
   }
 
-  _handleNavigate(event) { // This is for events from child components
+  _handleNavigate(event) {
     const requestedView = event.detail.view;
-    console.log(`AppShell: Navigate event to view: ${requestedView}`);
+    const locationData = event.detail.locationData;
+    const targetLocationId = event.detail.targetLocationId;
+
+    console.log(`AppShell: Navigate event to view: ${requestedView}`, event.detail);
+
+    if (requestedView === 'game') {
+      if (locationData) { // Navigating from map with full data
+        this.currentLocationData = locationData;
+      } else if (targetLocationId && this.allPois.length > 0) { // Navigating from game action with ID
+        const newLocation = this.allPois.find(poi => poi.id === targetLocationId);
+        if (newLocation) {
+          this.currentLocationData = newLocation;
+        } else {
+          console.error(`AppShell: Location ID "${targetLocationId}" not found.`);
+          // Optionally, navigate to an error view or back to map
+          this.currentView = 'map';
+          return;
+        }
+      } else if (!this.currentLocationData && this.allPois.length > 0) {
+        // Fallback if 'game' view is requested without specific location, e.g., from menu "Start Game"
+        // and no previous game location was set.
+        this.currentLocationData = this.allPois[0]; // Default to first POI
+      }
+    }
     this.currentView = requestedView;
-    window.location.hash = requestedView;
+  }
+
+  _handleAddToInventory(event) {
+    const item = event.detail.item;
+    // Avoid duplicates if item already exists (based on ID)
+    if (!this.playerInventory.some(invItem => invItem.id === item.id)) {
+      this.playerInventory = [...this.playerInventory, item];
+      console.log('AppShell: Item added to inventory:', item, 'New Inventory:', this.playerInventory);
+    } else {
+      console.log('AppShell: Item already in inventory:', item);
+    }
   }
 
   render() {
@@ -193,13 +258,21 @@ class AppShell extends LitElement {
       case 'map':
         return html`<map-view @navigate=${this._handleNavigate}></map-view>`;
       case 'game': // New case
-        return html`<game-interface-view @navigate=${this._handleNavigate}></game-interface-view>`;
+        return html`<game-interface-view
+                      .locationData=${this.currentLocationData}
+                      .playerInventory=${this.playerInventory}
+                      @navigate=${this._handleNavigate}
+                      @add-to-inventory=${this._handleAddToInventory}
+                    ></game-interface-view>`;
       case 'inventory': // New case
-        return html`<inventory-view @navigate=${this._handleNavigate}></inventory-view>`;
+        return html`<inventory-view
+                      .items=${this.playerInventory}
+                      @navigate=${this._handleNavigate}
+                    ></inventory-view>`;
       case 'research': // New case
         return html`<research-view @navigate=${this._handleNavigate}></research-view>`;
       default:
-        return html`<p>Unknown view: ${this.currentView}. Implement ${this.currentView}-view.js and update AppShell.</p>`;
+        return html`<p>Unknown view: ${this.currentView}.</p>`;
     }
   }
 }

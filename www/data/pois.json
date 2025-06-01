@@ -1,34 +1,57 @@
 [
   {
-    "id": "poi1",
-    "name": "Starting Village",
-    "x": 100,
-    "y": 150,
-    "icon": "home",
-    "description": "A quaint little village where your adventure begins. Mostly peaceful."
+    "id": "forest_entrance",
+    "name": "Mystic Forest Entrance",
+    "description": "A dimly lit path leading into an ancient forest. The air is thick with the scent of damp earth and old magic.",
+    "icon": "forest",
+    "x": 150,
+    "y": 200,
+    "gameViewImage": "../www/assets/images/locations/forest_entrance.jpg",
+    "hiddenObjects": [
+      {
+        "id": "item_rusty_key",
+        "name": "Rusty Key",
+        "description": "An old, rusty key. Wonder what it opens?",
+        "icon": "vpn_key",
+        "position": { "x": "75%", "y": "60%" },
+        "itemImage": "../www/assets/images/items/rusty_key_icon.png",
+        "foundMessage": "You found a Rusty Key!"
+      },
+      {
+        "id": "item_ancient_scroll",
+        "name": "Ancient Scroll",
+        "description": "A tattered scroll with faded, unreadable writing.",
+        "icon": "history_edu",
+        "position": { "x": "20%", "y": "45%" },
+        "itemImage": "../www/assets/images/items/scroll_icon.png",
+        "foundMessage": "You discovered an Ancient Scroll!"
+      }
+    ],
+    "actions": [
+      { "id": "action_return_map", "label": "Return to Map", "targetView": "map" }
+    ]
   },
   {
-    "id": "poi2",
-    "name": "Whispering Woods",
-    "x": 350,
-    "y": 80,
-    "icon": "park",
-    "description": "A dense forest rumored to have ancient secrets. Watch out for rustling leaves!"
-  },
-  {
-    "id": "poi3",
-    "name": "Dragon's Peak",
+    "id": "abandoned_mine",
+    "name": "Abandoned Mine Shaft",
+    "description": "The entrance to a dark and foreboding mine. A chilling draft emanates from within.",
+    "icon": "minor_crash",
     "x": 500,
-    "y": 300,
-    "icon": "filter_hdr",
-    "description": "The highest mountain in the region, said to be the lair of a fearsome dragon."
-  },
-  {
-    "id": "poi4",
-    "name": "Forgotten Ruins",
-    "x": 120,
     "y": 450,
-    "icon": "castle",
-    "description": "Crumbling stones of a long-lost civilization. Might contain treasure or danger."
+    "gameViewImage": "../www/assets/images/locations/mine_entrance.jpg",
+    "hiddenObjects": [
+      {
+        "id": "item_glowing_gem",
+        "name": "Glowing Gemstone",
+        "description": "A rough gemstone that emits a faint, pulsating light.",
+        "icon": "diamond",
+        "position": { "x": "50%", "y": "85%" },
+        "itemImage": "../www/assets/images/items/gem_icon.png",
+        "foundMessage": "You unearthed a Glowing Gemstone!"
+      }
+    ],
+    "actions": [
+      { "id": "action_return_map", "label": "Return to Map", "targetView": "map" }
+    ]
   }
 ]
