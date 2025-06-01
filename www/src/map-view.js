@@ -29,10 +29,25 @@ class MapView extends LitElement {
       border: 2px solid #555;
       overflow: auto; /* Important for scrolling */
       margin: 0 auto; /* Center the container */
-      background-color: #e0e0e0; /* Light grey background for the container */
-      position: relative; /* For potential future absolute positioning of map elements */
-      cursor: grab; /* Add this line */
+      background-color: #e0e0e0; /* Will be mostly covered by map content */
+      position: relative;
+      cursor: grab;
+
+      /* Hide scrollbars */
+      scrollbar-width: none; /* For Firefox */
+
+      /* Vignette effect */
+      box-shadow: inset 0 0 25px 15px rgba(0,0,0,0.35); /* Adjust spread, blur, and color for desired intensity */
+                                                        /* (Horizontal offset, vertical offset, blur radius, spread radius, color) */
     }
+
+    /* For WebKit browsers (Chrome, Safari, Edge, Opera) */
+    /* It's important this selector is specific enough and correctly processed. */
+    /* Applying to the class directly is standard. */
+    .map-container::-webkit-scrollbar {
+      display: none; /* Hide scrollbar */
+    }
+
     .map-content {
       width: 2560px;
       height: 1792px;
@@ -187,7 +202,7 @@ class MapView extends LitElement {
 
   async _loadPois() {
     try {
-      const response = await fetch('../data/pois.json'); // Path relative to the application root (www)
+      const response = await fetch('/data/pois.json'); // Path relative to the application root (www)
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
