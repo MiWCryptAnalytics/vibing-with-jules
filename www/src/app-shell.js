@@ -1,6 +1,7 @@
 import { LitElement, html, css } from 'lit';
 import './menu-view.js'; // Import the menu view
 import './splash-view.js'; // Import the splash view
+import './map-view.js'; // Import the map view
 
 class AppShell extends LitElement {
   static styles = css`
@@ -58,6 +59,8 @@ class AppShell extends LitElement {
         return html`<splash-view @navigate=${this._handleNavigate}></splash-view>`;
       case 'menu':
         return html`<menu-view @navigate=${this._handleNavigate}></menu-view>`;
+      case 'map': // New case
+        return html`<map-view @navigate=${this._handleNavigate}></map-view>`;
       // Add more cases for other views (map, game, inventory, research) later
       default:
         return html`<p>Unknown view: ${this.currentView}. Implement ${this.currentView}-view.js and update AppShell.</p>`;

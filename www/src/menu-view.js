@@ -77,7 +77,7 @@ class MenuView extends LitElement {
     return html`
       <h2>Game Menu</h2>
       <ul>
-        <li><a href="#" @click=${(e) => this._handleNavigation(e, 'game')}>Start Game</a></li>
+        <li><a href="#" @click=${(e) => this._handleNavigation(e, 'map')}>Start Game</a></li>
         <li><a href="#" @click=${(e) => this._handleNavigation(e, 'inventory')}>Inventory</a></li>
         <li><a href="#" @click=${(e) => this._handleNavigation(e, 'research')}>Research</a></li>
         <li><a href="#" @click=${(e) => this._handleNavigation(e, 'options')}>Options</a></li>
