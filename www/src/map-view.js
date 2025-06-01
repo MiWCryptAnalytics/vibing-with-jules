@@ -34,16 +34,27 @@ class MapView extends LitElement {
       cursor: grab; /* Add this line */
     }
     .map-content {
-      width: 1000px; /* Larger than container to demonstrate scrolling */
-      height: 800px; /* Larger than container */
-      background-color: #8fbc8f; /* DarkSeaGreen for the map itself */
-      /* Simple grid pattern using gradients */
-      background-image:
-        linear-gradient(to right, rgba(0,0,0,0.1) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(0,0,0,0.1) 1px, transparent 1px);
-      background-size: 20px 20px;
-      position: relative; /* For positioning elements on the map or transform origin */
+      width: 2560px;
+      height: 1792px;
+      background-image: url(/assets/images/mapv1.jpg);
+      background-repeat: no-repeat;
+      /* background-color: transparent; (no longer needed if image covers) */
+      position: relative; /* Keep for positioning elements on the map or transform origin */
+      /* The old CSS grid background-image rule should be removed */
     }
+
+    @keyframes pulseAnimation {
+      0% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.15);
+      }
+      100% {
+        transform: scale(1);
+      }
+    }
+
     .poi-marker {
       display: flex;
       align-items: center;
@@ -54,7 +65,9 @@ class MapView extends LitElement {
       cursor: pointer;
       font-size: 12px;
       box-shadow: 0 1px 3px rgba(0,0,0,0.3);
-      /* No transform: translate initially */
+      /* No transform: translate initially - assuming x,y is top left */
+      transform-origin: center; /* Make scaling originate from the center of the marker */
+      animation: pulseAnimation 2.5s infinite ease-in-out; /* Apply the animation */
     }
 
     .poi-marker:hover {
@@ -72,10 +85,13 @@ class MapView extends LitElement {
       white-space: nowrap; /* Prevent name from wrapping */
     }
     .poi-info-display {
-      position: absolute; /* Or 'fixed' for viewport positioning */
+      position: absolute; /* Or 'fixed' */
       bottom: 20px;
       left: 50%;
-      transform: translateX(-50%);
+      /* transform: translateX(-50%); /* Initial horizontal centering */
+      /* Combined transform for initial state: */
+      transform: translate(-50%, 20px); /* Start centered horizontally, and 20px down */
+
       width: 80%;
       max-width: 400px;
       background-color: white;
@@ -83,8 +99,18 @@ class MapView extends LitElement {
       border-radius: 8px;
       padding: 15px;
       box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-      z-index: 10; /* Ensure it's above map content but below top-nav if map is full screen */
+      z-index: 10;
       text-align: left;
+
+      opacity: 0; /* Initially hidden */
+      transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+      pointer-events: none; /* Ignore clicks when hidden */
+    }
+
+    .poi-info-display.visible {
+      opacity: 1;
+      transform: translate(-50%, 0); /* Slide to final position (centered, no Y offset) */
+      pointer-events: auto; /* Allow clicks when visible */
     }
 
     .poi-info-display h3 {
@@ -148,6 +174,7 @@ class MapView extends LitElement {
     this._handleDragEnd = this._handleDragEnd.bind(this);
     this._handlePoiClick = this._handlePoiClick.bind(this);
     this._closePoiInfo = this._closePoiInfo.bind(this);
+    this._handleMapClick = this._handleMapClick.bind(this);
   }
 
   connectedCallback() {
@@ -262,6 +289,27 @@ class MapView extends LitElement {
     }
   }
 
+  _handleMapClick(event) {
+    // Make sure the click is directly on the map-content, not on a POI marker that might be a child.
+    // Or, if POI markers have pointer-events: none, this check isn't strictly needed for that.
+    // However, good to be specific if possible. For now, let's assume clicks on POIs are handled by their own listeners.
+    // We might need to check event.target if POIs don't stop propagation.
+    // A simple way: if (event.target !== this.shadowRoot.querySelector('.map-content')) return;
+
+    //offsetX/Y are relative to the target element (map-content)
+    const rect = event.target.getBoundingClientRect(); // or this.mapContainer.getBoundingClientRect() if map-content is the direct target
+
+    // If event.target is the map-content div itself:
+    const clickedX = event.offsetX / this.zoomLevel;
+    const clickedY = event.offsetY / this.zoomLevel;
+
+    console.log(`Map clicked. Displayed coordinates (offsetX, offsetY): ${event.offsetX}, ${event.offsetY}. Image coordinates (adjusted for zoom ${this.zoomLevel.toFixed(1)}x): ${clickedX.toFixed(0)}, ${clickedY.toFixed(0)}`);
+
+    // If you wanted coordinates relative to the map container, not the map content itself (e.g. if map content is smaller)
+    // you would need to adjust based on scrollLeft/scrollTop of mapContainer and position of mapContent.
+    // But since mapContent is where the image is, offsetX/Y on it is what we want.
+  }
+
   _handlePoiClick(poi) {
     this.selectedPoi = poi;
     console.log('POI Clicked:', poi); // For debugging
@@ -312,7 +360,11 @@ class MapView extends LitElement {
     return html`
       <h2>Game Map</h2>
       <div class="map-container">
-        <div class="map-content" style="transform: scale(${this.zoomLevel}); transform-origin: top left;">
+        <div
+          class="map-content"
+          style="transform: scale(${this.zoomLevel}); transform-origin: top left;"
+          @click=${this._handleMapClick}
+        >
           <p style="text-align:center; padding-top: 20px; color: white;">Scrollable Map Area</p>
           ${this.pointsOfInterest.map(poi => html`
             <div
@@ -333,13 +385,13 @@ class MapView extends LitElement {
         <span>Current Zoom: ${this.zoomLevel.toFixed(1)}x</span>
       </div>
 
-      ${this.selectedPoi ? html`
-        <div class="poi-info-display">
+      <div class="poi-info-display ${this.selectedPoi ? 'visible' : ''}">
+        ${this.selectedPoi ? html`
           <h3><md-icon>${this.selectedPoi.icon}</md-icon> ${this.selectedPoi.name}</h3>
           <p>${this.selectedPoi.description}</p>
           <button @click=${this._closePoiInfo}>Close</button>
-        </div>
-      ` : ''}
+        ` : ''}
+      </div>
     `;
   }
 }
