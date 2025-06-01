@@ -77,10 +77,7 @@ class MenuView extends LitElement {
     return html`
       <h2>Game Menu</h2>
       <ul>
-        <li><a href="#" @click=${(e) => this._handleNavigation(e, 'map')}>Start Game</a></li>
-        <li><a href="#" @click=${(e) => this._handleNavigation(e, 'inventory')}>Inventory</a></li>
-        <li><a href="#" @click=${(e) => this._handleNavigation(e, 'research')}>Research</a></li>
-        <li><a href="#" @click=${(e) => this._handleNavigation(e, 'options')}>Options</a></li>
+        <li><a href="#" @click=${(e) => this._handleNavigation(e, 'game')}>Start Game</a></li>
       </ul>
       <p class="developer-note">
         (Developer Note: To switch themes, you would later add JavaScript to change the class on the &lt;body&gt; tag from 'theme-light' to 'theme-dark' or vice-versa. For now, a default theme is applied.)
