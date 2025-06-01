@@ -4,10 +4,12 @@
   "description": "A cool little game.",
   "main": "www/index.html",
   "scripts": {
-    "start": "echo \"No start script configured yet\""
+    "start": "wds --node-resolve --open www/index.html --watch"
   },
   "dependencies": {
     "lit": "^3.0.0"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "@web/dev-server": "^0.4.0"
+  }
 }
