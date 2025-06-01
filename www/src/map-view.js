@@ -381,7 +381,7 @@ class MapView extends LitElement {
           style="transform: scale(${this.zoomLevel}); transform-origin: top left;"
           @click=${this._handleMapClick}
         >
-          <p style="text-align:center; padding-top: 20px; color: white;">Scrollable Map Area</p>
+          <p style="text-align:center; padding-top: 20px; color: white; margin-top: 0;"></p>
           ${this.pointsOfInterest.map(poi => html`
             <div
               class="poi-marker"
