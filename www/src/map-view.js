@@ -29,8 +29,8 @@ class MapView extends LitElement {
       border: 2px solid #555;
       overflow: auto; /* Important for scrolling */
       margin: 0 auto; /* Center the container */
-      background-color: #e0e0e0; /* Will be mostly covered by map content */
-      position: relative;
+      background-color: #e0e0e0; /* Light grey background for the container */
+      position: relative; /* For potential future absolute positioning of map elements */
       cursor: grab;
 
       /* Hide scrollbars */
@@ -47,7 +47,6 @@ class MapView extends LitElement {
     .map-container::-webkit-scrollbar {
       display: none; /* Hide scrollbar */
     }
-
     .map-content {
       width: 2560px;
       height: 1792px;
@@ -361,14 +360,15 @@ class MapView extends LitElement {
 
   _zoomIn() {
     if (this.zoomLevel < 2) { // Max zoom limit
-      this.zoomLevel += 0.1;
+      const newZoomLevel = Math.min(2.0, this.zoomLevel + 0.1);
+      this.zoomLevel = parseFloat(newZoomLevel.toFixed(2));
     }
   }
 
   _zoomOut() {
-    if (this.zoomLevel > 0.5) { // Min zoom limit
-      this.zoomLevel -= 0.1;
-    }
+    // Min zoom limit (1.0x)
+    const newZoomLevel = Math.max(1.0, this.zoomLevel - 0.1);
+    this.zoomLevel = parseFloat(newZoomLevel.toFixed(2));
   }
 
   render() {
