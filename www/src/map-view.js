@@ -36,7 +36,7 @@ class MapView extends LitElement {
     .map-content {
       width: 2560px;
       height: 1792px;
-      background-image: url(../assets/images/mapv1.jpg);
+      background-image: url(../www/assets/images/mapv1.jpg);
       background-repeat: no-repeat;
       /* background-color: transparent; (no longer needed if image covers) */
       position: relative; /* Keep for positioning elements on the map or transform origin */
@@ -187,7 +187,7 @@ class MapView extends LitElement {
 
   async _loadPois() {
     try {
-      const response = await fetch('../data/pois.json'); // Path relative to the application root (www)
+      const response = await fetch('../www/data/pois.json'); // Path relative to the application root (www)
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
