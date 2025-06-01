@@ -1,0 +1,83 @@
+body {
+    font-family: sans-serif;
+    margin: 0;
+    padding: 20px;
+    line-height: 1.6;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    margin-bottom: 0.5em;
+    font-weight: bold;
+}
+
+a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+p {
+    margin-bottom: 1em;
+}
+
+/* Basic list styling for menu */
+ul {
+    list-style: none;
+    padding: 0;
+}
+
+ul li {
+    margin-bottom: 10px;
+}
+
+ul li a {
+    display: block;
+    padding: 10px 15px;
+    background-color: #f0f0f0;
+    border-radius: 5px;
+}
+
+ul li a:hover {
+    background-color: #e0e0e0;
+}
+
+/* Light Theme (Default) */
+.theme-light {
+    background-color: #ffffff;
+    color: #333333;
+}
+
+.theme-light a {
+    color: #0056b3; /* Slightly darker blue for better contrast on white */
+}
+
+.theme-light ul li a {
+    background-color: #e9ecef; /* Lighter grey for light theme menu items */
+    color: #333333;
+}
+
+.theme-light ul li a:hover {
+    background-color: #ced4da;
+}
+
+/* Dark Theme */
+.theme-dark {
+    background-color: #333333;
+    color: #ffffff;
+}
+
+.theme-dark a {
+    color: #80bfff; /* Lighter blue for dark theme */
+}
+
+.theme-dark ul li a {
+    background-color: #555555; /* Darker grey for dark theme menu items */
+    color: #ffffff;
+}
+
+.theme-dark ul li a:hover {
+    background-color: #777777;
+}
