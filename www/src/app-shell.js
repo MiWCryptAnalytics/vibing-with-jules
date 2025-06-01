@@ -88,13 +88,62 @@ class AppShell extends LitElement {
 
   constructor() {
     super();
+    const validViews = ['map', 'game', 'inventory', 'research', 'menu'];
+    const hash = window.location.hash;
+    let initialView = 'splash'; // Default view
+
+    if (hash && hash.length > 1) {
+      const potentialView = hash.substring(1); // Remove '#'
+      if (validViews.includes(potentialView)) {
+        initialView = potentialView;
+      }
+    }
+    this.currentView = initialView;
     // Will be changed back to 'splash' once splash-view is created.
-    this.currentView = 'splash'; // Set back to default
+    // this.currentView = 'splash'; // Set back to default
+    this._boundHandleHashChange = this._handleHashChange.bind(this);
+  }
+
+  connectedCallback() {
+    super.connectedCallback();
+    window.addEventListener('hashchange', this._boundHandleHashChange);
+  }
+
+  disconnectedCallback() {
+    window.removeEventListener('hashchange', this._boundHandleHashChange);
+    super.disconnectedCallback();
+  }
+
+  _handleHashChange() {
+    const validViews = ['map', 'game', 'inventory', 'research', 'menu', 'splash'];
+    const hash = window.location.hash;
+    if (hash && hash.length > 1) {
+      const potentialView = hash.substring(1); // Remove '#'
+      if (validViews.includes(potentialView) && this.currentView !== potentialView) {
+        this.currentView = potentialView;
+      }
+    } else if (this.currentView !== 'splash') { // Handle case where hash is empty (e.g. user clears it)
+      // Optional: navigate to splash or a default view if hash is cleared.
+      // For now, let's assume if hash is empty, and current view is not splash,
+      // we might want to go to splash. Or do nothing if currentView is already splash.
+      // This behavior can be refined based on exact product requirements.
+      // this.currentView = 'splash';
+      // For now, only update if the hash points to a valid, different view.
+      // If hash is empty, and current view is not splash, and splash is a valid default,
+      // one might consider setting currentView to 'splash'.
+      // However, the constructor already sets initialView to 'splash' if hash is empty/invalid.
+      // And _handleNavClick sets the hash.
+      // This function's main job is to react to EXTERNAL hash changes (back/forward/manual edit).
+      // If hash becomes empty/invalid, and currentView is e.g. 'map', it should probably stay 'map'
+      // until a navigation action changes it OR the constructor re-evaluates on a full page load.
+      // Let's stick to the primary requirement: update if hash is valid and different.
+    }
   }
 
   _handleNavClick(event, viewName) {
     event.preventDefault(); // Prevent default anchor tag behavior
     this.currentView = viewName;
+    window.location.hash = viewName;
     console.log(`AppShell: Top nav click to view: ${viewName}`);
   }
 
@@ -102,6 +151,7 @@ class AppShell extends LitElement {
     const requestedView = event.detail.view;
     console.log(`AppShell: Navigate event to view: ${requestedView}`);
     this.currentView = requestedView;
+    window.location.hash = requestedView;
   }
 
   render() {
