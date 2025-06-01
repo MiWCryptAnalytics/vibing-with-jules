@@ -1,4 +1,5 @@
 import { LitElement, html, css } from 'lit';
+import '@material/web/icon/icon.js';
 
 class MapView extends LitElement {
   static styles = css`
@@ -43,6 +44,79 @@ class MapView extends LitElement {
       background-size: 20px 20px;
       position: relative; /* For positioning elements on the map or transform origin */
     }
+    .poi-marker {
+      display: flex;
+      align-items: center;
+      padding: 4px 8px;
+      background-color: rgba(255, 255, 255, 0.8);
+      border: 1px solid #555;
+      border-radius: 16px;
+      cursor: pointer;
+      font-size: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+      /* No transform: translate initially */
+    }
+
+    .poi-marker:hover {
+      background-color: rgba(255, 255, 255, 1); /* Opaque on hover */
+      border-color: #000;
+    }
+
+    .poi-marker md-icon {
+      margin-right: 5px;
+      font-size: 18px; /* Adjust icon size if needed */
+      color: #333; /* Default icon color */
+    }
+
+    .poi-marker .poi-name {
+      white-space: nowrap; /* Prevent name from wrapping */
+    }
+    .poi-info-display {
+      position: absolute; /* Or 'fixed' for viewport positioning */
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80%;
+      max-width: 400px;
+      background-color: white;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 15px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      z-index: 10; /* Ensure it's above map content but below top-nav if map is full screen */
+      text-align: left;
+    }
+
+    .poi-info-display h3 {
+      margin-top: 0;
+      font-size: 1.2em;
+      display: flex;
+      align-items: center;
+    }
+
+    .poi-info-display h3 md-icon {
+      margin-right: 8px;
+      font-size: 24px; /* Match h3 font size better */
+    }
+
+    .poi-info-display p {
+      font-size: 0.9em;
+      margin-bottom: 10px;
+    }
+
+    .poi-info-display button {
+      display: block;
+      margin-top: 10px;
+      padding: 8px 15px;
+      background-color: #007bff; /* Standard button color */
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .poi-info-display button:hover {
+      background-color: #0056b3;
+    }
   `;
 
   static properties = {
@@ -70,8 +144,33 @@ class MapView extends LitElement {
 
     // Bind event handlers to ensure 'this' context
     this._handleDragStart = this._handleDragStart.bind(this);
-    this._handleDragMove = this._handleDragMove.bind(this); // Will be created later
-    this._handleDragEnd = this._handleDragEnd.bind(this);   // Will be created later
+    this._handleDragMove = this._handleDragMove.bind(this);
+    this._handleDragEnd = this._handleDragEnd.bind(this);
+    this._handlePoiClick = this._handlePoiClick.bind(this);
+    this._closePoiInfo = this._closePoiInfo.bind(this);
+  }
+
+  connectedCallback() {
+    super.connectedCallback(); // Always call super
+    if (this.pointsOfInterest.length === 0) { // Only load if not already populated
+      this._loadPois();
+    }
+    // Bind other event handlers if not done in constructor, or for listeners added here
+  }
+
+  async _loadPois() {
+    try {
+      const response = await fetch('/data/pois.json'); // Path relative to the application root (www)
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      this.pointsOfInterest = data;
+      console.log('POIs loaded:', this.pointsOfInterest); // For debugging
+    } catch (error) {
+      console.error("Could not load Points of Interest:", error);
+      this.pointsOfInterest = []; // Ensure it's an empty array on error
+    }
   }
 
   firstUpdated(changedProperties) {
@@ -163,6 +262,15 @@ class MapView extends LitElement {
     }
   }
 
+  _handlePoiClick(poi) {
+    this.selectedPoi = poi;
+    console.log('POI Clicked:', poi); // For debugging
+  }
+
+  _closePoiInfo() {
+    this.selectedPoi = null;
+  }
+
   _handleDragEnd(event) {
     if (!this.isDragging) {
       // Avoid redundant operations if drag already ended somehow
@@ -205,8 +313,18 @@ class MapView extends LitElement {
       <h2>Game Map</h2>
       <div class="map-container">
         <div class="map-content" style="transform: scale(${this.zoomLevel}); transform-origin: top left;">
-          <!-- Content inside the map, e.g., player icon, points of interest, could go here later -->
           <p style="text-align:center; padding-top: 20px; color: white;">Scrollable Map Area</p>
+          ${this.pointsOfInterest.map(poi => html`
+            <div
+              class="poi-marker"
+              style="position: absolute; left: ${poi.x}px; top: ${poi.y}px;"
+              @click=${() => this._handlePoiClick(poi)}
+              title="${poi.name}"
+            >
+              <md-icon>${poi.icon}</md-icon>
+              <span class="poi-name">${poi.name}</span>
+            </div>
+          `)}
         </div>
       </div>
       <div class="zoom-controls">
@@ -214,6 +332,14 @@ class MapView extends LitElement {
         <button @click=${this._zoomIn}>Zoom In</button>
         <span>Current Zoom: ${this.zoomLevel.toFixed(1)}x</span>
       </div>
+
+      ${this.selectedPoi ? html`
+        <div class="poi-info-display">
+          <h3><md-icon>${this.selectedPoi.icon}</md-icon> ${this.selectedPoi.name}</h3>
+          <p>${this.selectedPoi.description}</p>
+          <button @click=${this._closePoiInfo}>Close</button>
+        </div>
+      ` : ''}
     `;
   }
 }

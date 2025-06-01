@@ -4,7 +4,7 @@
     "name": "Starting Village",
     "x": 100,
     "y": 150,
-    "icon": "village.png",
+    "icon": "home",
     "description": "A quaint little village where your adventure begins. Mostly peaceful."
   },
   {
@@ -12,7 +12,7 @@
     "name": "Whispering Woods",
     "x": 350,
     "y": 80,
-    "icon": "forest.png",
+    "icon": "park",
     "description": "A dense forest rumored to have ancient secrets. Watch out for rustling leaves!"
   },
   {
@@ -20,7 +20,7 @@
     "name": "Dragon's Peak",
     "x": 500,
     "y": 300,
-    "icon": "mountain.png",
+    "icon": "filter_hdr",
     "description": "The highest mountain in the region, said to be the lair of a fearsome dragon."
   },
   {
@@ -28,7 +28,7 @@
     "name": "Forgotten Ruins",
     "x": 120,
     "y": 450,
-    "icon": "ruins.png",
+    "icon": "castle",
     "description": "Crumbling stones of a long-lost civilization. Might contain treasure or danger."
   }
 ]
