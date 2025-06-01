@@ -1,0 +1,13 @@
+{
+  "name": "my-game",
+  "version": "0.0.1",
+  "description": "A cool little game.",
+  "main": "www/index.html",
+  "scripts": {
+    "start": "echo \"No start script configured yet\""
+  },
+  "dependencies": {
+    "lit": "^3.0.0"
+  },
+  "devDependencies": {}
+}
