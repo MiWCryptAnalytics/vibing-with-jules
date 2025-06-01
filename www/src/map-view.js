@@ -29,6 +29,7 @@ class MapView extends LitElement {
       border: 2px solid #555;
       overflow: auto; /* Important for scrolling */
       margin: 0 auto; /* Center the container */
+      overscroll-behavior: none; /* Prevent bounce/rubber-band scrolling */
       background-color: #e0e0e0; /* Light grey background for the container */
       position: relative; /* For potential future absolute positioning of map elements */
       cursor: grab;
@@ -48,8 +49,8 @@ class MapView extends LitElement {
       display: none; /* Hide scrollbar */
     }
     .map-content {
-      width: 2560px;
-      height: 1792px;
+      width: 1280px;
+      height: 896px;
       background-image: url(../www/assets/images/mapv1.jpg);
       background-repeat: no-repeat;
       /* background-color: transparent; (no longer needed if image covers) */
