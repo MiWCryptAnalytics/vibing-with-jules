@@ -187,7 +187,7 @@ class MapView extends LitElement {
 
   async _loadPois() {
     try {
-      const response = await fetch('/data/pois.json'); // Path relative to the application root (www)
+      const response = await fetch('../data/pois.json'); // Path relative to the application root (www)
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
