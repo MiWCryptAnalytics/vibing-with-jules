@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+<file target-language="en" source-language="en" original="lit-localize-inputs" datatype="plaintext">
+<body>
+<trans-unit id="initial-message">
+  <source>Click the button below!</source>
+</trans-unit>
+<trans-unit id="lit-working">
+  <source>Lit is working!</source>
+</trans-unit>
+<trans-unit id="interactivity-achieved">
+  <source>Interactivity achieved!</source>
+</trans-unit>
+<trans-unit id="button-clicked">
+  <source>You clicked the button!</source>
+</trans-unit>
+<trans-unit id="cool-isnt-it">
+  <source>Isn't this cool?</source>
+</trans-unit>
+<trans-unit id="hello-lit">
+  <source>Hello from Lit component!</source>
+</trans-unit>
+<trans-unit id="menu-title">
+  <source>Game Menu</source>
+</trans-unit>
+<trans-unit id="menu-start-game">
+  <source>Start Game</source>
+</trans-unit>
+<trans-unit id="menu-interactivity-title">
+  <source>Simple Interactivity Test</source>
+</trans-unit>
+<trans-unit id="menu-change-message-button">
+  <source>Change Message</source>
+</trans-unit>
+<trans-unit id="splash-welcome">
+  <source>Welcome to My Lit Game!</source>
+</trans-unit>
+<trans-unit id="splash-adventure">
+  <source>The adventure begins here.</source>
+</trans-unit>
+<trans-unit id="splash-continue">
+  <source>Continue to Menu</source>
+</trans-unit>
+<trans-unit id="map-title">
+  <source>Game Map</source>
+</trans-unit>
+<trans-unit id="map-zoom-out">
+  <source>Zoom Out</source>
+</trans-unit>
+<trans-unit id="map-zoom-in">
+  <source>Zoom In</source>
+</trans-unit>
+<trans-unit id="map-current-zoom">
+  <source>Current Zoom:</source>
+</trans-unit>
+<trans-unit id="map-poi-close">
+  <source>Close</source>
+</trans-unit>
+<trans-unit id="game-interface-title">
+  <source>Game Interface</source>
+</trans-unit>
+<trans-unit id="game-interface-description">
+  <source>Main game actions and display will be here.</source>
+</trans-unit>
+<trans-unit id="inventory-title">
+  <source>Inventory</source>
+</trans-unit>
+<trans-unit id="inventory-description">
+  <source>Player's items will be displayed here.</source>
+</trans-unit>
+<trans-unit id="research-title">
+  <source>Research &amp; Upgrades</source>
+</trans-unit>
+<trans-unit id="research-description">
+  <source>Tech tree and upgrades will be managed here.</source>
+</trans-unit>
+<trans-unit id="nav-map">
+  <source>Map</source>
+</trans-unit>
+<trans-unit id="nav-game">
+  <source>Game</source>
+</trans-unit>
+<trans-unit id="nav-inventory">
+  <source>Inventory</source>
+</trans-unit>
+<trans-unit id="nav-research">
+  <source>Research</source>
+</trans-unit>
+<trans-unit id="nav-main-menu">
+  <source>Main Menu</source>
+</trans-unit>
+<trans-unit id="game-title">
+  <source>My Lit Game</source>
+</trans-unit>
+<trans-unit id="current-view">
+  <source>Current View:</source>
+</trans-unit>
+<trans-unit id="footer-copyright">
+  <source>(c) 2023 My Game Inc.</source>
+</trans-unit>
+<trans-unit id="unknown-view-prefix">
+  <source>Unknown view:</source>
+</trans-unit>
+<trans-unit id="unknown-view-suffix">
+  <source>Implement corresponding -view.js and update AppShell.</source>
+</trans-unit>
+</body>
+</file>
+</xliff>

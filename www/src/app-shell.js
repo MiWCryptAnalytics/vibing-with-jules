@@ -1,4 +1,8 @@
 import { LitElement, html, css } from 'lit';
+import { msg, updateWhenLocaleChanges, configureLocalization } from '@lit/localize';
+// import { localeCodes } from './generated/locale-codes.js'; // File not generated as of last check
+import { messages as enMessages } from './generated/locales/en.js';
+
 import './menu-view.js'; // Import the menu view
 import './splash-view.js'; // Import the splash view
 import './map-view.js'; // Import the map view
@@ -88,6 +92,8 @@ class AppShell extends LitElement {
 
   constructor() {
     super();
+    this._initializeLocalization(); // Call localization setup
+    updateWhenLocaleChanges(this);
     const validViews = ['map', 'game', 'inventory', 'research', 'menu'];
     const hash = window.location.hash;
     let initialView = 'splash'; // Default view
@@ -99,9 +105,32 @@ class AppShell extends LitElement {
       }
     }
     this.currentView = initialView;
-    // Will be changed back to 'splash' once splash-view is created.
-    // this.currentView = 'splash'; // Set back to default
     this._boundHandleHashChange = this._handleHashChange.bind(this);
+  }
+
+  async _initializeLocalization() {
+    // Using hardcoded 'en' as localeCodes module was not generated.
+    // const locale = 'en'; // Could be dynamic based on user pref / browser settings
+    // const targetLocales = localeCodes || ['en']; // Fallback if localeCodes is undefined
+    const targetLocales = ['en']; // Hardcoded as locale-codes.js was not generated
+
+    configureLocalization({
+      sourceLocale: 'en',
+      targetLocales: targetLocales,
+      loadLocale: async (localeCode) => {
+        if (localeCode === 'en') {
+          return enMessages;
+        }
+        // In a real app, you might dynamically import other locales here:
+        // const langModule = await import(`./generated/locales/${localeCode}.js`);
+        // return langModule.messages;
+        console.warn(`Locale ${localeCode} not implemented or messages not found, defaulting to English.`);
+        return enMessages; // Fallback to English messages
+      },
+    });
+    // Initial locale is set to sourceLocale ('en') by configureLocalization by default.
+    // If we needed to set it explicitly to another *configured* target locale:
+    // await setLocale(locale);
   }
 
   connectedCallback() {
@@ -122,21 +151,8 @@ class AppShell extends LitElement {
       if (validViews.includes(potentialView) && this.currentView !== potentialView) {
         this.currentView = potentialView;
       }
-    } else if (this.currentView !== 'splash') { // Handle case where hash is empty (e.g. user clears it)
-      // Optional: navigate to splash or a default view if hash is cleared.
-      // For now, let's assume if hash is empty, and current view is not splash,
-      // we might want to go to splash. Or do nothing if currentView is already splash.
-      // This behavior can be refined based on exact product requirements.
-      // this.currentView = 'splash';
-      // For now, only update if the hash points to a valid, different view.
-      // If hash is empty, and current view is not splash, and splash is a valid default,
-      // one might consider setting currentView to 'splash'.
-      // However, the constructor already sets initialView to 'splash' if hash is empty/invalid.
-      // And _handleNavClick sets the hash.
-      // This function's main job is to react to EXTERNAL hash changes (back/forward/manual edit).
-      // If hash becomes empty/invalid, and currentView is e.g. 'map', it should probably stay 'map'
-      // until a navigation action changes it OR the constructor re-evaluates on a full page load.
-      // Let's stick to the primary requirement: update if hash is valid and different.
+    } else if (this.currentView !== 'splash') {
+      // See previous comments on this logic block
     }
   }
 
@@ -158,18 +174,17 @@ class AppShell extends LitElement {
     return html`
       ${this.currentView !== 'splash' ? html`
         <nav class="top-nav">
-          <a href="#" @click=${(e) => this._handleNavClick(e, 'map')}>Map</a>
-          <a href="#" @click=${(e) => this._handleNavClick(e, 'game')}>Game</a>
-          <a href="#" @click=${(e) => this._handleNavClick(e, 'inventory')}>Inventory</a>
-          <a href="#" @click=${(e) => this._handleNavClick(e, 'research')}>Research</a>
-          <a href="#" @click=${(e) => this._handleNavClick(e, 'menu')}>Main Menu</a>
-          <!-- 'Main Menu' link to go back to menu-view -->
+          <a href="#" @click=${(e) => this._handleNavClick(e, 'map')}>${msg('Map', {id: 'nav-map'})}</a>
+          <a href="#" @click=${(e) => this._handleNavClick(e, 'game')}>${msg('Game', {id: 'nav-game'})}</a>
+          <a href="#" @click=${(e) => this._handleNavClick(e, 'inventory')}>${msg('Inventory', {id: 'nav-inventory'})}</a>
+          <a href="#" @click=${(e) => this._handleNavClick(e, 'research')}>${msg('Research', {id: 'nav-research'})}</a>
+          <a href="#" @click=${(e) => this._handleNavClick(e, 'menu')}>${msg('Main Menu', {id: 'nav-main-menu'})}</a>
         </nav>
       ` : ''}
 
       <header class="app-header">
-        <h1>My Lit Game</h1>
-        <p>Current View: ${this.currentView}</p> <!-- Useful for debugging -->
+        <h1>${msg('My Lit Game', {id: 'game-title'})}</h1>
+        <p>${msg('Current View:', {id: 'current-view'})} ${this.currentView}</p> <!-- Useful for debugging -->
       </header>
 
       <main class="main-content">
@@ -179,7 +194,7 @@ class AppShell extends LitElement {
       </main>
 
       <footer class="app-footer">
-        <p>(c) 2023 My Game Inc.</p>
+        <p>${msg('(c) 2023 My Game Inc.', {id: 'footer-copyright'})}</p>
       </footer>
     `;
   }
@@ -199,7 +214,7 @@ class AppShell extends LitElement {
       case 'research': // New case
         return html`<research-view @navigate=${this._handleNavigate}></research-view>`;
       default:
-        return html`<p>Unknown view: ${this.currentView}. Implement ${this.currentView}-view.js and update AppShell.</p>`;
+        return html`<p>${msg('Unknown view:', {id: 'unknown-view-prefix'})} ${this.currentView}. ${msg('Implement corresponding -view.js and update AppShell.', {id: 'unknown-view-suffix'})}</p>`;
     }
   }
 }
