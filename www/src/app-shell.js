@@ -88,24 +88,209 @@ class AppShell extends LitElement {
 
   static properties = {
     currentView: { type: String },
+    currentLocationData: { type: Object }, // To store data for the 'game' view
+    playerInventory: { type: Array },     // To store player's collected items
+    allPois: { type: Array, state: true } // To store all POIs for navigation
   };
 
   constructor() {
     super();
+    // --- Game State Persistence ---
+    this._xorKey = 'v!B1ngW1thJul3sS3cr3tK3y#2023'; // Keep this consistent
+    this._localStorageKey = 'vibingWithJulesGameState';
+    this._pendingLocationId = null; // Used if locationId is loaded before POIs
+    // --- End Game State Persistence ---
     this._initializeLocalization(); // Call localization setup
     updateWhenLocaleChanges(this);
     const validViews = ['map', 'game', 'inventory', 'research', 'menu'];
     const hash = window.location.hash;
     let initialView = 'splash'; // Default view
 
-    if (hash && hash.length > 1) {
-      const potentialView = hash.substring(1); // Remove '#'
-      if (validViews.includes(potentialView)) {
-        initialView = potentialView;
+
+    // Initialize properties
+    this.currentView = 'splash'; // Default, will be overridden by _initializeGame
+    this.currentLocationData = null;
+    this.playerInventory = [];
+    this.allPois = [];
+
+    this._boundHandleHashChange = this._handleHashChange.bind(this);
+    this._boundSaveGameState = this._saveGameState.bind(this); // For beforeunload
+
+    this._initializeGame();
+  }
+
+  async _initializeGame() {
+    const poiLoadPromise = this._loadAllPois(); // Start loading POIs
+    const loadedFromStorage = await this._loadGameState(); // Attempt to load game state
+
+    if (!loadedFromStorage) {
+      // No valid game state loaded, determine initial view from URL hash or default
+      const validViews = ['map', 'game', 'inventory', 'research', 'menu', 'splash'];
+      const hash = window.location.hash.substring(1);
+      if (hash && validViews.includes(hash)) {
+        this.currentView = hash;
+      } else {
+        this.currentView = 'splash'; // Default if no valid hash or no saved state
       }
     }
-    this.currentView = initialView;
-    this._boundHandleHashChange = this._handleHashChange.bind(this);
+
+    await poiLoadPromise; // Ensure POIs are fully loaded before proceeding
+
+    // Resolve pending location ID if it was set during _loadGameState and POIs are now ready
+    if (this._pendingLocationId && this.allPois.length > 0) {
+      this.currentLocationData = this.allPois.find(poi => poi.id === this._pendingLocationId) || null;
+      if (this.currentLocationData) {
+        console.log('AppShell: Resolved pendingLocationId to:', this.currentLocationData.name);
+      } else {
+        console.warn('AppShell: Could not resolve pendingLocationId after POI load:', this._pendingLocationId);
+        if (this.currentView === 'game') {
+          console.warn("AppShell: Current view is 'game' but location data is invalid. Navigating to map.");
+          this.currentView = 'map';
+        }
+      }
+      this._pendingLocationId = null;
+    } else if (this.currentView === 'game' && !this.currentLocationData && this.allPois.length > 0) {
+      // If currentView is 'game' (e.g., from hash or loaded state) but no specific location, default to first POI
+      this.currentLocationData = this.allPois[0];
+      console.log("AppShell: Defaulting to first POI for 'game' view:", this.currentLocationData?.name);
+    } else if (this.currentView === 'game' && !this.currentLocationData) {
+      // Game view, no location, and POIs are not available or empty. This is problematic.
+      console.warn("AppShell: Current view is 'game' but no location data and POIs unavailable. Navigating to map.");
+      this.currentView = 'map';
+    }
+
+    // Synchronize URL hash with the determined/loaded currentView
+    if (window.location.hash.substring(1) !== this.currentView) {
+      window.location.hash = this.currentView;
+    }
+
+    this.requestUpdate(); // Ensure UI reflects the fully initialized state
+  }
+
+  _calculateChecksum(str) {
+    let sum = 0;
+    for (let i = 0; i < str.length; i++) {
+      sum += str.charCodeAt(i);
+    }
+    return sum;
+  }
+
+  _encrypt(plainText) {
+    let xorOutput = '';
+    for (let i = 0; i < plainText.length; i++) {
+      xorOutput += String.fromCharCode(plainText.charCodeAt(i) ^ this._xorKey.charCodeAt(i % this._xorKey.length));
+    }
+    return btoa(xorOutput);
+  }
+
+  _decrypt(cipherText) {
+    try {
+      const base64Decoded = atob(cipherText);
+      let plainText = '';
+      for (let i = 0; i < base64Decoded.length; i++) {
+        plainText += String.fromCharCode(base64Decoded.charCodeAt(i) ^ this._xorKey.charCodeAt(i % this._xorKey.length));
+      }
+      return plainText;
+    } catch (e) {
+      console.error("AppShell: Decryption failed (likely invalid Base64 string).", e);
+      return null;
+    }
+  }
+
+  async _loadAllPois() {
+    try {
+      // Assuming pois.json is in www/data/ and app-shell.js is in www/src/
+      // The path ../www/data/pois.json implies 'www' is a sibling to 'src's parent.
+      // If your webroot is 'www' and 'data' is a direct child, 'data/pois.json' or '/data/pois.json' might be more typical.
+      // Using the path convention from map-view.js for consistency.
+      const response = await fetch('../www/data/pois.json');
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      this.allPois = await response.json();
+      console.log('AppShell: All POIs loaded:', this.allPois);
+      // If _loadGameState set a _pendingLocationId, try to resolve it now that POIs are loaded.
+      // This is also handled in _initializeGame after awaiting this promise, which is cleaner.
+    } catch (error) {
+      console.error("AppShell: Could not load Points of Interest:", error);
+      this.allPois = [];
+    }
+  }
+
+  _clearSavedGameState() {
+    localStorage.removeItem(this._localStorageKey);
+    localStorage.removeItem(this._localStorageKey + '_checksum');
+    console.log('AppShell: Cleared saved game state from localStorage.');
+  }
+
+  async _loadGameState() {
+    const encryptedData = localStorage.getItem(this._localStorageKey);
+    const storedChecksum = localStorage.getItem(this._localStorageKey + '_checksum');
+
+    if (encryptedData && storedChecksum) {
+      try {
+        const jsonString = this._decrypt(encryptedData);
+        if (!jsonString) { // Decryption failed
+          console.warn('AppShell: Decryption failed. Save data might be corrupted. Starting fresh.');
+          this._clearSavedGameState();
+          return false;
+        }
+
+        const calculatedChecksum = this._calculateChecksum(jsonString);
+
+        if (calculatedChecksum.toString() === storedChecksum) {
+          const savedState = JSON.parse(jsonString);
+
+          this.currentView = savedState.currentView || 'splash';
+          this.playerInventory = savedState.playerInventory || [];
+
+          if (savedState.currentLocationId) {
+            // POIs might not be loaded yet. If so, store ID to resolve later.
+            if (this.allPois && this.allPois.length > 0) {
+              this.currentLocationData = this.allPois.find(poi => poi.id === savedState.currentLocationId) || null;
+            } else {
+              this._pendingLocationId = savedState.currentLocationId;
+              this.currentLocationData = null; // Explicitly null until resolved
+              console.log('AppShell: POIs not ready during load, stored pendingLocationId:', this._pendingLocationId);
+            }
+          } else {
+            this.currentLocationData = null;
+          }
+
+          console.log('AppShell: Game state loaded and restored:', savedState);
+          return true; // Indicate success
+        } else {
+          console.warn('AppShell: Checksum mismatch. Save data might be corrupted. Starting fresh.');
+          this._clearSavedGameState();
+        }
+      } catch (error) {
+        console.error('AppShell: Error loading or parsing game state:', error, 'Starting fresh.');
+        this._clearSavedGameState();
+      }
+    } else {
+      console.log('AppShell: No saved game state found.');
+    }
+    return false; // Indicate no load or failure
+  }
+
+  _saveGameState() {
+    const gameState = {
+      currentView: this.currentView,
+      currentLocationId: this.currentLocationData ? this.currentLocationData.id : null,
+      playerInventory: this.playerInventory,
+      timestamp: Date.now()
+    };
+    try {
+      const jsonString = JSON.stringify(gameState);
+      const checksum = this._calculateChecksum(jsonString);
+      const encryptedData = this._encrypt(jsonString);
+
+      localStorage.setItem(this._localStorageKey, encryptedData);
+      localStorage.setItem(this._localStorageKey + '_checksum', checksum.toString());
+      console.log('AppShell: Game state saved.');
+    } catch (error) {
+      console.error('AppShell: Error saving game state:', error);
+    }
   }
 
   async _initializeLocalization() {
@@ -135,11 +320,16 @@ class AppShell extends LitElement {
 
   connectedCallback() {
     super.connectedCallback();
-    window.addEventListener('hashchange', this._boundHandleHashChange);
+    window.addEventListener('hashchange', this.
+                           
+                           
+                           );
+    window.addEventListener('beforeunload', this._boundSaveGameState);
   }
 
   disconnectedCallback() {
     window.removeEventListener('hashchange', this._boundHandleHashChange);
+    window.removeEventListener('beforeunload', this._boundSaveGameState);
     super.disconnectedCallback();
   }
 
@@ -147,27 +337,122 @@ class AppShell extends LitElement {
     const validViews = ['map', 'game', 'inventory', 'research', 'menu', 'splash'];
     const hash = window.location.hash;
     if (hash && hash.length > 1) {
-      const potentialView = hash.substring(1); // Remove '#'
-      if (validViews.includes(potentialView) && this.currentView !== potentialView) {
-        this.currentView = potentialView;
+      const hashView = hash.substring(1); // Remove '#'
+      if (this.currentView === hashView) {
+        return; // No change needed, already in sync
       }
-    } else if (this.currentView !== 'splash') {
-      // See previous comments on this logic block
+
+      if (validViews.includes(hashView)) {
+        console.log(`AppShell: Hash changed externally to #${hashView}, updating view.`);
+        this.currentView = hashView;
+        if (hashView === 'game') {
+          if (!this.currentLocationData && this.allPois.length > 0) {
+            this.currentLocationData = this.allPois[0]; // Default to first POI
+          } else if (!this.currentLocationData) { // No POIs loaded or empty
+            console.warn("AppShell: Hash changed to 'game' but no location data. Reverting to map.");
+            this.currentView = 'map';
+            window.location.hash = 'map'; // Correct the hash immediately
+          }
+        }
+        this._saveGameState(); // Save after view change from hash
+      }
+    } else if (!hash && this.currentView !== 'splash') { // Hash is empty (e.g. user cleared it from URL)
+      if (this.currentView === '') return; // Already reflects empty hash effectively
+      console.log(`AppShell: Hash cleared externally, navigating to splash.`);
+      this.currentView = 'splash';
+      // Do not set window.location.hash here if user explicitly cleared it.
+      this._saveGameState();
     }
   }
 
   _handleNavClick(event, viewName) {
     event.preventDefault(); // Prevent default anchor tag behavior
-    this.currentView = viewName;
-    window.location.hash = viewName;
-    console.log(`AppShell: Top nav click to view: ${viewName}`);
+    let stateChanged = false;
+
+    if (viewName === 'game' && !this.currentLocationData && this.allPois.length > 0) {
+      this.currentLocationData = this.allPois[0];
+      stateChanged = true;
+    }
+
+    if (this.currentView !== viewName) {
+      this.currentView = viewName;
+      stateChanged = true;
+    }
+
+    if (stateChanged) {
+      window.location.hash = this.currentView; // Update hash first
+      this._saveGameState(); // Then save
+      console.log(`AppShell: Top nav click to view: ${viewName}. State saved.`);
+    } else if (window.location.hash.substring(1) !== this.currentView) {
+      // View didn't change, but hash might be out of sync
+      window.location.hash = this.currentView;
+    }
   }
 
-  _handleNavigate(event) { // This is for events from child components
+  _handleNavigate(event) {
     const requestedView = event.detail.view;
-    console.log(`AppShell: Navigate event to view: ${requestedView}`);
-    this.currentView = requestedView;
-    window.location.hash = requestedView;
+    const locationData = event.detail.locationData;
+    const targetLocationId = event.detail.targetLocationId;
+    let stateChanged = false;
+
+    console.log(`AppShell: Navigate event to view: ${requestedView}`, event.detail);
+
+    if (requestedView === 'game') {
+      let newLocation = null;
+      if (locationData) { // Navigating from map with full data
+        newLocation = locationData;
+      } else if (targetLocationId && this.allPois.length > 0) { // Navigating from game action with ID
+        newLocation = this.allPois.find(poi => poi.id === targetLocationId);
+        if (!newLocation) {
+          console.error(`AppShell: Location ID "${targetLocationId}" not found.`);
+          this.currentView = 'map';
+          window.location.hash = 'map';
+          this._saveGameState();
+          return;
+        }
+      } else if (!this.currentLocationData && this.allPois.length > 0) {
+        newLocation = this.allPois[0]; // Default to first POI
+      }
+
+      if (newLocation && (!this.currentLocationData || this.currentLocationData.id !== newLocation.id)) {
+        this.currentLocationData = newLocation;
+        stateChanged = true;
+      } else if (!newLocation && requestedView === 'game') {
+        console.warn("AppShell: Cannot navigate to 'game' view without valid location. Going to map.");
+        if (this.currentView !== 'map') {
+          this.currentView = 'map';
+          stateChanged = true;
+        }
+        window.location.hash = this.currentView;
+        if (stateChanged) this._saveGameState();
+        return;
+      }
+    }
+
+    if (this.currentView !== requestedView) {
+      this.currentView = requestedView;
+      stateChanged = true;
+    }
+
+    if (stateChanged) {
+      window.location.hash = this.currentView; // Update hash first
+      this._saveGameState(); // Then save
+    } else if (window.location.hash.substring(1) !== this.currentView) {
+      // View didn't change, but hash might be out of sync
+      window.location.hash = this.currentView;
+    }
+  }
+
+  _handleAddToInventory(event) {
+    const item = event.detail.item;
+    // Avoid duplicates if item already exists (based on ID)
+    if (!this.playerInventory.some(invItem => invItem.id === item.id)) {
+      this.playerInventory = [...this.playerInventory, item];
+      console.log('AppShell: Item added to inventory:', item, 'New Inventory:', this.playerInventory);
+      this._saveGameState(); // Save after inventory change
+    } else {
+      console.log('AppShell: Item already in inventory:', item);
+    }
   }
 
   render() {
@@ -208,9 +493,17 @@ class AppShell extends LitElement {
       case 'map':
         return html`<map-view @navigate=${this._handleNavigate}></map-view>`;
       case 'game': // New case
-        return html`<game-interface-view @navigate=${this._handleNavigate}></game-interface-view>`;
+        return html`<game-interface-view
+                      .locationData=${this.currentLocationData}
+                      .playerInventory=${this.playerInventory}
+                      @navigate=${this._handleNavigate}
+                      @add-to-inventory=${this._handleAddToInventory}
+                    ></game-interface-view>`;
       case 'inventory': // New case
-        return html`<inventory-view @navigate=${this._handleNavigate}></inventory-view>`;
+        return html`<inventory-view
+                      .items=${this.playerInventory}
+                      @navigate=${this._handleNavigate}
+                    ></inventory-view>`;
       case 'research': // New case
         return html`<research-view @navigate=${this._handleNavigate}></research-view>`;
       default:

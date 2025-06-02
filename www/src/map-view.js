@@ -328,8 +328,17 @@ class MapView extends LitElement {
   }
 
   _handlePoiClick(poi) {
-    this.selectedPoi = poi;
-    console.log('POI Clicked:', poi); // For debugging
+    // this.selectedPoi = poi; // We'll navigate directly instead of just selecting
+    console.log('MapView: POI Clicked, navigating to game view:', poi);
+    const navigateEvent = new CustomEvent('navigate', {
+      detail: {
+        view: 'game',
+        locationData: poi // Pass the whole POI object as locationData
+      },
+      bubbles: true,
+      composed: true
+    });
+    this.dispatchEvent(navigateEvent);
   }
 
   _closePoiInfo() {
