@@ -2,6 +2,8 @@ import { LitElement, html, css } from 'lit';
 import '@material/web/list/list.js';
 import '@material/web/list/list-item.js';
 import '@material/web/icon/icon.js';
+import { msg, updateWhenLocaleChanges } from '@lit/localize';
+
 
 class InventoryView extends LitElement {
   static styles = css`
@@ -47,6 +49,7 @@ class InventoryView extends LitElement {
     }
   `;
 
+
   static properties = {
     items: { type: Array }
   };
@@ -54,6 +57,8 @@ class InventoryView extends LitElement {
   constructor() {
     super();
     this.items = [];
+    updateWhenLocaleChanges(this);
+
   }
 
   render() {

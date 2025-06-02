@@ -1,4 +1,8 @@
 import { LitElement, html, css } from 'lit';
+import { msg, updateWhenLocaleChanges, configureLocalization } from '@lit/localize';
+// import { localeCodes } from './generated/locale-codes.js'; // File not generated as of last check
+import { messages as enMessages } from './generated/locales/en.js';
+
 import './menu-view.js'; // Import the menu view
 import './splash-view.js'; // Import the splash view
 import './map-view.js'; // Import the map view
@@ -96,6 +100,12 @@ class AppShell extends LitElement {
     this._localStorageKey = 'vibingWithJulesGameState';
     this._pendingLocationId = null; // Used if locationId is loaded before POIs
     // --- End Game State Persistence ---
+    this._initializeLocalization(); // Call localization setup
+    updateWhenLocaleChanges(this);
+    const validViews = ['map', 'game', 'inventory', 'research', 'menu'];
+    const hash = window.location.hash;
+    let initialView = 'splash'; // Default view
+
 
     // Initialize properties
     this.currentView = 'splash'; // Default, will be overridden by _initializeGame
@@ -283,9 +293,37 @@ class AppShell extends LitElement {
     }
   }
 
+  async _initializeLocalization() {
+    // Using hardcoded 'en' as localeCodes module was not generated.
+    // const locale = 'en'; // Could be dynamic based on user pref / browser settings
+    // const targetLocales = localeCodes || ['en']; // Fallback if localeCodes is undefined
+    const targetLocales = ['en']; // Hardcoded as locale-codes.js was not generated
+
+    configureLocalization({
+      sourceLocale: 'en',
+      targetLocales: targetLocales,
+      loadLocale: async (localeCode) => {
+        if (localeCode === 'en') {
+          return enMessages;
+        }
+        // In a real app, you might dynamically import other locales here:
+        // const langModule = await import(`./generated/locales/${localeCode}.js`);
+        // return langModule.messages;
+        console.warn(`Locale ${localeCode} not implemented or messages not found, defaulting to English.`);
+        return enMessages; // Fallback to English messages
+      },
+    });
+    // Initial locale is set to sourceLocale ('en') by configureLocalization by default.
+    // If we needed to set it explicitly to another *configured* target locale:
+    // await setLocale(locale);
+  }
+
   connectedCallback() {
     super.connectedCallback();
-    window.addEventListener('hashchange', this._boundHandleHashChange);
+    window.addEventListener('hashchange', this.
+                           
+                           
+                           );
     window.addEventListener('beforeunload', this._boundSaveGameState);
   }
 
@@ -421,18 +459,17 @@ class AppShell extends LitElement {
     return html`
       ${this.currentView !== 'splash' ? html`
         <nav class="top-nav">
-          <a href="#" @click=${(e) => this._handleNavClick(e, 'map')}>Map</a>
-          <a href="#" @click=${(e) => this._handleNavClick(e, 'game')}>Game</a>
-          <a href="#" @click=${(e) => this._handleNavClick(e, 'inventory')}>Inventory</a>
-          <a href="#" @click=${(e) => this._handleNavClick(e, 'research')}>Research</a>
-          <a href="#" @click=${(e) => this._handleNavClick(e, 'menu')}>Main Menu</a>
-          <!-- 'Main Menu' link to go back to menu-view -->
+          <a href="#" @click=${(e) => this._handleNavClick(e, 'map')}>${msg('Map', {id: 'nav-map'})}</a>
+          <a href="#" @click=${(e) => this._handleNavClick(e, 'game')}>${msg('Game', {id: 'nav-game'})}</a>
+          <a href="#" @click=${(e) => this._handleNavClick(e, 'inventory')}>${msg('Inventory', {id: 'nav-inventory'})}</a>
+          <a href="#" @click=${(e) => this._handleNavClick(e, 'research')}>${msg('Research', {id: 'nav-research'})}</a>
+          <a href="#" @click=${(e) => this._handleNavClick(e, 'menu')}>${msg('Main Menu', {id: 'nav-main-menu'})}</a>
         </nav>
       ` : ''}
 
       <header class="app-header">
-        <h1>My Lit Game</h1>
-        <p>Current View: ${this.currentView}</p> <!-- Useful for debugging -->
+        <h1>${msg('My Lit Game', {id: 'game-title'})}</h1>
+        <p>${msg('Current View:', {id: 'current-view'})} ${this.currentView}</p> <!-- Useful for debugging -->
       </header>
 
       <main class="main-content">
@@ -442,7 +479,7 @@ class AppShell extends LitElement {
       </main>
 
       <footer class="app-footer">
-        <p>(c) 2023 My Game Inc.</p>
+        <p>${msg('(c) 2023 My Game Inc.', {id: 'footer-copyright'})}</p>
       </footer>
     `;
   }
@@ -470,7 +507,7 @@ class AppShell extends LitElement {
       case 'research': // New case
         return html`<research-view @navigate=${this._handleNavigate}></research-view>`;
       default:
-        return html`<p>Unknown view: ${this.currentView}.</p>`;
+        return html`<p>${msg('Unknown view:', {id: 'unknown-view-prefix'})} ${this.currentView}. ${msg('Implement corresponding -view.js and update AppShell.', {id: 'unknown-view-suffix'})}</p>`;
     }
   }
 }
