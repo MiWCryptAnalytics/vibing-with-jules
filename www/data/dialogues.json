@@ -1,0 +1,118 @@
+{
+  "npc_one_eyed_jack": {
+    "jack_start": {
+      "id": "jack_start",
+      "npcText": "Arr, what brings ye to Tortuga, matey? Don't be shy, speak yer mind or be on yer way!",
+      "playerChoices": [
+        { 
+          "text": "Just looking around, seeing the sights.", 
+          "nextNodeId": "jack_look_around", 
+          "action": null 
+        },
+        { 
+          "text": "Heard any good rumors worth a pirate's ear?", 
+          "nextNodeId": "jack_rumors", 
+          "action": null 
+        },
+        {
+          "text": "I'm looking for adventure... and treasure!",
+          "nextNodeId": "jack_adventure",
+          "action": null
+        }
+      ]
+    },
+    "jack_look_around": {
+      "id": "jack_look_around",
+      "npcText": "Tortuga's got sights aplenty, that's for sure. Just keep yer wits about ye, and yer coin purse hidden. Not everyone here plays nice.",
+      "playerChoices": [
+        { "text": "Thanks for the advice.", "nextNodeId": "END", "action": null }
+      ]
+    },
+    "jack_rumors": {
+      "id": "jack_rumors",
+      "npcText": "Rumors, ye say? Aye, the sea be full o' them, like barnacles on an old hull. Most are as empty as a looted treasure chest, but some... some whisper of islands that appear only in the densest fog, guarded by creatures from the deep. Reckon those are best left to the imagination, eh?",
+      "playerChoices": [
+        { "text": "Perhaps you're right.", "nextNodeId": "END", "action": null },
+        { "text": "Sounds like a challenge!", "nextNodeId": "jack_challenge_accepted", "action": null}
+      ]
+    },
+    "jack_adventure": {
+        "id": "jack_adventure",
+        "npcText": "Adventure and treasure, the lifeblood of any true pirate! This town's a good start, but the real riches lie beyond the horizon. Keep an eye out for old maps, and don't trust a soul further than ye can throw 'em.",
+        "playerChoices": [
+            { "text": "Solid advice, thank you.", "nextNodeId": "END", "action": null }
+        ]
+    },
+    "jack_challenge_accepted": {
+        "id": "jack_challenge_accepted",
+        "npcText": "Heh, a bold one, are ye? That spirit might serve ye well, or get ye killed. Time will tell. Now, be off with ye, I've got important... pirate business to attend to.",
+        "playerChoices": [
+            { "text": "Farewell, Jack.", "nextNodeId": "END", "action": null }
+        ]
+    }
+  },
+  "npc_mysterious_woman": {
+    "mysterious_start": {
+      "id": "mysterious_start",
+      "npcText": "The lagoon keeps many secrets, whispered on the tides. What is it that you truly seek here, traveler?",
+      "playerChoices": [
+        { 
+          "text": "Who are you, if I may ask?", 
+          "nextNodeId": "mysterious_who", 
+          "action": null 
+        },
+        { 
+          "text": "Just admiring the tranquility of this place.", 
+          "nextNodeId": "mysterious_admire", 
+          "action": null 
+        }
+      ]
+    },
+    "mysterious_who": {
+      "id": "mysterious_who",
+      "npcText": "I am but a guardian of this place, a keeper of its balance. The waters here are ancient, and they remember all who pass. Be respectful of their depths.",
+      "playerChoices": [
+        { "text": "I understand. I mean no harm.", "nextNodeId": "END", "action": null }
+      ]
+    },
+    "mysterious_admire": {
+        "id": "mysterious_admire",
+        "npcText": "Indeed, it is a rare sanctuary in these troubled seas. May you find a moment of peace here. But remember, even the calmest waters can hide sharp rocks.",
+        "playerChoices": [
+            { "text": "I'll keep that in mind.", "nextNodeId": "END", "action": null}
+        ]
+    }
+  },
+  "npc_shady_merchant": {
+    "shady_start": {
+        "id": "shady_start",
+        "npcText": "Psst! Over here, friend. Looking for something... special? Something not found in your everyday market stall?",
+        "playerChoices": [
+            { "text": "What kind of 'special' items are we talking about?", "nextNodeId": "shady_items_query", "action": null },
+            { "text": "No thanks, I'm just browsing.", "nextNodeId": "shady_browsing", "action": null }
+        ]
+    },
+    "shady_items_query": {
+        "id": "shady_items_query",
+        "npcText": "Ah, a connoisseur! I have trinkets from forgotten isles, maps that lead to... interesting places, and curiosities that would make a king jealous. Of course, such things have their price.",
+        "playerChoices": [
+            { "text": "Maybe another time. My coin purse is light.", "nextNodeId": "END", "action": null },
+            { "text": "(Lie) I'm not afraid of a high price for true value.", "nextNodeId": "shady_lie_price", "action": null }
+        ]
+    },
+    "shady_browsing": {
+        "id": "shady_browsing",
+        "npcText": "Suit yourself. But when the ordinary fails to satisfy, remember where to find me. Heh heh.",
+        "playerChoices": [
+            { "text": "I will.", "nextNodeId": "END", "action": null }
+        ]
+    },
+    "shady_lie_price": {
+        "id": "shady_lie_price",
+        "npcText": "Is that so? Well, perhaps we can do business. But not here, not now. Too many eyes. Find me when the moon is high, and the shadows are long. We'll talk then.",
+        "playerChoices": [
+            { "text": "Intriguing. I might just do that.", "nextNodeId": "END", "action": null }
+        ]
+    }
+  }
+}

@@ -34,8 +34,8 @@ class MockMapView {
       bubbles: true, composed: true
     });
     this.dispatchEvent(navigateEvent);
-    this.selectedPoi = null;
-    this.requestUpdate();
+    this.selectedPoi = null; 
+    this.requestUpdate(); 
   }
 }
 
@@ -78,7 +78,7 @@ function testMapViewLocationRestrictions() {
       results.push(`FAIL: ${message} (Expected true, Got false)`);
     }
   };
-
+  
   const assertNotNull = (value, message) => {
     if (value !== null && value !== undefined) {
       testsPassed++;
@@ -106,9 +106,9 @@ function testMapViewLocationRestrictions() {
   };
 
   const ancientScroll = { id: "item_ancient_scroll", name: "Ancient Scroll" };
-  const smugglersCove = {
-    id: "location_smugglers_cove", name: "Smuggler's Cove",
-    requiredItems: ["item_ancient_scroll"], description: "A cove."
+  const smugglersCove = { 
+    id: "location_smugglers_cove", name: "Smuggler's Cove", 
+    requiredItems: ["item_ancient_scroll"], description: "A cove." 
   };
   const forest = { id: "forest", name: "Forest", description: "A forest." };
 
@@ -123,11 +123,11 @@ function testMapViewLocationRestrictions() {
     assertTrue(mapView.selectedPoi.customMessage && mapView.selectedPoi.customMessage.includes("ancient scroll"), "Test 1.4: Message indicates missing scroll");
     assertTrue(mapView.selectedPoi.isAccessible === false, "Test 1.5: POI marked not accessible");
   }
-  mapView.dispatchedEvents = [];
+  mapView.dispatchedEvents = []; 
 
   mapView = new MockMapView();
   mapView.pointsOfInterest = [smugglersCove, forest];
-  mapView.playerInventory = [ancientScroll];
+  mapView.playerInventory = [ancientScroll]; 
   mapView._handlePoiClick(smugglersCove);
   assertEqual(mapView.dispatchedEvents.length, 1, "Test 2.1: Navigate event IS dispatched");
   if(mapView.dispatchedEvents.length > 0) {
@@ -138,8 +138,8 @@ function testMapViewLocationRestrictions() {
 
   mapView = new MockMapView();
   mapView.pointsOfInterest = [smugglersCove, forest];
-  mapView.playerInventory = [];
-  mapView._handlePoiClick(forest);
+  mapView.playerInventory = []; 
+  mapView._handlePoiClick(forest); 
   assertEqual(mapView.dispatchedEvents.length, 1, "Test 3.1: Navigate for unrestricted location");
    if(mapView.dispatchedEvents.length > 0) {
     assertDeepEqual(mapView.dispatchedEvents[0].detail, { view: 'game', locationData: forest }, "Test 3.2: Correct details for unrestricted");
@@ -161,6 +161,6 @@ if (typeof module !== 'undefined' && module.exports) {
   window.testMapViewLocationRestrictions = testMapViewLocationRestrictions;
   window.MockMapView = MockMapView;
   // Make assertions available globally for the runner script
-  window.assertEqual = (actual, expected, message, results) => { /* ... */ };
+  window.assertEqual = (actual, expected, message, results) => { /* ... */ }; 
   // (Actual implementation of these would be needed in a runner HTML)
 }

@@ -89,16 +89,28 @@ class GameInterfaceView extends LitElement {
   static properties = {
     locationData: { type: Object },
     playerInventory: { type: Array },
-    playerResources: { type: Object }, // Added for market interactions
-    _lastFoundMessage: { type: String, state: true }
+    playerResources: { type: Object }, 
+    allItems: { type: Object }, 
+    allNpcs: { type: Object },      // Added for NPC data
+    allDialogues: { type: Object }, // Added for dialogue data
+    _lastFoundMessage: { type: String, state: true },
+    _activeDialogueNpcId: { type: String, state: true },
+    _currentDialogueNodeId: { type: String, state: true },
+    _currentDialogueNode: { type: Object, state: true }
   };
 
   constructor() {
     super();
     this.locationData = null;
     this.playerInventory = [];
-    this.playerResources = { gold: 0, silver: 0, rum: 0 }; // Initialize
+    this.playerResources = { gold: 0, silver: 0, rum: 0 };
+    this.allItems = new Map(); 
+    this.allNpcs = new Map();      // Initialize allNpcs
+    this.allDialogues = {};    // Initialize allDialogues
     this._lastFoundMessage = '';
+    this._activeDialogueNpcId = null;
+    this._currentDialogueNodeId = null;
+    this._currentDialogueNode = null;
   }
 
   // Helper to format price object (e.g., { gold: 10 }) into "10 Gold"
@@ -135,14 +147,14 @@ class GameInterfaceView extends LitElement {
         // For this to work, 'good' needs enough details to form an inventory item
         // or itemIdToTrade should point to a globally defined item template.
         // The current POI definition for tradableGoods includes name, desc, icon, itemImage.
-        this.dispatchEvent(new CustomEvent('add-to-inventory', {
-          detail: { item: {
+        this.dispatchEvent(new CustomEvent('add-to-inventory', { 
+          detail: { item: { 
             id: good.itemIdToTrade, // This is crucial
-            name: good.name,
-            description: good.description,
-            icon: good.icon,
-            itemImage: good.itemImage
-          } },
+            name: good.name, 
+            description: good.description, 
+            icon: good.icon, 
+            itemImage: good.itemImage 
+          } }, 
           bubbles: true, composed: true
         }));
         message = `${msg('Bought', {id: 'notify-bought'})} ${good.name}.`;
@@ -171,7 +183,7 @@ class GameInterfaceView extends LitElement {
       const itemInInventory = this.playerInventory.find(item => item.id === good.itemIdToTrade);
       if (itemInInventory) {
         this.dispatchEvent(new CustomEvent('remove-from-inventory', { detail: { itemId: good.itemIdToTrade }, bubbles: true, composed: true }));
-
+        
         const incomeUpdate = { [currency]: income };
         this.dispatchEvent(new CustomEvent('update-resources', { detail: incomeUpdate, bubbles: true, composed: true }));
         message = `${msg('Sold', {id: 'notify-sold'})} ${good.name} ${msg('for', {id: 'notify-for'})} ${this._formatPrice(payment)}.`;
@@ -185,7 +197,7 @@ class GameInterfaceView extends LitElement {
       if (this.playerResources && this.playerResources[good.resourceType] >= good.quantity) {
         const resourceDeduction = { [good.resourceType]: -good.quantity };
         this.dispatchEvent(new CustomEvent('update-resources', { detail: resourceDeduction, bubbles: true, composed: true }));
-
+        
         const incomeUpdate = { [currency]: income };
         this.dispatchEvent(new CustomEvent('update-resources', { detail: incomeUpdate, bubbles: true, composed: true }));
         message = `${msg('Sold', {id: 'notify-sold'})} ${good.quantity} ${good.name} ${msg('for', {id: 'notify-for'})} ${this._formatPrice(payment)}.`;
@@ -195,6 +207,61 @@ class GameInterfaceView extends LitElement {
     }
     this._lastFoundMessage = message;
     setTimeout(() => { this._lastFoundMessage = ''; this.requestUpdate(); }, 3000);
+    this.requestUpdate();
+  }
+
+  _handleNpcClick(npcId) {
+    if (!this.allDialogues || !this.allNpcs) {
+      console.error("Dialogue or NPC data not loaded!");
+      return;
+    }
+    const npcDetails = this.allNpcs.get(npcId);
+    const dialogueTree = this.allDialogues[npcId];
+
+    if (npcDetails && dialogueTree) {
+      this._activeDialogueNpcId = npcId;
+      // Determine start node: often npcId_start or first key.
+      const startNodeId = Object.keys(dialogueTree)[0]; // Simple assumption: first node is start
+      
+      if (dialogueTree[startNodeId]) {
+        this._currentDialogueNodeId = startNodeId;
+        this._currentDialogueNode = dialogueTree[startNodeId];
+        this.requestUpdate();
+      } else {
+        console.error(`No start node found for NPC ${npcId} (tried ${startNodeId})`);
+        this._lastFoundMessage = `Hmm, ${npcDetails.name} doesn't seem to want to talk.`;
+        setTimeout(() => { this._lastFoundMessage = '';}, 3000);
+      }
+    } else {
+      console.error(`NPC details or dialogue tree not found for NPC ID: ${npcId}`);
+      this._lastFoundMessage = "They have nothing to say.";
+       setTimeout(() => { this._lastFoundMessage = '';}, 3000);
+    }
+  }
+
+  _handlePlayerChoice(choice) {
+    if (!this._activeDialogueNpcId || !this.allDialogues) return;
+
+    if (choice.nextNodeId === "END") {
+      this._endDialogue();
+    } else {
+      const dialogueTree = this.allDialogues[this._activeDialogueNpcId];
+      const nextNode = dialogueTree ? dialogueTree[choice.nextNodeId] : null;
+      if (nextNode) {
+        this._currentDialogueNodeId = choice.nextNodeId;
+        this._currentDialogueNode = nextNode;
+      } else {
+        console.error(`Dialogue node "${choice.nextNodeId}" not found for NPC "${this._activeDialogueNpcId}". Ending dialogue.`);
+        this._endDialogue();
+      }
+    }
+    this.requestUpdate();
+  }
+
+  _endDialogue() {
+    this._activeDialogueNpcId = null;
+    this._currentDialogueNodeId = null;
+    this._currentDialogueNode = null;
     this.requestUpdate();
   }
 
@@ -211,12 +278,19 @@ class GameInterfaceView extends LitElement {
         messageToDisplay = interaction.successMessage;
         console.log(`Interaction success: ${interaction.successMessage}`);
 
-        if (interaction.revealedItem) {
-          this.dispatchEvent(new CustomEvent('add-to-inventory', {
-            detail: { item: { ...interaction.revealedItem } }, // Dispatch a copy
-            bubbles: true,
-            composed: true,
-          }));
+        if (interaction.revealsItemId) { // Changed from revealedItem (object) to revealsItemId (string)
+          const revealedItemDetails = this.allItems.get(interaction.revealsItemId);
+          if (revealedItemDetails) {
+            this.dispatchEvent(new CustomEvent('add-to-inventory', {
+              // revealedItemDetails itself contains its own foundMessage if defined in items.json
+              detail: { item: { ...revealedItemDetails } }, 
+              bubbles: true,
+              composed: true,
+            }));
+          } else {
+            console.warn(`GameInterfaceView: Revealed item ID "${interaction.revealsItemId}" not found in allItems.`);
+            messageToDisplay = "An error occurred revealing an item."; // Fallback message
+          }
         }
 
         // Modify the state of the interacted object in locationData
@@ -249,7 +323,7 @@ class GameInterfaceView extends LitElement {
       // Object is an interactable that has already been successfully handled
       messageToDisplay = `${clickedObject.name}: ${clickedObject.description}`;
       // No further action needed, it's just a visual element.
-    }
+    } 
     // Check if the object grants resources (and isn't an interactable feature already handled by above block)
     else if (clickedObject.grantsResources && !clickedObject.isHandledInteractable) {
       this.dispatchEvent(new CustomEvent('update-resources', {
@@ -258,26 +332,48 @@ class GameInterfaceView extends LitElement {
         composed: true,
       }));
       messageToDisplay = clickedObject.foundMessage || `You found: ${clickedObject.name}!`;
-
+      
       // Mark as handled to make it non-interactive and update its appearance via render logic
       const objectInScene = this.locationData.hiddenObjects.find(obj => obj.id === clickedObject.id);
       if (objectInScene) {
         // Update properties to reflect it's been collected
         // The name could be changed, or just rely on isHandledInteractable for rendering
         objectInScene.description = "The resources have been gathered."; // Example description change
-        objectInScene.isHandledInteractable = true;
+        objectInScene.isHandledInteractable = true; 
       }
     }
     else {
-      // Standard hidden object: add to inventory
-      // This assumes that if it's clickable and not an unhandled interactable or resource cache, it's a collectible item.
-      // The rendering logic should prevent already found items from being clickable.
-      this.dispatchEvent(new CustomEvent('add-to-inventory', {
-        detail: { item: { ...clickedObject } }, // Dispatch a copy
-        bubbles: true,
-        composed: true,
-      }));
-      messageToDisplay = clickedObject.foundMessage || `You found: ${clickedObject.name}!`;
+      // Standard hidden object (referenced by itemId or a fully defined special object not yet handled)
+      if (clickedObject.itemId) {
+        const itemDetails = this.allItems.get(clickedObject.itemId);
+        if (itemDetails) {
+          const itemToAdd = { 
+            ...itemDetails, 
+            // Override with location-specific foundMessage if present
+            foundMessage: clickedObject.foundMessage || itemDetails.foundMessage || `You found: ${itemDetails.name}!` 
+          };
+          this.dispatchEvent(new CustomEvent('add-to-inventory', {
+            detail: { item: itemToAdd },
+            bubbles: true,
+            composed: true,
+          }));
+          messageToDisplay = itemToAdd.foundMessage;
+          
+          // Mark this itemId instance as "found" by effectively making it isHandledInteractable
+          // This assumes the render logic will hide it based on playerInventory containing itemDetails.id
+          // For non-inventory items or items that should visually change but remain, this needs adjustment.
+          // The current render logic hides based on playerInventory.some(invItem => invItem.id === obj.itemId)
+          // so no explicit change to clickedObject here is needed if it's purely an item pickup.
+        } else {
+          console.warn(`GameInterfaceView: Item ID "${clickedObject.itemId}" not found in allItems.`);
+          messageToDisplay = "You see something, but can't identify it.";
+        }
+      } else {
+        // This case should ideally not be hit if all standard items use itemId.
+        // It might be a special object not covered by other conditions.
+        console.warn('GameInterfaceView: Clicked object is not a standard item reference and not handled by other types:', clickedObject);
+        messageToDisplay = `You examine ${clickedObject.name || 'an object'}.`;
+      }
     }
 
     if (messageToDisplay) {
@@ -285,7 +381,7 @@ class GameInterfaceView extends LitElement {
       // Clear message and request update after timeout
       setTimeout(() => {
         this._lastFoundMessage = '';
-        this.requestUpdate();
+        this.requestUpdate(); 
       }, 3000);
     }
     this.requestUpdate(); // Request update to reflect changes immediately
@@ -308,9 +404,30 @@ class GameInterfaceView extends LitElement {
     const backgroundImage = this.locationData.gameViewImage ? `url(${this.locationData.gameViewImage})` : 'none';
 
     let contentHtml;
+    let npcListHtml = html``;
+
+    // Render NPCs if present
+    if (this.locationData && this.locationData.npcIds && this.locationData.npcIds.length > 0 && this.allNpcs.size > 0) {
+      npcListHtml = html`
+        <div class="npc-list">
+          <h4>${msg('People Here', {id: 'npc-list-header'})}:</h4>
+          ${this.locationData.npcIds.map(npcId => {
+            const npc = this.allNpcs.get(npcId);
+            return npc ? html`
+              <div class="npc-presence" @click=${() => this._handleNpcClick(npcId)}>
+                <md-icon>${npc.icon || 'person'}</md-icon>
+                <span>${npc.name}</span>
+              </div>
+            ` : '';
+          })}
+        </div>
+      `;
+    }
+
     if (this.locationData.isMarket) {
       contentHtml = html`
         <div class="market-interface">
+          ${npcListHtml} {/* Display NPCs in market too */}
           <md-list class="market-list">
             ${this.locationData.tradableGoods?.map(good => html`
               <md-list-item class="tradable-good" id="${good.goodId}">
@@ -338,35 +455,85 @@ class GameInterfaceView extends LitElement {
           </md-list>
         </div>
       `;
-    } else {
+    } else { // Not a market, render hidden objects and NPCs
       contentHtml = html`
-        ${this.locationData.hiddenObjects?.map(obj => {
-          const isFound = this.playerInventory.some(invItem => invItem.id === obj.id);
-          if (obj.isHandledInteractable) {
+        ${npcListHtml}
+        ${this.locationData.hiddenObjects?.map(objInLocation => {
+          let itemDetails = null;
+          let displayId = objInLocation.id; 
+          let displayName = objInLocation.name;
+          let displayIcon = objInLocation.icon;
+          let displayDescription = objInLocation.description;
+          let isInteractable = objInLocation.isInteractableFeature;
+
+          if (objInLocation.itemId) { // It's an item reference
+            itemDetails = this.allItems.get(objInLocation.itemId);
+            if (!itemDetails) {
+              console.warn(`Render: Item ID ${objInLocation.itemId} not found in allItems.`);
+              return ''; // Don't render if item definition is missing
+            }
+            displayId = itemDetails.id; // Use the actual item ID for isFound check
+            displayName = itemDetails.name;
+            displayIcon = itemDetails.icon;
+            // Description for title could be item's or from objInLocation if overridden
+            displayDescription = objInLocation.description || itemDetails.description; 
+            isInteractable = false; // Standard items are not interactable features themselves
+          }
+          
+          // An item/object is considered "found" or "handled" for rendering purposes if:
+          // 1. It's an item and its ID is in playerInventory.
+          // 2. It's a special object (chest, resource grant) and marked as isHandledInteractable.
+          const isEffectivelyHandled = objInLocation.isHandledInteractable || 
+                                     (itemDetails && this.playerInventory.some(invItem => invItem.id === itemDetails.id));
+
+          if (isEffectivelyHandled && !objInLocation.isInteractableFeature && !objInLocation.grantsResources) { // Only hide if it was a simple pickup
+             if(itemDetails && this.playerInventory.some(invItem => invItem.id === itemDetails.id)) return ''; // Already in inventory, render nothing
+          }
+          
+          if (objInLocation.isHandledInteractable) { // Persists visually but non-interactive (opened chest, collected cache)
             return html`
-              <div class="hidden-object" style="left: ${obj.position.x}; top: ${obj.position.y}; cursor: default;" title="${obj.name} - ${obj.description}">
-                <md-icon>${obj.icon || 'check_circle'}</md-icon>
+              <div class="hidden-object" style="left: ${objInLocation.position.x}; top: ${objInLocation.position.y}; cursor: default;" title="${displayName} - ${objInLocation.description || displayDescription}">
+                <md-icon>${objInLocation.icon || displayIcon || 'check_circle'}</md-icon>
               </div>`;
           }
-          if (!isFound) {
+          
+          if (itemDetails || objInLocation.id) { 
             return html`
-              <div class="hidden-object" style="left: ${obj.position.x}; top: ${obj.position.y};"
-                title="${obj.isInteractableFeature ? obj.description : `Investigate ${obj.name}`}"
-                @click=${() => this._handleObjectClick(obj)}>
-                <md-icon>${obj.icon || 'search'}</md-icon>
+              <div class="hidden-object" style="left: ${objInLocation.position.x}; top: ${objInLocation.position.y};"
+                title="${isInteractable ? displayDescription : `Investigate ${displayName}`}"
+                @click=${() => this._handleObjectClick(objInLocation)}>
+                <md-icon>${displayIcon || 'search'}</md-icon>
               </div>`;
           }
-          return '';
+          return ''; 
         })}
       `;
     }
+
+    // Dialogue Panel UI (rendered as an overlay)
+    const dialoguePanelHtml = this._currentDialogueNode ? html`
+      <div class="dialogue-overlay">
+        <div class="dialogue-panel">
+          <div class="npc-name-dialogue">${this.allNpcs.get(this._activeDialogueNpcId)?.name || 'Someone'} says:</div>
+          <p class="npc-text">${this._currentDialogueNode.npcText}</p>
+          <div class="player-choices">
+            ${this._currentDialogueNode.playerChoices.map(choice => html`
+              <md-filled-button class="player-choice-button" @click=${() => this._handlePlayerChoice(choice)}>
+                ${choice.text}
+              </md-filled-button>
+            `)}
+          </div>
+        </div>
+      </div>
+    ` : '';
 
     return html`
       <div class="viewport" style="background-image: ${backgroundImage};">
         <div class="location-title">${this.locationData.name}</div>
         ${contentHtml}
+        ${dialoguePanelHtml}
         ${this._lastFoundMessage ? html`<div class="found-message">${this._lastFoundMessage}</div>` : ''}
-        ${this.locationData.actions && this.locationData.actions.length > 0 ? html`
+        ${this.locationData.actions && this.locationData.actions.length > 0 && !this._currentDialogueNode ? html`
           <div class="actions-panel">
             ${this.locationData.actions.map(action => html`
               <md-filled-button @click=${() => this._handleActionClick(action)}>
@@ -381,30 +548,101 @@ class GameInterfaceView extends LitElement {
 }
 customElements.define('game-interface-view', GameInterfaceView);
 
-/* Basic CSS for market (can be expanded) */
+/* Styles for Market, NPCs, and Dialogue */
 GameInterfaceView.styles = [GameInterfaceView.styles, css`
   .market-interface {
-    padding-top: 50px; /* Space below location title */
+    padding-top: 10px; /* Adjusted padding */
     height: calc(100% - 100px); /* Adjust based on title and action panel */
     overflow-y: auto;
   }
   .market-list {
     max-width: 700px;
     margin: 0 auto;
-    background-color: rgba(255, 255, 255, 0.9); /* Semi-transparent white background */
+    background-color: rgba(255, 255, 255, 0.9); 
     border-radius: 8px;
   }
   .tradable-good .trade-actions {
     display: flex;
     flex-direction: column;
     align-items: flex-end;
-    gap: 4px; /* Space between price and button */
+    gap: 4px;
   }
   .tradable-good .price-tag {
     font-size: 0.9em;
     color: #333;
   }
   .tradable-good md-filled-button {
-    --md-filled-button-container-height: 36px; /* Smaller buttons */
+    --md-filled-button-container-height: 36px;
+  }
+
+  .npc-list {
+    background-color: rgba(0,0,0,0.1);
+    padding: 8px;
+    margin: 50px auto 10px auto; /* Below title, before other content */
+    max-width: 700px;
+    border-radius: 4px;
+  }
+  .npc-list h4 {
+    margin: 0 0 5px 0;
+    color: white;
+    font-size: 0.9em;
+  }
+  .npc-presence {
+    display: inline-flex; /* Changed to inline-flex */
+    align-items: center;
+    background-color: rgba(255, 255, 255, 0.8);
+    padding: 5px 10px;
+    margin: 5px; /* Added margin for spacing between NPCs */
+    border-radius: 16px;
+    cursor: pointer;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+  }
+  .npc-presence:hover {
+    background-color: white;
+  }
+  .npc-presence md-icon {
+    margin-right: 8px;
+  }
+
+  .dialogue-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100; /* Ensure it's above other UI elements */
+  }
+  .dialogue-panel {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    width: 80%;
+    max-width: 500px;
+    text-align: left;
+  }
+  .npc-name-dialogue {
+    font-weight: bold;
+    margin-bottom: 10px;
+    font-size: 1.1em;
+    color: #333;
+  }
+  .npc-text {
+    margin-bottom: 15px;
+    line-height: 1.6;
+    color: #555;
+  }
+  .player-choices {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .player-choice-button {
+    width: 100%; /* Make buttons full width of panel */
+     --md-filled-button-container-color: #4a5568; /* A darker, more neutral color */
   }
 `];

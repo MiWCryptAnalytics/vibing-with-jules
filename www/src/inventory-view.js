@@ -92,7 +92,7 @@ class InventoryView extends LitElement {
             <div slot="trailing-supporting-text">${this.playerResources?.gold !== undefined ? this.playerResources.gold : 0}</div>
           </md-list-item>
           <md-list-item>
-            <md-icon slot="start">savings</md-icon>
+            <md-icon slot="start">savings</md-icon> 
             <div slot="headline">${msg('Silver Pieces', {id: 'resources-silver'})}</div>
             <div slot="trailing-supporting-text">${this.playerResources?.silver !== undefined ? this.playerResources.silver : 0}</div>
           </md-list-item>

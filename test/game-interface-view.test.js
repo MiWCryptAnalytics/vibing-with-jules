@@ -37,10 +37,10 @@ class MockGameInterfaceView {
         this.dispatchEvent(new CustomEvent('update-resources', { detail: resourceGain }));
         message = `Bought ${good.quantity} ${good.name}.`;
       } else if (good.type === 'item') {
-        this.dispatchEvent(new CustomEvent('add-to-inventory', {
-          detail: { item: {
-            id: good.itemIdToTrade, name: good.name, description: good.description,
-            icon: good.icon, itemImage: good.itemImage
+        this.dispatchEvent(new CustomEvent('add-to-inventory', { 
+          detail: { item: { 
+            id: good.itemIdToTrade, name: good.name, description: good.description, 
+            icon: good.icon, itemImage: good.itemImage 
           } }
         }));
         message = `Bought ${good.name}.`;
@@ -83,7 +83,7 @@ class MockGameInterfaceView {
     this._lastFoundMessage = message;
     this.requestUpdate();
   }
-
+  
   _handleObjectClick(clickedObject) {
     let messageToDisplay = '';
     if (clickedObject.isInteractableFeature && clickedObject.interaction && !clickedObject.isHandledInteractable) {
@@ -266,7 +266,7 @@ function testGameInterfaceInteractions() {
   assertEqual(view.dispatchedEvents.length, 0, "Test 7.1: No events if no sextant to sell");
   assertMatch(view._lastFoundMessage, "You don't have Sextant to sell", "Test 7.2: Don't have sextant message");
   view.dispatchedEvents = [];
-
+  
   console.log(`--- ${testSuiteName} ---`);
   if (results.length > 0) { results.forEach(r => console.log(r)); }
   console.log(`Total Tests: ${testsPassed + testsFailed}, Passed: ${testsPassed}, Failed: ${testsFailed}`);

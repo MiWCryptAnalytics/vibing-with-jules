@@ -345,11 +345,11 @@ class MapView extends LitElement {
         // Player does not have all required items
         const message = `You need: ${missingItems.join(', ')} to access ${poi.name}.`;
         console.log(`MapView: Access to ${poi.name} denied. Missing: ${missingItems.join(', ')}`);
-
+        
         this.selectedPoi = {
           ...poi,
           customMessage: message,
-          isAccessible: false
+          isAccessible: false 
         };
         this.requestUpdate(); // Ensure the info display updates
         return; // Stop further processing
@@ -361,14 +361,14 @@ class MapView extends LitElement {
     const navigateEvent = new CustomEvent('navigate', {
       detail: {
         view: 'game',
-        locationData: poi
+        locationData: poi 
       },
       bubbles: true,
       composed: true
     });
     this.dispatchEvent(navigateEvent);
     this.selectedPoi = null; // Clear selection after successful navigation attempt
-    this.requestUpdate();
+    this.requestUpdate(); 
   }
 
   _closePoiInfo() {

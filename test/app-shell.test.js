@@ -91,11 +91,11 @@ function testUpdatePlayerResources() {
   appShell.playerResources = { gold: 10 };
   appShell._updatePlayerResources({ food: 20 }); // 'food' is a new resource
   assertDeepEqual(appShell.playerResources, { gold: 10, food: 20 }, "Test 4: Add a new resource type dynamically");
-
+  
   // Test 5: Subtract from a new resource type (should result in 0)
   appShell = new MockAppShell();
   appShell.playerResources = { gold: 10 };
-  appShell._updatePlayerResources({ wood: -20 });
+  appShell._updatePlayerResources({ wood: -20 }); 
   assertDeepEqual(appShell.playerResources, { gold: 10, wood: 0 }, "Test 5: Subtract new resource type (results in 0)");
 
   console.log(`--- ${testSuiteName} ---`);

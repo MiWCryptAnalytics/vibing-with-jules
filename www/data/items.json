@@ -1,0 +1,122 @@
+[
+  {
+    "id": "item_rusty_key",
+    "name": "Rusty Key",
+    "description": "An old, rusty key. Wonder what it opens?",
+    "icon": "vpn_key",
+    "itemImage": "../www/assets/images/items/rusty_key_icon.png",
+    "type": "key"
+  },
+  {
+    "id": "item_ancient_scroll",
+    "name": "Ancient Scroll",
+    "description": "A tattered scroll with faded, unreadable writing.",
+    "icon": "history_edu",
+    "itemImage": "../www/assets/images/items/scroll_icon.png",
+    "type": "collectible"
+  },
+  {
+    "id": "item_glowing_gem",
+    "name": "Glowing Gemstone",
+    "description": "A rough gemstone that emits a faint, pulsating light.",
+    "icon": "diamond",
+    "itemImage": "../www/assets/images/items/gem_icon.png",
+    "type": "collectible"
+  },
+  {
+    "id": "item_treasure_map_fragment",
+    "name": "Treasure Map Fragment",
+    "description": "A torn piece of parchment, showing a crude drawing of islands and an 'X' that marks the spot.",
+    "icon": "map",
+    "itemImage": "../www/assets/images/items/treasure_map_fragment.png",
+    "type": "quest"
+  },
+  {
+    "id": "item_sextant",
+    "name": "Sextant",
+    "description": "A nautical instrument used for navigating by the stars. Essential for any seasoned pirate captain.",
+    "icon": "explore",
+    "itemImage": "../www/assets/images/items/sextant.png",
+    "type": "tool"
+  },
+  {
+    "id": "item_bottle_of_grog",
+    "name": "Bottle of Grog",
+    "description": "A dusty bottle filled with a potent, pirate brew. Smells like adventure (and bad decisions).",
+    "icon": "sports_bar",
+    "itemImage": "../www/assets/images/items/bottle_of_grog.png",
+    "type": "consumable"
+  },
+  {
+    "id": "item_pirate_flag",
+    "name": "Pirate Flag",
+    "description": "A tattered black flag with a skull and crossbones. The infamous Jolly Roger.",
+    "icon": "flag",
+    "itemImage": "../www/assets/images/items/pirate_flag.png",
+    "type": "collectible"
+  },
+  {
+    "id": "item_gold_coins",
+    "name": "Gold Coins",
+    "description": "A small pouch of glittering gold coins. Looks valuable.",
+    "icon": "monetization_on",
+    "itemImage": "../www/assets/images/items/gold_coins_icon.png",
+    "type": "currency_item" 
+  },
+  {
+    "id": "item_obsidian_shard",
+    "name": "Obsidian Shard",
+    "description": "A sharp piece of volcanic glass.",
+    "icon": "landscape", 
+    "itemImage": "../www/assets/images/items/item_obsidian_shard_icon.png",
+    "type": "collectible"
+  },
+  {
+    "id": "item_pearl_necklace",
+    "name": "Pearl Necklace",
+    "description": "A beautiful necklace of lustrous pearls.",
+    "icon": "watch", 
+    "itemImage": "../www/assets/images/items/item_pearl_necklace_icon.png",
+    "type": "treasure"
+  },
+  {
+    "id": "item_captains_logbook",
+    "name": "Captain's Logbook",
+    "description": "A weathered logbook from an unknown captain.",
+    "icon": "menu_book",
+    "itemImage": "../www/assets/images/items/item_captains_logbook_icon.png",
+    "type": "quest_item"
+  },
+  {
+    "id": "item_parrot_companion",
+    "name": "Loyal Parrot",
+    "description": "A talkative parrot that now follows you. Squawks occasionally about crackers.",
+    "icon": "pets",
+    "itemImage": "../www/assets/images/items/item_parrot_companion_icon.png",
+    "type": "companion"
+  },
+  {
+    "id": "item_rum_soaked_map",
+    "name": "Rum-Soaked Map",
+    "description": "A tattered map, stained with rum and secrets. Parts of it are barely legible.",
+    "icon": "map",
+    "itemImage": "../www/assets/images/items/item_rum_soaked_map_icon.png",
+    "type": "map_fragment"
+  },
+  {
+    "id": "item_cannonball",
+    "name": "Cannonball",
+    "description": "A heavy iron cannonball, standard make.",
+    "icon": "adjust", 
+    "itemImage": "../www/assets/images/items/item_cannonball_icon.png",
+    "type": "weapon_part"
+  },
+  {
+    "id": "item_empty_bottle",
+    "name": "Empty Bottle",
+    "description": "An empty glass bottle. Could be useful for messages, or storing... rum?",
+    "icon": "wine_bar", 
+    "itemImage": "../www/assets/images/items/item_empty_bottle_icon.png",
+    "type": "crafting_material"
+  }
+]
