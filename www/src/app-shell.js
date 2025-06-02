@@ -1,7 +1,7 @@
 import { LitElement, html, css } from 'lit';
 import { msg, updateWhenLocaleChanges, configureLocalization } from '@lit/localize';
 // import { localeCodes } from './generated/locale-codes.js'; // File not generated as of last check
-import { messages as enMessages } from './generated/locales/en.js';
+import { templates as enMessages } from './generated/locales/en.js';
 
 import './menu-view.js'; // Import the menu view
 import './splash-view.js'; // Import the splash view
@@ -102,10 +102,6 @@ class AppShell extends LitElement {
     // --- End Game State Persistence ---
     this._initializeLocalization(); // Call localization setup
     updateWhenLocaleChanges(this);
-    const validViews = ['map', 'game', 'inventory', 'research', 'menu'];
-    const hash = window.location.hash;
-    let initialView = 'splash'; // Default view
-
 
     // Initialize properties
     this.currentView = 'splash'; // Default, will be overridden by _initializeGame
@@ -116,7 +112,10 @@ class AppShell extends LitElement {
     this._boundHandleHashChange = this._handleHashChange.bind(this);
     this._boundSaveGameState = this._saveGameState.bind(this); // For beforeunload
 
-    this._initializeGame();
+    this._initializeGame().catch(error => {
+      console.error("AppShell: Critical error during game initialization:", error);
+      // You could set a specific error view here if you have one: this.currentView = 'error-view';
+    });
   }
 
   async _initializeGame() {
@@ -199,11 +198,8 @@ class AppShell extends LitElement {
 
   async _loadAllPois() {
     try {
-      // Assuming pois.json is in www/data/ and app-shell.js is in www/src/
-      // The path ../www/data/pois.json implies 'www' is a sibling to 'src's parent.
-      // If your webroot is 'www' and 'data' is a direct child, 'data/pois.json' or '/data/pois.json' might be more typical.
-      // Using the path convention from map-view.js for consistency.
-      const response = await fetch('../www/data/pois.json');
+      // Corrected path: If www is server root, from /src/app-shell.js, ../data/ goes to /data/
+      const response = await fetch('../data/pois.json'); // Or '/data/pois.json'
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -320,10 +316,7 @@ class AppShell extends LitElement {
 
   connectedCallback() {
     super.connectedCallback();
-    window.addEventListener('hashchange', this.
-                           
-                           
-                           );
+    window.addEventListener('hashchange', this._boundHandleHashChange);
     window.addEventListener('beforeunload', this._boundSaveGameState);
   }
 
