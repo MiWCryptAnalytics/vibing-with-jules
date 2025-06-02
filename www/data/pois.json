@@ -2,7 +2,7 @@
   {
     "id": "forest_entrance",
     "name": "Mystic Forest Entrance",
-    "description": "A dimly lit path leading into an ancient forest. The air is thick with the scent of damp earth and old magic.",
+    "description": "A dimly lit path leading into an ancient forest. The air is thick with the scent of damp earth and old magic. You notice a sturdy, locked chest near the base of an ancient tree.",
     "icon": "forest",
     "x": 150,
     "y": 200,
@@ -25,6 +25,28 @@
         "position": { "x": "20%", "y": "45%" },
         "itemImage": "../www/assets/images/items/scroll_icon.png",
         "foundMessage": "You discovered an Ancient Scroll!"
+      },
+      {
+        "id": "locked_chest_forest",
+        "name": "Locked Chest",
+        "description": "A sturdy chest, firmly locked. It looks like it needs a key.",
+        "icon": "inventory_2",
+        "position": { "x": "50%", "y": "80%" },
+        "itemImage": "../www/assets/images/items/locked_chest_icon.png",
+        "isInteractableFeature": true,
+        "interaction": {
+          "requiredItemId": "item_rusty_key",
+          "successMessage": "The Rusty Key fits the lock perfectly! The chest creaks open, revealing Gold Coins!",
+          "revealedItem": {
+            "id": "item_gold_coins",
+            "name": "Gold Coins",
+            "description": "A small pouch of glittering gold coins.",
+            "icon": "monetization_on",
+            "itemImage": "../www/assets/images/items/gold_coins_icon.png",
+            "foundMessage": "You found Gold Coins!"
+          },
+          "consumesRequiredItem": false
+        }
       }
     ],
     "actions": [
@@ -48,6 +70,133 @@
         "position": { "x": "50%", "y": "85%" },
         "itemImage": "../www/assets/images/items/gem_icon.png",
         "foundMessage": "You unearthed a Glowing Gemstone!"
+      }
+    ],
+    "actions": [
+      { "id": "action_return_map", "label": "Return to Map", "targetView": "map" }
+    ]
+  },
+  {
+    "id": "location_smugglers_cove",
+    "name": "Smuggler's Cove",
+    "description": "A hidden cove, notorious for illicit trade and pirate dealings. The salty air is thick with secrets.",
+    "icon": "anchor",
+    "x": 300,
+    "y": 100,
+    "gameViewImage": "../www/assets/images/locations/smugglers_cove.png",
+    "requiredItems": ["item_ancient_scroll"],
+    "hiddenObjects": [
+      {
+        "id": "item_treasure_map_fragment",
+        "name": "Treasure Map Fragment",
+        "description": "A torn piece of parchment, showing a crude drawing of islands and an 'X' that marks the spot.",
+        "icon": "map",
+        "position": { "x": "40%", "y": "70%" },
+        "itemImage": "../www/assets/images/items/treasure_map_fragment.png",
+        "foundMessage": "Ye found a piece of a Treasure Map!"
+      },
+      {
+        "id": "item_bottle_of_grog",
+        "name": "Bottle of Grog",
+        "description": "A dusty bottle filled with a potent, pirate brew. Smells like adventure (and bad decisions).",
+        "icon": "sports_bar",
+        "position": { "x": "65%", "y": "50%" },
+        "itemImage": "../www/assets/images/items/bottle_of_grog.png",
+        "foundMessage": "Ahoy! A Bottle of Grog to quench yer thirst!"
+      }
+    ],
+    "actions": [
+      { "id": "action_return_map", "label": "Return to Map", "targetView": "map" }
+    ]
+  },
+  {
+    "id": "location_sunken_shipwreck",
+    "name": "Sunken Shipwreck",
+    "description": "The ghostly remains of a pirate ship, resting silently on the seabed. Treasures and dangers may lurk within.",
+    "icon": "scuba_diving",
+    "x": 600,
+    "y": 300,
+    "gameViewImage": "../www/assets/images/locations/sunken_shipwreck.png",
+    "hiddenObjects": [
+      {
+        "id": "item_sextant",
+        "name": "Sextant",
+        "description": "A nautical instrument used for navigating by the stars. Essential for any seasoned pirate captain.",
+        "icon": "explore",
+        "position": { "x": "30%", "y": "40%" },
+        "itemImage": "../www/assets/images/items/sextant.png",
+        "foundMessage": "A trusty Sextant! Now ye can chart a course to riches!"
+      },
+      {
+        "id": "found_cache_of_doubloons",
+        "name": "Cache of Doubloons",
+        "description": "A small, waterlogged chest spilling over with gold coins!",
+        "icon": "paid",
+        "position": { "x": "70%", "y": "75%" },
+        "itemImage": "../www/assets/images/items/doubloons_cache_icon.png",
+        "grantsResources": { "gold": 50 },
+        "foundMessage": "Shiver me timbers! Ye found a cache of 50 Gold Doubloons!"
+      }
+    ],
+    "actions": [
+      { "id": "action_return_map", "label": "Return to Map", "targetView": "map" }
+    ]
+  },
+  {
+    "id": "location_pirate_outpost",
+    "name": "Pirate Outpost",
+    "description": "A ramshackle outpost built on a remote island, flying the Jolly Roger high. A haven for scallywags.",
+    "icon": "fort",
+    "x": 100,
+    "y": 500,
+    "gameViewImage": "../www/assets/images/locations/pirate_outpost.png",
+    "hiddenObjects": [
+      {
+        "id": "item_pirate_flag",
+        "name": "Pirate Flag",
+        "description": "A tattered black flag with a skull and crossbones. The infamous Jolly Roger.",
+        "icon": "flag",
+        "position": { "x": "50%", "y": "20%" },
+        "itemImage": "../www/assets/images/items/pirate_flag.png",
+        "foundMessage": "The Jolly Roger! Fly it high and proud, pirate!"
+      }
+    ],
+    "actions": [
+      { "id": "action_return_map", "label": "Return to Map", "targetView": "map" }
+    ]
+  },
+  {
+    "id": "port_royal_market",
+    "name": "Port Royal Market",
+    "description": "A bustling marketplace filled with merchants and goods from across the seas. You can almost smell the spices and hear the bartering.",
+    "icon": "storefront",
+    "x": 250,
+    "y": 350,
+    "gameViewImage": "../www/assets/images/locations/market.jpg",
+    "isMarket": true,
+    "tradableGoods": [
+      {
+        "goodId": "rum_bottle_supply",
+        "name": "Bottle of Rum",
+        "description": "A hearty spirit, good for courage or celebration.",
+        "icon": "sports_bar",
+        "itemImage": "../www/assets/images/items/bottle_of_grog.png",
+        "type": "resource",
+        "resourceType": "rum",
+        "quantity": 1,
+        "marketSellsToPlayerPrice": { "silver": 5 },
+        "stock": 20
+      },
+      {
+        "goodId": "buy_sextant_from_player",
+        "name": "Sextant",
+        "description": "A nautical instrument for navigation. Always in demand by captains.",
+        "icon": "explore",
+        "itemImage": "../www/assets/images/items/sextant.png",
+        "type": "item",
+        "itemIdToTrade": "item_sextant",
+        "marketBuysFromPlayerPrice": { "gold": 15 },
+        "demand": 3
       }
     ],
     "actions": [

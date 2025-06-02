@@ -90,6 +90,7 @@ class AppShell extends LitElement {
     currentView: { type: String },
     currentLocationData: { type: Object }, // To store data for the 'game' view
     playerInventory: { type: Array },     // To store player's collected items
+    playerResources: { type: Object },    // Added for monetary system
     allPois: { type: Array, state: true } // To store all POIs for navigation
   };
 
@@ -107,6 +108,7 @@ class AppShell extends LitElement {
     this.currentView = 'splash'; // Default, will be overridden by _initializeGame
     this.currentLocationData = null;
     this.playerInventory = [];
+    this.playerResources = { gold: 0, silver: 0, rum: 0 }; // Initialize playerResources
     this.allPois = [];
 
     this._boundHandleHashChange = this._handleHashChange.bind(this);
@@ -124,6 +126,10 @@ class AppShell extends LitElement {
 
     if (!loadedFromStorage) {
       // No valid game state loaded, determine initial view from URL hash or default
+      // Grant initial resources for a new game
+      this.playerResources = { gold: 100, silver: 50, rum: 5 };
+      console.log('AppShell: New game started. Granted initial resources:', this.playerResources);
+
       const validViews = ['map', 'game', 'inventory', 'research', 'menu', 'splash'];
       const hash = window.location.hash.substring(1);
       if (hash && validViews.includes(hash)) {
@@ -239,6 +245,8 @@ class AppShell extends LitElement {
 
           this.currentView = savedState.currentView || 'splash';
           this.playerInventory = savedState.playerInventory || [];
+          // Restore playerResources, defaulting if not found in saved state
+          this.playerResources = savedState.playerResources || { gold: 0, silver: 0, rum: 0 };
 
           if (savedState.currentLocationId) {
             // POIs might not be loaded yet. If so, store ID to resolve later.
@@ -274,6 +282,7 @@ class AppShell extends LitElement {
       currentView: this.currentView,
       currentLocationId: this.currentLocationData ? this.currentLocationData.id : null,
       playerInventory: this.playerInventory,
+      playerResources: this.playerResources, // Include playerResources in saved state
       timestamp: Date.now()
     };
     try {
@@ -448,6 +457,52 @@ class AppShell extends LitElement {
     }
   }
 
+  _handleRemoveFromInventory(event) {
+    const itemIdToRemove = event.detail.itemId;
+    const initialInventoryLength = this.playerInventory.length;
+    this.playerInventory = this.playerInventory.filter(item => item.id !== itemIdToRemove);
+
+    if (this.playerInventory.length < initialInventoryLength) {
+      console.log('AppShell: Item removed from inventory:', itemIdToRemove, 'New Inventory:', this.playerInventory);
+      this._saveGameState(); // Save after inventory change
+      this.requestUpdate(); // Ensure UI (like inventory view) updates
+    } else {
+      console.log('AppShell: Item to remove not found in inventory:', itemIdToRemove);
+    }
+  }
+
+  _updatePlayerResources(resourceChanges) {
+    if (!this.playerResources) {
+      // Should have been initialized, but as a safeguard
+      this.playerResources = { gold: 0, silver: 0, rum: 0 };
+    }
+    for (const resource in resourceChanges) {
+      if (this.playerResources.hasOwnProperty(resource)) {
+        this.playerResources[resource] += resourceChanges[resource];
+        if (this.playerResources[resource] < 0) {
+          this.playerResources[resource] = 0; // Prevent negative resources
+        }
+      } else {
+        // If the resource doesn't exist on playerResources, initialize it if positive change
+        if (resourceChanges[resource] > 0) {
+            this.playerResources[resource] = resourceChanges[resource];
+        } else {
+            // Trying to subtract from a non-existent resource, effectively 0
+            this.playerResources[resource] = 0;
+        }
+        console.warn(`AppShell: Resource "${resource}" was not pre-defined in playerResources. It has been initialized.`);
+      }
+    }
+    console.log('AppShell: Player resources updated:', this.playerResources);
+    this._saveGameState(); // Save state after updating resources
+    this.requestUpdate();  // Ensure UI reflects the changes
+  }
+
+  _handleUpdateResources(event) {
+    console.log('AppShell: update-resources event received with detail:', event.detail);
+    this._updatePlayerResources(event.detail);
+  }
+
   render() {
     return html`
       ${this.currentView !== 'splash' ? html`
@@ -484,17 +539,23 @@ class AppShell extends LitElement {
       case 'menu':
         return html`<menu-view @navigate=${this._handleNavigate}></menu-view>`;
       case 'map':
-        return html`<map-view @navigate=${this._handleNavigate}></map-view>`;
+        return html`<map-view
+                    .playerInventory=${this.playerInventory}
+                    @navigate=${this._handleNavigate}
+                  ></map-view>`;
       case 'game': // New case
         return html`<game-interface-view
                       .locationData=${this.currentLocationData}
                       .playerInventory=${this.playerInventory}
                       @navigate=${this._handleNavigate}
                       @add-to-inventory=${this._handleAddToInventory}
+                      @remove-from-inventory=${this._handleRemoveFromInventory}
+                      @update-resources=${this._handleUpdateResources}
                     ></game-interface-view>`;
       case 'inventory': // New case
         return html`<inventory-view
                       .items=${this.playerInventory}
+                      .playerResources=${this.playerResources}
                       @navigate=${this._handleNavigate}
                     ></inventory-view>`;
       case 'research': // New case

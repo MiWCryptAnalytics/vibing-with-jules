@@ -168,8 +168,9 @@ class MapView extends LitElement {
     startY: { type: Number, state: true },
     initialScrollLeft: { type: Number, state: true },
     initialScrollTop: { type: Number, state: true },
-    pointsOfInterest: { type: Array, state: true }, // New
-    selectedPoi: { type: Object, state: true }    // New
+    pointsOfInterest: { type: Array, state: true },
+    selectedPoi: { type: Object, state: true },
+    playerInventory: { type: Array } // Added for item restrictions
   };
 
   constructor() {
@@ -182,8 +183,9 @@ class MapView extends LitElement {
     this.startY = 0;
     this.initialScrollLeft = 0;
     this.initialScrollTop = 0;
-    this.pointsOfInterest = []; // New
-    this.selectedPoi = null;    // New
+    this.pointsOfInterest = [];
+    this.selectedPoi = null;
+    this.playerInventory = []; // Initialize playerInventory
 
     // Bind event handlers to ensure 'this' context
     this._handleDragStart = this._handleDragStart.bind(this);
@@ -328,17 +330,45 @@ class MapView extends LitElement {
   }
 
   _handlePoiClick(poi) {
-    // this.selectedPoi = poi; // We'll navigate directly instead of just selecting
-    console.log('MapView: POI Clicked, navigating to game view:', poi);
+    // Check for required items before navigating
+    if (poi.requiredItems && poi.requiredItems.length > 0) {
+      const missingItems = [];
+      for (const itemId of poi.requiredItems) {
+        if (!this.playerInventory.some(invItem => invItem.id === itemId)) {
+          // Create a user-friendly name from the item ID
+          const itemName = itemId.replace('item_', '').replace(/_/g, ' ');
+          missingItems.push(itemName);
+        }
+      }
+
+      if (missingItems.length > 0) {
+        // Player does not have all required items
+        const message = `You need: ${missingItems.join(', ')} to access ${poi.name}.`;
+        console.log(`MapView: Access to ${poi.name} denied. Missing: ${missingItems.join(', ')}`);
+
+        this.selectedPoi = {
+          ...poi,
+          customMessage: message,
+          isAccessible: false
+        };
+        this.requestUpdate(); // Ensure the info display updates
+        return; // Stop further processing
+      }
+    }
+
+    // If all checks pass or no required items, proceed to navigate
+    console.log('MapView: POI Clicked, navigating to game view:', poi.name);
     const navigateEvent = new CustomEvent('navigate', {
       detail: {
         view: 'game',
-        locationData: poi // Pass the whole POI object as locationData
+        locationData: poi
       },
       bubbles: true,
       composed: true
     });
     this.dispatchEvent(navigateEvent);
+    this.selectedPoi = null; // Clear selection after successful navigation attempt
+    this.requestUpdate();
   }
 
   _closePoiInfo() {
@@ -415,7 +445,11 @@ class MapView extends LitElement {
       <div class="poi-info-display ${this.selectedPoi ? 'visible' : ''}">
         ${this.selectedPoi ? html`
           <h3><md-icon>${this.selectedPoi.icon}</md-icon> ${this.selectedPoi.name}</h3>
-          <p>${this.selectedPoi.description}</p>
+          ${this.selectedPoi.customMessage ? html`
+            <p class="restriction-message" style="color: red;">${this.selectedPoi.customMessage}</p>
+          ` : html`
+            <p>${this.selectedPoi.description}</p>
+          `}
           <button @click=${this._closePoiInfo}>${msg('Close', {id: 'map-poi-close'})}</button>
         ` : ''}
       </div>
