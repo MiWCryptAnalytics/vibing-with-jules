@@ -29,7 +29,7 @@
         "interaction": {
           "requiredItemId": "item_rusty_key",
           "successMessage": "The Rusty Key fits the lock perfectly! The chest creaks open, revealing Gold Coins!",
-          "revealsItemId": "item_gold_coins", 
+          "revealsItemId": "item_gold_coins",
           "consumesRequiredItem": false
         }
       }
@@ -102,7 +102,7 @@
         "foundMessage": "A trusty Sextant! Now ye can chart a course to riches!"
       },
       {
-        "id": "found_cache_of_doubloons", 
+        "id": "found_cache_of_doubloons",
         "name": "Cache of Doubloons",
         "description": "A small, waterlogged chest spilling over with gold coins!",
         "icon": "paid",
@@ -140,8 +140,8 @@
     "name": "Port Royal Market",
     "description": "A bustling marketplace filled with merchants and goods from across the seas. You can almost smell the spices and hear the bartering.",
     "icon": "storefront",
-    "x": 250, 
-    "y": 350, 
+    "x": 250,
+    "y": 350,
     "gameViewImage": "../www/assets/images/locations/port_royal_market.jpg",
     "isMarket": true,
     "npcIds": ["npc_shady_merchant"],
@@ -156,7 +156,7 @@
         "resourceType": "rum",
         "quantity": 1,
         "marketSellsToPlayerPrice": { "silver": 5 },
-        "stock": 20 
+        "stock": 20
       },
       {
         "goodId": "buy_sextant_from_player_pr",
@@ -165,9 +165,9 @@
         "icon": "explore",
         "itemImage": "../www/assets/images/items/item_sextant_icon.png",
         "type": "item",
-        "itemIdToTrade": "item_sextant", 
+        "itemIdToTrade": "item_sextant",
         "marketBuysFromPlayerPrice": { "gold": 15 },
-        "demand": 3 
+        "demand": 3
       }
     ],
     "actions": [
@@ -179,7 +179,7 @@
     "name": "Volcano Island",
     "description": "A treacherous island dominated by a smoking volcano. The air is thick with sulfur.",
     "icon": "whatshot",
-    "x": 700, 
+    "x": 700,
     "y": 150,
     "gameViewImage": "../www/assets/images/locations/volcano_island.jpg",
     "hiddenObjects": [
@@ -203,7 +203,7 @@
     "name": "Hidden Lagoon",
     "description": "A tranquil lagoon shielded by high cliffs, a perfect hideaway.",
     "icon": "anchor",
-    "x": 50, 
+    "x": 50,
     "y": 250,
     "gameViewImage": "../www/assets/images/locations/hidden_lagoon.jpg",
     "npcIds": ["npc_mysterious_woman"],
@@ -233,7 +233,7 @@
     "name": "Tortuga Town",
     "description": "The infamous pirate haven of Tortuga. Rowdy, dangerous, and full of opportunity.",
     "icon": "fort",
-    "x": 400, 
+    "x": 400,
     "y": 50,
     "gameViewImage": "../www/assets/images/locations/tortuga_town.jpg",
     "isMarket": true,
@@ -272,5 +272,269 @@
     "actions": [
       { "id": "action_return_map", "label": "Return to Map", "targetView": "map" }
     ]
+  },
+  {
+    "id": "kraken_abyss",
+    "name": "Kraken's Abyss",
+    "description": "A terrifyingly deep trench rumored to be the lair of the legendary Kraken.",
+    "icon": "waves",
+    "x": 750, "y": 550,
+    "gameViewImage": "../www/assets/images/locations/placeholder_poi_1.jpg",
+    "hiddenObjects": [],
+    "actions": [{ "id": "action_return_map", "label": "Return to Map", "targetView": "map" }],
+    "npcIds": ["npc_kraken_abyss"]
+  },
+  {
+    "id": "cursed_galleon_graveyard",
+    "name": "Cursed Galleon Graveyard",
+    "description": "An eerie expanse of shattered shipwrecks, said to be haunted by their drowned crews.",
+    "icon": "sailing",
+    "x": 100, "y": 300,
+    "gameViewImage": "../www/assets/images/locations/placeholder_poi_2.jpg",
+    "hiddenObjects": [],
+    "actions": [{ "id": "action_return_map", "label": "Return to Map", "targetView": "map" }],
+    "npcIds": ["npc_cursed_galleon_graveyard"]
+  },
+  {
+    "id": "mermaid_rock",
+    "name": "Mermaid's Rock",
+    "description": "A cluster of sun-bleached rocks where sailors claim to hear enchanting songs.",
+    "icon": "girl",
+    "x": 350, "y": 580,
+    "gameViewImage": "../www/assets/images/locations/placeholder_poi_3.jpg",
+    "hiddenObjects": [],
+    "actions": [{ "id": "action_return_map", "label": "Return to Map", "targetView": "map" }],
+    "npcIds": ["npc_mermaid_rock"]
+  },
+  {
+    "id": "blackbeards_hidden_cache",
+    "name": "Blackbeard's Hidden Cache",
+    "description": "Legend tells of a secret cave where Blackbeard stashed his most valuable treasures.",
+    "icon": "diamond",
+    "x": 50, "y": 50,
+    "gameViewImage": "../www/assets/images/locations/placeholder_poi_4.jpg",
+    "hiddenObjects": [],
+    "actions": [{ "id": "action_return_map", "label": "Return to Map", "targetView": "map" }],
+    "npcIds": ["npc_blackbeards_hidden_cache"]
+  },
+  {
+    "id": "stormy_cape_of_no_return",
+    "name": "Stormy Cape of No Return",
+    "description": "A treacherous cape known for its sudden, violent storms that have claimed many ships.",
+    "icon": "thunderstorm",
+    "x": 780, "y": 50,
+    "gameViewImage": "../www/assets/images/locations/placeholder_poi_5.jpg",
+    "hiddenObjects": [],
+    "actions": [{ "id": "action_return_map", "label": "Return to Map", "targetView": "map" }],
+    "npcIds": ["npc_stormy_cape_of_no_return"]
+  },
+  {
+    "id": "davy_jones_locker_entrance",
+    "name": "Davy Jones' Locker Entrance",
+    "description": "A swirling whirlpool rumored to be an entrance to the fearsome Davy Jones' Locker.",
+    "icon": "water",
+    "x": 400, "y": 300,
+    "gameViewImage": "../www/assets/images/locations/placeholder_poi_6.jpg",
+    "hiddenObjects": [],
+    "actions": [{ "id": "action_return_map", "label": "Return to Map", "targetView": "map" }],
+    "npcIds": ["npc_davy_jones_locker_entrance"]
+  },
+  {
+    "id": "cannibal_island",
+    "name": "Cannibal Island",
+    "description": "An unsettling island marked by crude skull totems. Best to steer clear.",
+    "icon": "skull",
+    "x": 200, "y": 450,
+    "gameViewImage": "../www/assets/images/locations/placeholder_poi_7.jpg",
+    "hiddenObjects": [],
+    "actions": [{ "id": "action_return_map", "label": "Return to Map", "targetView": "map" }],
+    "npcIds": ["npc_cannibal_island"]
+  },
+  {
+    "id": "smugglers_secret_strait",
+    "name": "Smuggler's Secret Strait",
+    "description": "A narrow passage hidden by cliffs, used by smugglers to evade naval patrols.",
+    "icon": "directions_boat",
+    "x": 600, "y": 120,
+    "gameViewImage": "../www/assets/images/locations/placeholder_poi_8.jpg",
+    "hiddenObjects": [],
+    "actions": [{ "id": "action_return_map", "label": "Return to Map", "targetView": "map" }],
+    "npcIds": ["npc_smugglers_secret_strait"]
+  },
+  {
+    "id": "treasure_fleet_wreckage_site",
+    "name": "Treasure Fleet Wreckage Site",
+    "description": "The scattered remains of a Spanish treasure fleet, lost to a hurricane centuries ago.",
+    "icon": "broken_image",
+    "x": 50, "y": 400,
+    "gameViewImage": "../www/assets/images/locations/placeholder_poi_9.jpg",
+    "hiddenObjects": [],
+    "actions": [{ "id": "action_return_map", "label": "Return to Map", "targetView": "map" }],
+    "npcIds": ["npc_treasure_fleet_wreckage_site"]
+  },
+  {
+    "id": "fort_caroline_ruins",
+    "name": "Fort Caroline Ruins",
+    "description": "The crumbling stone walls of an old colonial fort, now reclaimed by jungle.",
+    "icon": "fort",
+    "x": 650, "y": 400,
+    "gameViewImage": "../www/assets/images/locations/placeholder_poi_10.jpg",
+    "hiddenObjects": [],
+    "actions": [{ "id": "action_return_map", "label": "Return to Map", "targetView": "map" }],
+    "npcIds": ["npc_fort_caroline_ruins"]
+  },
+  {
+    "id": "ship_trap_island",
+    "name": "Ship-Trap Island",
+    "description": "An island infamous for its treacherous currents and magnetic rocks that pull ships to their doom.",
+    "icon": "magnet",
+    "x": 250, "y": 250,
+    "gameViewImage": "../www/assets/images/locations/placeholder_poi_11.jpg",
+    "hiddenObjects": [],
+    "actions": [{ "id": "action_return_map", "label": "Return to Map", "targetView": "map" }],
+    "npcIds": ["npc_ship_trap_island"]
+  },
+  {
+    "id": "marooners_rock",
+    "name": "Marooner's Rock",
+    "description": "A desolate rock where mutineers and troublemakers were left to their fate.",
+    "icon": "person_off",
+    "x": 700, "y": 250,
+    "gameViewImage": "../www/assets/images/locations/placeholder_poi_12.jpg",
+    "hiddenObjects": [],
+    "actions": [{ "id": "action_return_map", "label": "Return to Map", "targetView": "map" }],
+    "npcIds": ["npc_marooners_rock"]
+  },
+  {
+    "id": "the_leviathans_ribcage",
+    "name": "The Leviathan's Ribcage",
+    "description": "Massive, bleached bones forming a natural archway, said to be the remains of a colossal sea beast.",
+    "icon": "skull",
+    "x": 120, "y": 120,
+    "gameViewImage": "../www/assets/images/locations/placeholder_poi_13.jpg",
+    "hiddenObjects": [{"itemId": "leviathan_tooth", "position": {"x": "50%", "y": "50%"}, "foundMessage": "You found a massive Leviathan Tooth!"}],
+    "actions": [{ "id": "action_return_map", "label": "Return to Map", "targetView": "map" }],
+    "npcIds": ["npc_the_leviathans_ribcage"]
+  },
+  {
+    "id": "coral_reef_labyrinth",
+    "name": "Coral Reef Labyrinth",
+    "description": "A sprawling, maze-like coral reef, beautiful but easy to get lost in.",
+    "icon": "hub",
+    "x": 550, "y": 500,
+    "gameViewImage": "../www/assets/images/locations/placeholder_poi_14.jpg",
+    "hiddenObjects": [],
+    "actions": [{ "id": "action_return_map", "label": "Return to Map", "targetView": "map" }],
+    "npcIds": ["npc_coral_reef_labyrinth"]
+  },
+  {
+    "id": "skeleton_key_islet",
+    "name": "Skeleton Key Islet",
+    "description": "A small island shaped like a skull, rumored to hold a key to a great treasure.",
+    "icon": "key",
+    "x": 450, "y": 180,
+    "gameViewImage": "../www/assets/images/locations/placeholder_poi_15.jpg",
+    "hiddenObjects": [],
+    "actions": [{ "id": "action_return_map", "label": "Return to Map", "targetView": "map" }],
+    "npcIds": ["npc_skeleton_key_islet"]
+  },
+  {
+    "id": "the_barnacle_bank",
+    "name": "The Barnacle Bank",
+    "description": "A shallow sandbar covered in ancient, oversized barnacles, some rumored to hide pearls.",
+    "icon": "beach_access",
+    "x": 300, "y": 30,
+    "gameViewImage": "../www/assets/images/locations/placeholder_poi_16.jpg",
+    "hiddenObjects": [],
+    "actions": [{ "id": "action_return_map", "label": "Return to Map", "targetView": "map" }],
+    "npcIds": ["npc_the_barnacle_bank"]
+  },
+  {
+    "id": "ghost_ship_anchorage",
+    "name": "Ghost Ship Anchorage",
+    "description": "A misty bay where the spectral 'Flying Dutchman' is sometimes sighted.",
+    "icon": "sailing",
+    "x": 180, "y": 550,
+    "gameViewImage": "../www/assets/images/locations/placeholder_poi_17.jpg",
+    "hiddenObjects": [],
+    "actions": [{ "id": "action_return_map", "label": "Return to Map", "targetView": "map" }],
+    "npcIds": ["npc_ghost_ship_anchorage"]
+  },
+  {
+    "id": "sea_serpents_pass",
+    "name": "Sea Serpent's Pass",
+    "description": "A winding channel where giant sea serpents are often spotted navigating the currents.",
+    "icon": "snake",
+    "x": 600, "y": 580,
+    "gameViewImage": "../www/assets/images/locations/placeholder_poi_18.jpg",
+    "hiddenObjects": [],
+    "actions": [{ "id": "action_return_map", "label": "Return to Map", "targetView": "map" }],
+    "npcIds": ["npc_sea_serpents_pass"]
+  },
+  {
+    "id": "dead_mans_chest_island",
+    "name": "Dead Man's Chest Island",
+    "description": "Yo ho ho, an island famed in pirate shanties, said to hide a cursed treasure chest.",
+    "icon": "inventory_2",
+    "x": 720, "y": 480,
+    "gameViewImage": "../www/assets/images/locations/placeholder_poi_19.jpg",
+    "hiddenObjects": [],
+    "actions": [{ "id": "action_return_map", "label": "Return to Map", "targetView": "map" }],
+    "npcIds": ["npc_dead_mans_chest_island"]
+  },
+  {
+    "id": "rum_runners_rendezvous",
+    "name": "Rum Runner's Rendezvous",
+    "description": "A secluded beach where illegal rum shipments are secretly landed.",
+    "icon": "sports_bar",
+    "x": 20, "y": 200,
+    "gameViewImage": "../www/assets/images/locations/placeholder_poi_20.jpg",
+    "hiddenObjects": [],
+    "actions": [{ "id": "action_return_map", "label": "Return to Map", "targetView": "map" }],
+    "npcIds": ["npc_rum_runners_rendezvous"]
+  },
+  {
+    "id": "spyglass_hill",
+    "name": "Spyglass Hill",
+    "description": "The tallest point on the islands, offering a panoramic view of the surrounding seas.",
+    "icon": "binoculars",
+    "x": 480, "y": 380,
+    "gameViewImage": "../www/assets/images/locations/placeholder_poi_21.jpg",
+    "hiddenObjects": [],
+    "actions": [{ "id": "action_return_map", "label": "Return to Map", "targetView": "map" }],
+    "npcIds": ["npc_spyglass_hill"]
+  },
+  {
+    "id": "mutineers_gallows",
+    "name": "Mutineer's Gallows",
+    "description": "A grim site where pirates who broke the code met their end.",
+    "icon": "skull",
+    "x": 330, "y": 420,
+    "gameViewImage": "../www/assets/images/locations/placeholder_poi_22.jpg",
+    "hiddenObjects": [],
+    "actions": [{ "id": "action_return_map", "label": "Return to Map", "targetView": "map" }],
+    "npcIds": ["npc_mutineers_gallows"]
+  },
+  {
+    "id": "buried_doubloon_beach",
+    "name": "Buried Doubloon Beach",
+    "description": "A stretch of sand where pirates are known to bury their ill-gotten gains.",
+    "icon": "paid",
+    "x": 500, "y": 20,
+    "gameViewImage": "../www/assets/images/locations/placeholder_poi_23.jpg",
+    "hiddenObjects": [{"itemId": "bag_of_doubloons", "position": {"x": "60%", "y": "70%"}, "foundMessage": "You dug up a small bag of Doubloons!"}],
+    "actions": [{ "id": "action_return_map", "label": "Return to Map", "targetView": "map" }],
+    "npcIds": ["npc_buried_doubloon_beach"]
+  },
+  {
+    "id": "captains_quarrel_cove",
+    "name": "Captain's Quarrel Cove",
+    "description": "A notorious dueling spot where pirate captains settled their disputes...permanently.",
+    "icon": "swords",
+    "x": 680, "y": 320,
+    "gameViewImage": "../www/assets/images/locations/placeholder_poi_24.jpg",
+    "hiddenObjects": [],
+    "actions": [{ "id": "action_return_map", "label": "Return to Map", "targetView": "map" }],
+    "npcIds": ["npc_captains_quarrel_cove"]
   }
 ]

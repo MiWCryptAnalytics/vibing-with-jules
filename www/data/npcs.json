@@ -5,7 +5,8 @@
     "description": "A weathered pirate with a story for every scar. He's seen more storms than a royal navy admiral.",
     "icon": "person",
     "defaultLocationId": "tortuga_town",
-    "portraitImage": "../www/assets/images/portraits/one_eyed_jack_portrait.png" 
+    "portraitImage": "../www/assets/images/portraits/one_eyed_jack_portrait.png",
+    "alignment": "neutral"
   },
   {
     "id": "npc_mysterious_woman",
@@ -13,7 +14,8 @@
     "description": "She watches the world with knowing eyes, her secrets as deep as the ocean.",
     "icon": "face_3",
     "defaultLocationId": "hidden_lagoon",
-    "portraitImage": "../www/assets/images/portraits/mysterious_woman_portrait.png"
+    "portraitImage": "../www/assets/images/portraits/mysterious_woman_portrait.png",
+    "alignment": "neutral"
   },
   {
     "id": "npc_shady_merchant",
@@ -21,6 +23,319 @@
     "description": "He deals in rare and unusual items... for the right price. Always has a glint in his eye.",
     "icon": "store",
     "defaultLocationId": "port_royal_market",
-    "portraitImage": "../www/assets/images/portraits/shady_merchant_portrait.png"
+    "portraitImage": "../www/assets/images/portraits/shady_merchant_portrait.png",
+    "alignment": "neutral"
+  },
+  {
+    "id": "npc_kraken_abyss",
+    "name": "Kraken Worshipper",
+    "description": "A wild-eyed hermit who claims to commune with the great Kraken.",
+    "icon": "person_pin",
+    "defaultLocationId": "kraken_abyss",
+    "portraitImage": "../www/assets/images/portraits/placeholder_npc_1.png",
+    "alignment": "neutral"
+  },
+  {
+    "id": "npc_cursed_galleon_graveyard",
+    "name": "Phantom Watcher",
+    "description": "A spectral figure that drifts among the wrecked ships.",
+    "icon": "person_pin",
+    "defaultLocationId": "cursed_galleon_graveyard",
+    "portraitImage": "../www/assets/images/portraits/placeholder_npc_2.png",
+    "alignment": "neutral"
+  },
+  {
+    "id": "npc_mermaid_rock",
+    "name": "Siren Songstress",
+    "description": "Her voice is beautiful, yet sorrowful, echoing from the rocks.",
+    "icon": "person_pin",
+    "defaultLocationId": "mermaid_rock",
+    "portraitImage": "../www/assets/images/portraits/placeholder_npc_3.png",
+    "alignment": "neutral"
+  },
+  {
+    "id": "npc_blackbeards_hidden_cache",
+    "name": "Figure of Blackbeard's Hidden Cache",
+    "description": "A mysterious figure watching over Blackbeard's Hidden Cache.",
+    "icon": "person_pin",
+    "defaultLocationId": "blackbeards_hidden_cache",
+    "portraitImage": "../www/assets/images/portraits/placeholder_npc_4.png",
+    "alignment": "neutral"
+  },
+  {
+    "id": "npc_stormy_cape_of_no_return",
+    "name": "Figure of Stormy Cape of No Return",
+    "description": "A mysterious figure watching over Stormy Cape of No Return.",
+    "icon": "person_pin",
+    "defaultLocationId": "stormy_cape_of_no_return",
+    "portraitImage": "../www/assets/images/portraits/placeholder_npc_5.png",
+    "alignment": "neutral"
+  },
+  {
+    "id": "npc_davy_jones_locker_entrance",
+    "name": "Figure of Davy Jones' Locker Entrance",
+    "description": "A mysterious figure watching over Davy Jones' Locker Entrance.",
+    "icon": "person_pin",
+    "defaultLocationId": "davy_jones_locker_entrance",
+    "portraitImage": "../www/assets/images/portraits/placeholder_npc_6.png",
+    "alignment": "neutral"
+  },
+  {
+    "id": "npc_cannibal_island",
+    "name": "Figure of Cannibal Island",
+    "description": "A mysterious figure watching over Cannibal Island.",
+    "icon": "person_pin",
+    "defaultLocationId": "cannibal_island",
+    "portraitImage": "../www/assets/images/portraits/placeholder_npc_7.png",
+    "alignment": "neutral"
+  },
+  {
+    "id": "npc_smugglers_secret_strait",
+    "name": "Figure of Smuggler's Secret Strait",
+    "description": "A mysterious figure watching over Smuggler's Secret Strait.",
+    "icon": "person_pin",
+    "defaultLocationId": "smugglers_secret_strait",
+    "portraitImage": "../www/assets/images/portraits/placeholder_npc_8.png",
+    "alignment": "neutral"
+  },
+  {
+    "id": "npc_treasure_fleet_wreckage_site",
+    "name": "Figure of Treasure Fleet Wreckage Site",
+    "description": "A mysterious figure watching over Treasure Fleet Wreckage Site.",
+    "icon": "person_pin",
+    "defaultLocationId": "treasure_fleet_wreckage_site",
+    "portraitImage": "../www/assets/images/portraits/placeholder_npc_9.png",
+    "alignment": "neutral"
+  },
+  {
+    "id": "npc_fort_caroline_ruins",
+    "name": "Figure of Fort Caroline Ruins",
+    "description": "A mysterious figure watching over Fort Caroline Ruins.",
+    "icon": "person_pin",
+    "defaultLocationId": "fort_caroline_ruins",
+    "portraitImage": "../www/assets/images/portraits/placeholder_npc_10.png",
+    "alignment": "neutral"
+  },
+  {
+    "id": "npc_ship_trap_island",
+    "name": "Figure of Ship-Trap Island",
+    "description": "A mysterious figure watching over Ship-Trap Island.",
+    "icon": "person_pin",
+    "defaultLocationId": "ship_trap_island",
+    "portraitImage": "../www/assets/images/portraits/placeholder_npc_11.png",
+    "alignment": "neutral"
+  },
+  {
+    "id": "npc_marooners_rock",
+    "name": "Figure of Marooner's Rock",
+    "description": "A mysterious figure watching over Marooner's Rock.",
+    "icon": "person_pin",
+    "defaultLocationId": "marooners_rock",
+    "portraitImage": "../www/assets/images/portraits/placeholder_npc_12.png",
+    "alignment": "neutral"
+  },
+  {
+    "id": "npc_the_leviathans_ribcage",
+    "name": "Figure of The Leviathan's Ribcage",
+    "description": "A mysterious figure watching over The Leviathan's Ribcage.",
+    "icon": "person_pin",
+    "defaultLocationId": "the_leviathans_ribcage",
+    "portraitImage": "../www/assets/images/portraits/placeholder_npc_13.png",
+    "alignment": "neutral"
+  },
+  {
+    "id": "npc_coral_reef_labyrinth",
+    "name": "Figure of Coral Reef Labyrinth",
+    "description": "A mysterious figure watching over Coral Reef Labyrinth.",
+    "icon": "person_pin",
+    "defaultLocationId": "coral_reef_labyrinth",
+    "portraitImage": "../www/assets/images/portraits/placeholder_npc_14.png",
+    "alignment": "neutral"
+  },
+  {
+    "id": "npc_skeleton_key_islet",
+    "name": "Figure of Skeleton Key Islet",
+    "description": "A mysterious figure watching over Skeleton Key Islet.",
+    "icon": "person_pin",
+    "defaultLocationId": "skeleton_key_islet",
+    "portraitImage": "../www/assets/images/portraits/placeholder_npc_15.png",
+    "alignment": "neutral"
+  },
+  {
+    "id": "npc_the_barnacle_bank",
+    "name": "Figure of The Barnacle Bank",
+    "description": "A mysterious figure watching over The Barnacle Bank.",
+    "icon": "person_pin",
+    "defaultLocationId": "the_barnacle_bank",
+    "portraitImage": "../www/assets/images/portraits/placeholder_npc_16.png",
+    "alignment": "neutral"
+  },
+  {
+    "id": "npc_ghost_ship_anchorage",
+    "name": "Figure of Ghost Ship Anchorage",
+    "description": "A mysterious figure watching over Ghost Ship Anchorage.",
+    "icon": "person_pin",
+    "defaultLocationId": "ghost_ship_anchorage",
+    "portraitImage": "../www/assets/images/portraits/placeholder_npc_17.png",
+    "alignment": "neutral"
+  },
+  {
+    "id": "npc_sea_serpents_pass",
+    "name": "Figure of Sea Serpent's Pass",
+    "description": "A mysterious figure watching over Sea Serpent's Pass.",
+    "icon": "person_pin",
+    "defaultLocationId": "sea_serpents_pass",
+    "portraitImage": "../www/assets/images/portraits/placeholder_npc_18.png",
+    "alignment": "neutral"
+  },
+  {
+    "id": "npc_dead_mans_chest_island",
+    "name": "Figure of Dead Man's Chest Island",
+    "description": "A mysterious figure watching over Dead Man's Chest Island.",
+    "icon": "person_pin",
+    "defaultLocationId": "dead_mans_chest_island",
+    "portraitImage": "../www/assets/images/portraits/placeholder_npc_19.png",
+    "alignment": "neutral"
+  },
+  {
+    "id": "npc_rum_runners_rendezvous",
+    "name": "Figure of Rum Runner's Rendezvous",
+    "description": "A mysterious figure watching over Rum Runner's Rendezvous.",
+    "icon": "person_pin",
+    "defaultLocationId": "rum_runners_rendezvous",
+    "portraitImage": "../www/assets/images/portraits/placeholder_npc_20.png",
+    "alignment": "neutral"
+  },
+  {
+    "id": "npc_spyglass_hill",
+    "name": "Figure of Spyglass Hill",
+    "description": "A mysterious figure watching over Spyglass Hill.",
+    "icon": "person_pin",
+    "defaultLocationId": "spyglass_hill",
+    "portraitImage": "../www/assets/images/portraits/placeholder_npc_21.png",
+    "alignment": "neutral"
+  },
+  {
+    "id": "npc_mutineers_gallows",
+    "name": "Figure of Mutineer's Gallows",
+    "description": "A mysterious figure watching over Mutineer's Gallows.",
+    "icon": "person_pin",
+    "defaultLocationId": "mutineers_gallows",
+    "portraitImage": "../www/assets/images/portraits/placeholder_npc_22.png",
+    "alignment": "neutral"
+  },
+  {
+    "id": "npc_buried_doubloon_beach",
+    "name": "Figure of Buried Doubloon Beach",
+    "description": "A mysterious figure watching over Buried Doubloon Beach.",
+    "icon": "person_pin",
+    "defaultLocationId": "buried_doubloon_beach",
+    "portraitImage": "../www/assets/images/portraits/placeholder_npc_23.png",
+    "alignment": "neutral"
+  },
+  {
+    "id": "npc_captains_quarrel_cove",
+    "name": "Figure of Captain's Quarrel Cove",
+    "description": "A mysterious figure watching over Captain's Quarrel Cove.",
+    "icon": "person_pin",
+    "defaultLocationId": "captains_quarrel_cove",
+    "portraitImage": "../www/assets/images/portraits/placeholder_npc_24.png",
+    "alignment": "neutral"
+  },
+  {
+    "id": "npc_wandering_bard",
+    "name": "Wandering Bard",
+    "description": "A cheerful bard strumming lively shanties, always ready with an encouraging word or a tale of heroism.",
+    "icon": "music_note",
+    "portraitImage": "../www/assets/images/portraits/placeholder_random_npc_1.png",
+    "alignment": "good"
+  },
+  {
+    "id": "npc_shipwrecked_sailor",
+    "name": "Shipwrecked Sailor",
+    "description": "A grateful sailor rescued from a deserted island, eager to repay your kindness.",
+    "icon": "person_pin",
+    "portraitImage": "../www/assets/images/portraits/placeholder_random_npc_2.png",
+    "alignment": "good"
+  },
+  {
+    "id": "npc_helpful_islander",
+    "name": "Helpful Islander",
+    "description": "A native islander offering guidance or a rare fruit, asking for nothing in return.",
+    "icon": "emoji_people",
+    "portraitImage": "../www/assets/images/portraits/placeholder_random_npc_3.png",
+    "alignment": "good"
+  },
+  {
+    "id": "npc_retired_naval_officer",
+    "name": "Retired Naval Officer",
+    "description": "An old, honorable naval officer who shares wisdom about the seas and despises pirates but respects courage.",
+    "icon": "military_tech",
+    "portraitImage": "../www/assets/images/portraits/placeholder_random_npc_4.png",
+    "alignment": "good"
+  },
+  {
+    "id": "npc_traveling_merchant",
+    "name": "Traveling Merchant",
+    "description": "A pragmatic merchant sailing a small sloop, offering common goods at fair prices.",
+    "icon": "store",
+    "portraitImage": "../www/assets/images/portraits/placeholder_random_npc_5.png",
+    "alignment": "neutral"
+  },
+  {
+    "id": "npc_hermit_crab_collector",
+    "name": "Hermit Crab Collector",
+    "description": "An eccentric individual obsessed with collecting rare hermit crab shells, willing to trade information for unique finds.",
+    "icon": "bug_report",
+    "portraitImage": "../www/assets/images/portraits/placeholder_random_npc_6.png",
+    "alignment": "neutral"
+  },
+  {
+    "id": "npc_castaway_cartographer",
+    "name": "Castaway Cartographer",
+    "description": "A cartographer who claims to have lost his valuable maps, seeking passage to any port.",
+    "icon": "map",
+    "portraitImage": "../www/assets/images/portraits/placeholder_random_npc_7.png",
+    "alignment": "neutral"
+  },
+  {
+    "id": "npc_superstitious_fisherman",
+    "name": "Superstitious Fisherman",
+    "description": "A fisherman guided by omens and rituals, wary of strangers but knowledgeable about local waters.",
+    "icon": "phishing",
+    "portraitImage": "../www/assets/images/portraits/placeholder_random_npc_8.png",
+    "alignment": "neutral"
+  },
+  {
+    "id": "npc_cutthroat_buccaneer",
+    "name": "Cutthroat Buccaneer",
+    "description": "A menacing pirate spoiling for a fight, demanding tribute or your life.",
+    "icon": "sports_kabaddi",
+    "portraitImage": "../www/assets/images/portraits/placeholder_random_npc_9.png",
+    "alignment": "evil"
+  },
+  {
+    "id": "npc_deceptive_siren",
+    "name": "Deceptive Siren",
+    "description": "A beautiful creature whose enchanting song lures sailors to their doom, or at least to part with their gold.",
+    "icon": "voice_over_record",
+    "portraitImage": "../www/assets/images/portraits/placeholder_random_npc_10.png",
+    "alignment": "evil"
+  },
+  {
+    "id": "npc_cursed_treasure_guardian",
+    "name": "Cursed Treasure Guardian",
+    "description": "A spectral guardian bound to a cursed treasure, attacking anyone who comes near.",
+    "icon": "ghost",
+    "portraitImage": "../www/assets/images/portraits/placeholder_random_npc_11.png",
+    "alignment": "evil"
+  },
+  {
+    "id": "npc_ruthless_slave_trader",
+    "name": "Ruthless Slave Trader",
+    "description": "A vile individual looking to capture unsuspecting sailors for a quick profit.",
+    "icon": "money_off",
+    "portraitImage": "../www/assets/images/portraits/placeholder_random_npc_12.png",
+    "alignment": "evil"
   }
 ]
