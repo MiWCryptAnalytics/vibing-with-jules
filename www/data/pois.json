@@ -2,29 +2,36 @@
   {
     "id": "forest_entrance",
     "name": "Mystic Forest Entrance",
-    "description": "A dimly lit path leading into an ancient forest. The air is thick with the scent of damp earth and old magic.",
+    "description": "A dimly lit path leading into an ancient forest. The air is thick with the scent of damp earth and old magic. You notice a sturdy, locked chest near the base of an ancient tree.",
     "icon": "forest",
     "x": 150,
     "y": 200,
     "gameViewImage": "../www/assets/images/locations/forest_entrance.jpg",
     "hiddenObjects": [
       {
-        "id": "item_rusty_key",
-        "name": "Rusty Key",
-        "description": "An old, rusty key. Wonder what it opens?",
-        "icon": "vpn_key",
+        "itemId": "item_rusty_key",
         "position": { "x": "75%", "y": "60%" },
-        "itemImage": "../www/assets/images/items/rusty_key_icon.png",
         "foundMessage": "You found a Rusty Key!"
       },
       {
-        "id": "item_ancient_scroll",
-        "name": "Ancient Scroll",
-        "description": "A tattered scroll with faded, unreadable writing.",
-        "icon": "history_edu",
+        "itemId": "item_ancient_scroll",
         "position": { "x": "20%", "y": "45%" },
-        "itemImage": "../www/assets/images/items/scroll_icon.png",
         "foundMessage": "You discovered an Ancient Scroll!"
+      },
+      {
+        "id": "locked_chest_forest",
+        "name": "Locked Chest",
+        "description": "A sturdy chest, firmly locked. It looks like it needs a key.",
+        "icon": "inventory_2",
+        "position": { "x": "50%", "y": "80%" },
+        "itemImage": "../www/assets/images/items/locked_chest_icon.png",
+        "isInteractableFeature": true,
+        "interaction": {
+          "requiredItemId": "item_rusty_key",
+          "successMessage": "The Rusty Key fits the lock perfectly! The chest creaks open, revealing Gold Coins!",
+          "revealsItemId": "item_gold_coins", 
+          "consumesRequiredItem": false
+        }
       }
     ],
     "actions": [
@@ -41,13 +48,225 @@
     "gameViewImage": "../www/assets/images/locations/mine_entrance.jpg",
     "hiddenObjects": [
       {
-        "id": "item_glowing_gem",
-        "name": "Glowing Gemstone",
-        "description": "A rough gemstone that emits a faint, pulsating light.",
-        "icon": "diamond",
+        "itemId": "item_glowing_gem",
         "position": { "x": "50%", "y": "85%" },
-        "itemImage": "../www/assets/images/items/gem_icon.png",
         "foundMessage": "You unearthed a Glowing Gemstone!"
+      },
+      {
+        "itemId": "item_captains_logbook",
+        "position": { "x": "30%", "y": "30%" },
+        "foundMessage": "You found an old Captain's Logbook!"
+      }
+    ],
+    "actions": [
+      { "id": "action_return_map", "label": "Return to Map", "targetView": "map" }
+    ]
+  },
+  {
+    "id": "location_smugglers_cove",
+    "name": "Smuggler's Cove",
+    "description": "A hidden cove, notorious for illicit trade and pirate dealings. The salty air is thick with secrets.",
+    "icon": "anchor",
+    "x": 300,
+    "y": 100,
+    "gameViewImage": "../www/assets/images/locations/smugglers_cove.png",
+    "requiredItems": ["item_ancient_scroll"],
+    "hiddenObjects": [
+      {
+        "itemId": "item_treasure_map_fragment",
+        "position": { "x": "40%", "y": "70%" },
+        "foundMessage": "Ye found a piece of a Treasure Map!"
+      },
+      {
+        "itemId": "item_bottle_of_grog",
+        "position": { "x": "65%", "y": "50%" },
+        "foundMessage": "Ahoy! A Bottle of Grog to quench yer thirst!"
+      }
+    ],
+    "actions": [
+      { "id": "action_return_map", "label": "Return to Map", "targetView": "map" }
+    ]
+  },
+  {
+    "id": "location_sunken_shipwreck",
+    "name": "Sunken Shipwreck",
+    "description": "The ghostly remains of a pirate ship, resting silently on the seabed. Treasures and dangers may lurk within.",
+    "icon": "scuba_diving",
+    "x": 600,
+    "y": 300,
+    "gameViewImage": "../www/assets/images/locations/sunken_shipwreck.png",
+    "hiddenObjects": [
+      {
+        "itemId": "item_sextant",
+        "position": { "x": "30%", "y": "40%" },
+        "foundMessage": "A trusty Sextant! Now ye can chart a course to riches!"
+      },
+      {
+        "id": "found_cache_of_doubloons", 
+        "name": "Cache of Doubloons",
+        "description": "A small, waterlogged chest spilling over with gold coins!",
+        "icon": "paid",
+        "position": { "x": "70%", "y": "75%" },
+        "itemImage": "../www/assets/images/items/doubloons_cache_icon.png",
+        "grantsResources": { "gold": 50 },
+        "foundMessage": "Shiver me timbers! Ye found a cache of 50 Gold Doubloons!"
+      }
+    ],
+    "actions": [
+      { "id": "action_return_map", "label": "Return to Map", "targetView": "map" }
+    ]
+  },
+  {
+    "id": "location_pirate_outpost",
+    "name": "Pirate Outpost",
+    "description": "A ramshackle outpost built on a remote island, flying the Jolly Roger high. A haven for scallywags.",
+    "icon": "fort",
+    "x": 100,
+    "y": 500,
+    "gameViewImage": "../www/assets/images/locations/pirate_outpost.png",
+    "hiddenObjects": [
+      {
+        "itemId": "item_pirate_flag",
+        "position": { "x": "50%", "y": "20%" },
+        "foundMessage": "The Jolly Roger! Fly it high and proud, pirate!"
+      }
+    ],
+    "actions": [
+      { "id": "action_return_map", "label": "Return to Map", "targetView": "map" }
+    ]
+  },
+  {
+    "id": "port_royal_market",
+    "name": "Port Royal Market",
+    "description": "A bustling marketplace filled with merchants and goods from across the seas. You can almost smell the spices and hear the bartering.",
+    "icon": "storefront",
+    "x": 250, 
+    "y": 350, 
+    "gameViewImage": "../www/assets/images/locations/port_royal_market.jpg",
+    "isMarket": true,
+    "npcIds": ["npc_shady_merchant"],
+    "tradableGoods": [
+      {
+        "goodId": "rum_bottle_supply_pr",
+        "name": "Bottle of Rum",
+        "description": "A hearty spirit, good for courage or celebration.",
+        "icon": "sports_bar",
+        "itemImage": "../www/assets/images/items/bottle_of_grog.png",
+        "type": "resource",
+        "resourceType": "rum",
+        "quantity": 1,
+        "marketSellsToPlayerPrice": { "silver": 5 },
+        "stock": 20 
+      },
+      {
+        "goodId": "buy_sextant_from_player_pr",
+        "name": "Sextant",
+        "description": "A nautical instrument for navigation. Always in demand by captains.",
+        "icon": "explore",
+        "itemImage": "../www/assets/images/items/item_sextant_icon.png",
+        "type": "item",
+        "itemIdToTrade": "item_sextant", 
+        "marketBuysFromPlayerPrice": { "gold": 15 },
+        "demand": 3 
+      }
+    ],
+    "actions": [
+      { "id": "action_return_map", "label": "Return to Map", "targetView": "map" }
+    ]
+  },
+  {
+    "id": "volcano_island",
+    "name": "Volcano Island",
+    "description": "A treacherous island dominated by a smoking volcano. The air is thick with sulfur.",
+    "icon": "whatshot",
+    "x": 700, 
+    "y": 150,
+    "gameViewImage": "../www/assets/images/locations/volcano_island.jpg",
+    "hiddenObjects": [
+      {
+        "itemId": "item_obsidian_shard",
+        "position": { "x": "40%", "y": "65%" },
+        "foundMessage": "You found a sharp Obsidian Shard!"
+      },
+      {
+        "itemId": "item_cannonball",
+        "position": { "x": "70%", "y": "80%" },
+        "foundMessage": "You recovered a heavy Cannonball."
+      }
+    ],
+    "actions": [
+      { "id": "action_return_map", "label": "Return to Map", "targetView": "map" }
+    ]
+  },
+  {
+    "id": "hidden_lagoon",
+    "name": "Hidden Lagoon",
+    "description": "A tranquil lagoon shielded by high cliffs, a perfect hideaway.",
+    "icon": "anchor",
+    "x": 50, 
+    "y": 250,
+    "gameViewImage": "../www/assets/images/locations/hidden_lagoon.jpg",
+    "npcIds": ["npc_mysterious_woman"],
+    "hiddenObjects": [
+      {
+        "itemId": "item_pearl_necklace",
+        "position": { "x": "25%", "y": "75%" },
+        "foundMessage": "You discovered a beautiful Pearl Necklace!"
+      },
+      {
+        "itemId": "item_empty_bottle",
+        "position": { "x": "60%", "y": "60%" },
+        "foundMessage": "An empty bottle. This might be useful."
+      },
+      {
+        "itemId": "item_parrot_companion",
+        "position": { "x": "45%", "y": "40%" },
+        "foundMessage": "A colorful parrot squawks and lands on your shoulder!"
+      }
+    ],
+    "actions": [
+      { "id": "action_return_map", "label": "Return to Map", "targetView": "map" }
+    ]
+  },
+  {
+    "id": "tortuga_town",
+    "name": "Tortuga Town",
+    "description": "The infamous pirate haven of Tortuga. Rowdy, dangerous, and full of opportunity.",
+    "icon": "fort",
+    "x": 400, 
+    "y": 50,
+    "gameViewImage": "../www/assets/images/locations/tortuga_town.jpg",
+    "isMarket": true,
+    "npcIds": ["npc_one_eyed_jack"],
+    "tradableGoods": [
+      {
+        "goodId": "sell_empty_bottle_tt",
+        "name": "Empty Bottle",
+        "description": "An empty glass bottle. Good for... messages?",
+        "icon": "wine_bar",
+        "itemImage": "../www/assets/images/items/item_empty_bottle_icon.png",
+        "type": "item",
+        "itemIdToTrade": "item_empty_bottle",
+        "marketSellsToPlayerPrice": { "silver": 2 },
+        "stock": 30
+      },
+      {
+        "goodId": "buy_obsidian_shard_tt",
+        "name": "Obsidian Shard",
+        "description": "A sharp piece of volcanic glass. Some collectors fancy these.",
+        "icon": "landscape",
+        "itemImage": "../www/assets/images/items/item_obsidian_shard_icon.png",
+        "type": "item",
+        "itemIdToTrade": "item_obsidian_shard",
+        "marketBuysFromPlayerPrice": { "gold": 10 },
+        "demand": 5
+      }
+    ],
+    "hiddenObjects": [
+      {
+        "itemId": "item_rum_soaked_map",
+        "position": { "x": "70%", "y": "30%" },
+        "foundMessage": "You found a Rum-Soaked Map hidden under a loose floorboard!"
       }
     ],
     "actions": [

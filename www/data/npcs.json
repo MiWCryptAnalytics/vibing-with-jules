@@ -1,0 +1,26 @@
+[
+  {
+    "id": "npc_one_eyed_jack",
+    "name": "One-Eyed Jack",
+    "description": "A weathered pirate with a story for every scar. He's seen more storms than a royal navy admiral.",
+    "icon": "person",
+    "defaultLocationId": "tortuga_town",
+    "portraitImage": "../www/assets/images/portraits/one_eyed_jack_portrait.png" 
+  },
+  {
+    "id": "npc_mysterious_woman",
+    "name": "Mysterious Woman",
+    "description": "She watches the world with knowing eyes, her secrets as deep as the ocean.",
+    "icon": "face_3",
+    "defaultLocationId": "hidden_lagoon",
+    "portraitImage": "../www/assets/images/portraits/mysterious_woman_portrait.png"
+  },
+  {
+    "id": "npc_shady_merchant",
+    "name": "Shady Merchant",
+    "description": "He deals in rare and unusual items... for the right price. Always has a glint in his eye.",
+    "icon": "store",
+    "defaultLocationId": "port_royal_market",
+    "portraitImage": "../www/assets/images/portraits/shady_merchant_portrait.png"
+  }
+]

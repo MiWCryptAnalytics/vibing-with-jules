@@ -90,7 +90,11 @@ class AppShell extends LitElement {
     currentView: { type: String },
     currentLocationData: { type: Object }, // To store data for the 'game' view
     playerInventory: { type: Array },     // To store player's collected items
-    allPois: { type: Array, state: true } // To store all POIs for navigation
+    playerResources: { type: Object },    // Added for monetary system
+    allPois: { type: Array, state: true }, // To store all POIs for navigation
+    allItems: { type: Object, state: true }, // To store all item definitions
+    allNpcs: { type: Object, state: true }, // To store all NPC definitions
+    allDialogues: { type: Object, state: true } // To store all dialogues
   };
 
   constructor() {
@@ -107,7 +111,11 @@ class AppShell extends LitElement {
     this.currentView = 'splash'; // Default, will be overridden by _initializeGame
     this.currentLocationData = null;
     this.playerInventory = [];
+    this.playerResources = { gold: 0, silver: 0, rum: 0 }; // Initialize playerResources
     this.allPois = [];
+    this.allItems = new Map(); // Initialize allItems as a Map
+    this.allNpcs = new Map(); // Initialize allNpcs as a Map
+    this.allDialogues = {}; // Initialize allDialogues as an Object
 
     this._boundHandleHashChange = this._handleHashChange.bind(this);
     this._boundSaveGameState = this._saveGameState.bind(this); // For beforeunload
@@ -119,11 +127,22 @@ class AppShell extends LitElement {
   }
 
   async _initializeGame() {
-    const poiLoadPromise = this._loadAllPois(); // Start loading POIs
-    const loadedFromStorage = await this._loadGameState(); // Attempt to load game state
+    const dataLoadPromises = [
+      this._loadAllPois(),
+      this._loadAllItems(),
+      this._loadAllNpcs(),
+      this._loadAllDialogues()
+    ];
+    
+    // Attempt to load game state while data files are being fetched.
+    const loadedFromStorage = await this._loadGameState(); 
 
     if (!loadedFromStorage) {
       // No valid game state loaded, determine initial view from URL hash or default
+      // Grant initial resources for a new game
+      this.playerResources = { gold: 100, silver: 50, rum: 5 };
+      console.log('AppShell: New game started. Granted initial resources:', this.playerResources);
+
       const validViews = ['map', 'game', 'inventory', 'research', 'menu', 'splash'];
       const hash = window.location.hash.substring(1);
       if (hash && validViews.includes(hash)) {
@@ -133,10 +152,11 @@ class AppShell extends LitElement {
       }
     }
 
-    await poiLoadPromise; // Ensure POIs are fully loaded before proceeding
+    // Ensure all static data (POIs, Items) is loaded before proceeding
+    await Promise.all(dataLoadPromises);
 
-    // Resolve pending location ID if it was set during _loadGameState and POIs are now ready
-    if (this._pendingLocationId && this.allPois.length > 0) {
+    // Resolve pending location ID if it was set during _loadGameState and POIs/Items are now ready
+    if (this._pendingLocationId && this.allPois.length > 0) { // allItems check might also be relevant if locations depend on item data
       this.currentLocationData = this.allPois.find(poi => poi.id === this._pendingLocationId) || null;
       if (this.currentLocationData) {
         console.log('AppShell: Resolved pendingLocationId to:', this.currentLocationData.name);
@@ -209,8 +229,64 @@ class AppShell extends LitElement {
       // This is also handled in _initializeGame after awaiting this promise, which is cleaner.
     } catch (error) {
       console.error("AppShell: Could not load Points of Interest:", error);
-      this.allPois = [];
+      this.allPois = []; // Ensure it's an empty array on error
     }
+  }
+
+  async _loadAllItems() {
+    try {
+      const response = await fetch('../data/items.json');
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const itemsArray = await response.json();
+      itemsArray.forEach(item => this.allItems.set(item.id, item));
+      console.log('AppShell: All Items loaded:', this.allItems);
+    } catch (error) {
+      console.error("AppShell: Could not load Items:", error);
+      this.allItems = new Map(); // Ensure it's an empty map on error
+    }
+  }
+
+  getItemDetails(itemId) {
+    return this.allItems.get(itemId);
+  }
+
+  async _loadAllNpcs() {
+    try {
+      const response = await fetch('../data/npcs.json');
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const npcsArray = await response.json();
+      npcsArray.forEach(npc => this.allNpcs.set(npc.id, npc));
+      console.log('AppShell: All NPCs loaded:', this.allNpcs);
+    } catch (error) {
+      console.error("AppShell: Could not load NPCs:", error);
+      this.allNpcs = new Map();
+    }
+  }
+
+  getNpcDetails(npcId) {
+    return this.allNpcs.get(npcId);
+  }
+
+  async _loadAllDialogues() {
+    try {
+      const response = await fetch('../data/dialogues.json');
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      this.allDialogues = await response.json();
+      console.log('AppShell: All Dialogues loaded:', this.allDialogues);
+    } catch (error) {
+      console.error("AppShell: Could not load Dialogues:", error);
+      this.allDialogues = {};
+    }
+  }
+
+  getDialogueForNpc(npcId) {
+    return this.allDialogues[npcId];
   }
 
   _clearSavedGameState() {
@@ -239,6 +315,8 @@ class AppShell extends LitElement {
 
           this.currentView = savedState.currentView || 'splash';
           this.playerInventory = savedState.playerInventory || [];
+          // Restore playerResources, defaulting if not found in saved state
+          this.playerResources = savedState.playerResources || { gold: 0, silver: 0, rum: 0 };
 
           if (savedState.currentLocationId) {
             // POIs might not be loaded yet. If so, store ID to resolve later.
@@ -274,6 +352,7 @@ class AppShell extends LitElement {
       currentView: this.currentView,
       currentLocationId: this.currentLocationData ? this.currentLocationData.id : null,
       playerInventory: this.playerInventory,
+      playerResources: this.playerResources, // Include playerResources in saved state
       timestamp: Date.now()
     };
     try {
@@ -448,6 +527,52 @@ class AppShell extends LitElement {
     }
   }
 
+  _handleRemoveFromInventory(event) {
+    const itemIdToRemove = event.detail.itemId;
+    const initialInventoryLength = this.playerInventory.length;
+    this.playerInventory = this.playerInventory.filter(item => item.id !== itemIdToRemove);
+
+    if (this.playerInventory.length < initialInventoryLength) {
+      console.log('AppShell: Item removed from inventory:', itemIdToRemove, 'New Inventory:', this.playerInventory);
+      this._saveGameState(); // Save after inventory change
+      this.requestUpdate(); // Ensure UI (like inventory view) updates
+    } else {
+      console.log('AppShell: Item to remove not found in inventory:', itemIdToRemove);
+    }
+  }
+
+  _updatePlayerResources(resourceChanges) {
+    if (!this.playerResources) {
+      // Should have been initialized, but as a safeguard
+      this.playerResources = { gold: 0, silver: 0, rum: 0 };
+    }
+    for (const resource in resourceChanges) {
+      if (this.playerResources.hasOwnProperty(resource)) {
+        this.playerResources[resource] += resourceChanges[resource];
+        if (this.playerResources[resource] < 0) {
+          this.playerResources[resource] = 0; // Prevent negative resources
+        }
+      } else {
+        // If the resource doesn't exist on playerResources, initialize it if positive change
+        if (resourceChanges[resource] > 0) {
+            this.playerResources[resource] = resourceChanges[resource];
+        } else {
+            // Trying to subtract from a non-existent resource, effectively 0
+            this.playerResources[resource] = 0;
+        }
+        console.warn(`AppShell: Resource "${resource}" was not pre-defined in playerResources. It has been initialized.`);
+      }
+    }
+    console.log('AppShell: Player resources updated:', this.playerResources);
+    this._saveGameState(); // Save state after updating resources
+    this.requestUpdate();  // Ensure UI reflects the changes
+  }
+
+  _handleUpdateResources(event) {
+    console.log('AppShell: update-resources event received with detail:', event.detail);
+    this._updatePlayerResources(event.detail);
+  }
+
   render() {
     return html`
       ${this.currentView !== 'splash' ? html`
@@ -484,17 +609,27 @@ class AppShell extends LitElement {
       case 'menu':
         return html`<menu-view @navigate=${this._handleNavigate}></menu-view>`;
       case 'map':
-        return html`<map-view @navigate=${this._handleNavigate}></map-view>`;
+        return html`<map-view 
+                    .playerInventory=${this.playerInventory} 
+                    @navigate=${this._handleNavigate}
+                  ></map-view>`;
       case 'game': // New case
         return html`<game-interface-view
                       .locationData=${this.currentLocationData}
                       .playerInventory=${this.playerInventory}
+                      .playerResources=${this.playerResources} /* Pass playerResources */
+                      .allItems=${this.allItems} /* Pass allItems */
+                      .allNpcs=${this.allNpcs} /* Pass allNpcs */
+                      .allDialogues=${this.allDialogues} /* Pass allDialogues */
                       @navigate=${this._handleNavigate}
                       @add-to-inventory=${this._handleAddToInventory}
+                      @remove-from-inventory=${this._handleRemoveFromInventory}
+                      @update-resources=${this._handleUpdateResources}
                     ></game-interface-view>`;
       case 'inventory': // New case
         return html`<inventory-view
                       .items=${this.playerInventory}
+                      .playerResources=${this.playerResources}
                       @navigate=${this._handleNavigate}
                     ></inventory-view>`;
       case 'research': // New case
