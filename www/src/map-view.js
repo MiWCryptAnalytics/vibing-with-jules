@@ -1,4 +1,5 @@
 import { LitElement, html, css } from 'lit';
+import { msg, updateWhenLocaleChanges } from '@lit/localize';
 import '@material/web/icon/icon.js';
 
 class MapView extends LitElement {
@@ -173,6 +174,7 @@ class MapView extends LitElement {
 
   constructor() {
     super();
+    updateWhenLocaleChanges(this);
     // Future properties like zoomLevel, mapData etc. will go here
     this.zoomLevel = 1;
     this.isDragging = false;
@@ -374,7 +376,7 @@ class MapView extends LitElement {
 
   render() {
     return html`
-      <h2>Game Map</h2>
+      <h2>${msg('Game Map', {id: 'map-title'})}</h2>
       <div class="map-container">
         <div
           class="map-content"
@@ -396,16 +398,16 @@ class MapView extends LitElement {
         </div>
       </div>
       <div class="zoom-controls">
-        <button @click=${this._zoomOut}>Zoom Out</button>
-        <button @click=${this._zoomIn}>Zoom In</button>
-        <span>Current Zoom: ${this.zoomLevel.toFixed(1)}x</span>
+        <button @click=${this._zoomOut}>${msg('Zoom Out', {id: 'map-zoom-out'})}</button>
+        <button @click=${this._zoomIn}>${msg('Zoom In', {id: 'map-zoom-in'})}</button>
+        <span>${msg('Current Zoom:', {id: 'map-current-zoom'})} ${this.zoomLevel.toFixed(1)}x</span>
       </div>
 
       <div class="poi-info-display ${this.selectedPoi ? 'visible' : ''}">
         ${this.selectedPoi ? html`
           <h3><md-icon>${this.selectedPoi.icon}</md-icon> ${this.selectedPoi.name}</h3>
           <p>${this.selectedPoi.description}</p>
-          <button @click=${this._closePoiInfo}>Close</button>
+          <button @click=${this._closePoiInfo}>${msg('Close', {id: 'map-poi-close'})}</button>
         ` : ''}
       </div>
     `;

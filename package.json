@@ -4,13 +4,17 @@
   "description": "A cool little game.",
   "main": "www/index.html",
   "scripts": {
-    "start": "wds --node-resolve --open www/index.html --watch"
+    "start": "wds --node-resolve --open www/index.html --watch",
+    "localize:extract": "lit-localize extract --config www/lit-localize.json",
+    "localize:build": "lit-localize build --config www/lit-localize.json"
   },
   "dependencies": {
-    "lit": "^3.0.0",
-    "@material/web": "^1.0.0"
+    "@material/web": "^1.0.0",
+    "lit": "^3.0.0"
   },
   "devDependencies": {
+    "@lit/localize": "^0.12.2",
+    "@lit/localize-tools": "^0.8.0",
     "@web/dev-server": "^0.4.0"
   }
 }

@@ -1,4 +1,5 @@
 import { LitElement, html, css } from 'lit';
+import { msg, updateWhenLocaleChanges } from '@lit/localize';
 
 class SplashView extends LitElement {
   static styles = css`
@@ -22,6 +23,11 @@ class SplashView extends LitElement {
     }
   `;
 
+  constructor() {
+    super();
+    updateWhenLocaleChanges(this);
+  }
+
   _continueToMenu(event) {
     event.preventDefault();
     const navigateEvent = new CustomEvent('navigate', {
@@ -34,9 +40,9 @@ class SplashView extends LitElement {
 
   render() {
     return html`
-      <h1>Welcome to My Lit Game!</h1>
-      <p>The adventure begins here.</p>
-      <p><a href="#" @click=${this._continueToMenu}>Continue to Menu</a></p>
+      <h1>${msg('Welcome to My Lit Game!', {id: 'splash-welcome'})}</h1>
+      <p>${msg('The adventure begins here.', {id: 'splash-adventure'})}</p>
+      <p><a href="#" @click=${this._continueToMenu}>${msg('Continue to Menu', {id: 'splash-continue'})}</a></p>
     `;
   }
 }

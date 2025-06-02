@@ -1,4 +1,5 @@
 import { LitElement, html, css } from 'lit';
+import { msg, updateWhenLocaleChanges } from '@lit/localize';
 
 class MenuView extends LitElement {
   static styles = css`
@@ -49,7 +50,8 @@ class MenuView extends LitElement {
 
   constructor() {
     super();
-    this.message = 'Click the button below!';
+    updateWhenLocaleChanges(this);
+    this.message = msg('Click the button below!', {id: 'initial-message'});
   }
 
   _handleNavigation(event, viewName) {
@@ -64,29 +66,29 @@ class MenuView extends LitElement {
 
   _changeMessage() {
     const messages = [
-      "Lit is working!",
-      "Interactivity achieved!",
-      "You clicked the button!",
-      "Isn't this cool?",
-      "Hello from Lit component!"
+      msg('Lit is working!', {id: 'lit-working'}),
+      msg('Interactivity achieved!', {id: 'interactivity-achieved'}),
+      msg('You clicked the button!', {id: 'button-clicked'}),
+      msg("Isn't this cool?", {id: 'cool-isnt-it'}),
+      msg('Hello from Lit component!', {id: 'hello-lit'})
     ];
     this.message = messages[Math.floor(Math.random() * messages.length)];
   }
 
   render() {
     return html`
-      <h2>Game Menu</h2>
+      <h2>${msg('Game Menu', {id: 'menu-title'})}</h2>
       <ul>
-        <li><a href="#" @click=${(e) => this._handleNavigation(e, 'game')}>Start Game</a></li>
+        <li><a href="#" @click=${(e) => this._handleNavigation(e, 'game')}>${msg('Start Game', {id: 'menu-start-game'})}</a></li>
       </ul>
       <p class="developer-note">
         (Developer Note: To switch themes, you would later add JavaScript to change the class on the &lt;body&gt; tag from 'theme-light' to 'theme-dark' or vice-versa. For now, a default theme is applied.)
       </p>
 
       <hr>
-      <h3>Simple Interactivity Test</h3>
+      <h3>${msg('Simple Interactivity Test', {id: 'menu-interactivity-title'})}</h3>
       <p>${this.message}</p>
-      <button @click=${this._changeMessage}>Change Message</button>
+      <button @click=${this._changeMessage}>${msg('Change Message', {id: 'menu-change-message-button'})}</button>
     `;
   }
 }
