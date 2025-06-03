@@ -9,29 +9,49 @@ class MapView extends LitElement {
       text-align: center; /* Center the map container if it's narrower than host */
     }
     h2 {
-      margin-bottom: 16px;
+      /* Inherits global styles */
+      margin-bottom: 16px; /* Keep */
     }
     .zoom-controls {
       margin-top: 10px;
       text-align: center;
     }
     .zoom-controls button {
-      padding: 5px 10px;
-      margin: 0 5px;
-      /* Styles inherited or can be specific */
+      padding: 5px 10px; /* Keep */
+      margin: 0 5px; /* Keep */
+      background-color: #7A5C5C; /* medium brown */
+      color: #FDF5E6; /* cream */
+      border: 1px solid #2F1E1E; /* darker brown */
+      border-radius: 0; /* Rustic look */
+      font-family: 'MainTextFont', serif; /* Placeholder */
+      transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
+    }
+    .zoom-controls button:hover {
+      background-color: #2F1E1E; /* darker brown */
+      color: #FDF5E6; /* Keep cream */
+      transform: scale(1.1);
+    }
+    .zoom-controls button:active {
+      transform: scale(0.95);
     }
     .zoom-controls span {
       margin-left: 10px;
+      color: #3C2F2F; /* dark brown */
+      font-family: 'MainTextFont', serif; /* Placeholder */
     }
     .map-container {
       width: 90%; /* Or a fixed width like 500px */
       max-width: 600px;
       height: 400px;
-      border: 2px solid #555;
+      border: 5px solid #3C2F2F; /* dark brown, thicker */
+      /* Conceptual: border-image-source: url('assets/images/theme/map_frame.png'); */
+      /* border-image-slice: 20; */
+      /* border-image-width: 20px; */
+      /* border-image-repeat: round; */
       overflow: auto; /* Important for scrolling */
       margin: 0 auto; /* Center the container */
       overscroll-behavior: none; /* Prevent bounce/rubber-band scrolling */
-      background-color: #e0e0e0; /* Light grey background for the container */
+      background-color: #5C8D9C; /* muted sea blue for areas around map image */
       position: relative; /* For potential future absolute positioning of map elements */
       cursor: grab;
 
@@ -39,99 +59,92 @@ class MapView extends LitElement {
       scrollbar-width: none; /* For Firefox */
 
       /* Vignette effect */
-      box-shadow: inset 0 0 25px 15px rgba(0,0,0,0.35); /* Adjust spread, blur, and color for desired intensity */
-                                                        /* (Horizontal offset, vertical offset, blur radius, spread radius, color) */
+      box-shadow: inset 0 0 25px 15px rgba(0,0,0,0.35); /* Keep */
     }
 
-    /* For WebKit browsers (Chrome, Safari, Edge, Opera) */
-    /* It's important this selector is specific enough and correctly processed. */
-    /* Applying to the class directly is standard. */
     .map-container::-webkit-scrollbar {
       display: none; /* Hide scrollbar */
     }
     .map-content {
-      width: 1280px;
-      height: 896px;
-      background-image: url(../www/assets/images/mapv1.jpg);
+      width: 1280px; /* Keep original map size */
+      height: 896px; /* Keep original map size */
+      /* Conceptual: background-image: url('assets/images/theme/pirate_map_background.jpg'); */
+      background-image: url(../www/assets/images/mapv1.jpg); /* Current image */
       background-repeat: no-repeat;
-      /* background-color: transparent; (no longer needed if image covers) */
-      position: relative; /* Keep for positioning elements on the map or transform origin */
-      /* The old CSS grid background-image rule should be removed */
+      position: relative;
     }
 
     @keyframes pulseAnimation {
-      0% {
-        transform: scale(1);
-      }
-      50% {
-        transform: scale(1.15);
-      }
-      100% {
-        transform: scale(1);
-      }
+      0% { transform: scale(1); }
+      50% { transform: scale(1.15); }
+      100% { transform: scale(1); }
     }
 
     .poi-marker {
       display: flex;
       align-items: center;
-      padding: 4px 8px;
-      background-color: rgba(255, 255, 255, 0.8);
-      border: 1px solid #555;
-      border-radius: 16px;
+      padding: 5px 8px; /* Adjusted */
+      background-color: #FDF5E6; /* cream/parchment placeholder */
+      /* Conceptual: background-image: url('assets/images/theme/poi_marker_bg.png'); */
+      border: 1px solid #3C2F2F; /* dark brown */
+      border-radius: 3px; /* slight rounding */
       cursor: pointer;
-      font-size: 12px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.3);
-      /* No transform: translate initially - assuming x,y is top left */
-      transform-origin: center; /* Make scaling originate from the center of the marker */
-      animation: pulseAnimation 2.5s infinite ease-in-out; /* Apply the animation */
+      font-family: 'MainTextFont', serif; /* Placeholder */
+      font-size: 12px; /* Keep */
+      box-shadow: 0 1px 3px rgba(0,0,0,0.3); /* Keep */
+      transform-origin: center;
+      animation: pulseAnimation 2.5s infinite ease-in-out; /* Keep */
+      transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out, transform 0.2s ease-out;
     }
 
     .poi-marker:hover {
-      background-color: rgba(255, 255, 255, 1); /* Opaque on hover */
-      border-color: #000;
+      background-color: #E0D8C9; /* Slightly darker parchment for hover */
+      border-color: #000; /* Black border on hover */
+      /* transform: scale(1.1); */ /* Pulse animation is likely sufficient, avoid over-animating */
     }
 
     .poi-marker md-icon {
-      margin-right: 5px;
-      font-size: 18px; /* Adjust icon size if needed */
-      color: #333; /* Default icon color */
+      margin-right: 5px; /* Keep */
+      font-size: 18px; /* Keep */
+      color: #3C2F2F; /* dark brown */
     }
 
     .poi-marker .poi-name {
       white-space: nowrap; /* Prevent name from wrapping */
     }
     .poi-info-display {
-      position: absolute; /* Or 'fixed' */
+      position: absolute;
       bottom: 20px;
       left: 50%;
-      /* transform: translateX(-50%); /* Initial horizontal centering */
-      /* Combined transform for initial state: */
-      transform: translate(-50%, 20px); /* Start centered horizontally, and 20px down */
-
+      transform: translate(-50%, 20px);
       width: 80%;
       max-width: 400px;
-      background-color: white;
-      border: 1px solid #ccc;
-      border-radius: 8px;
+      background-color: #FDF5E6; /* parchment */
+      /* Conceptual: background-image: url('assets/images/theme/parchment_texture_popup.png'); */
+      border: 2px solid #3C2F2F; /* dark brown */
+      /* Conceptual: border-image-source: url('assets/images/theme/popup_border.png'); */
+      /* border-image-slice: 10; */
+      /* border-image-width: 10px; */
+      border-radius: 3px; /* slight rounding */
       padding: 15px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-      z-index: 10;
-      text-align: left;
-
-      opacity: 0; /* Initially hidden */
-      transition: opacity 0.3s ease-out, transform 0.3s ease-out;
-      pointer-events: none; /* Ignore clicks when hidden */
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2); /* Keep */
+      z-index: 10; /* Keep */
+      text-align: left; /* Keep */
+      opacity: 0;
+      transition: opacity 0.3s ease-out, transform 0.3s ease-out; /* Keep */
+      pointer-events: none;
     }
 
     .poi-info-display.visible {
       opacity: 1;
-      transform: translate(-50%, 0); /* Slide to final position (centered, no Y offset) */
-      pointer-events: auto; /* Allow clicks when visible */
+      transform: translate(-50%, 0);
+      pointer-events: auto;
     }
 
     .poi-info-display h3 {
+      /* Inherits 'PirateFont' from global h3 */
       margin-top: 0;
-      font-size: 1.2em;
+      font-size: 1.2em; /* Ensure harmonious with icon */
       display: flex;
       align-items: center;
     }
@@ -139,25 +152,29 @@ class MapView extends LitElement {
     .poi-info-display h3 md-icon {
       margin-right: 8px;
       font-size: 24px; /* Match h3 font size better */
+      color: #3C2F2F; /* dark brown, ensure it's themed */
     }
 
     .poi-info-display p {
+      /* Inherits 'MainTextFont' from global p */
       font-size: 0.9em;
       margin-bottom: 10px;
     }
 
-    .poi-info-display button {
+    .poi-info-display button { /* Close button */
       display: block;
       margin-top: 10px;
-      padding: 8px 15px;
-      background-color: #007bff; /* Standard button color */
-      color: white;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
+      padding: 8px 15px; /* Updated */
+      background-color: #7A5C5C; /* medium brown */
+      color: #FDF5E6; /* cream */
+      border: 1px solid #2F1E1E; /* darker brown */
+      border-radius: 0; /* Rustic */
+      font-family: 'MainTextFont', serif; /* Placeholder */
+      cursor: pointer; /* Keep for button */
     }
     .poi-info-display button:hover {
-      background-color: #0056b3;
+      background-color: #2F1E1E; /* darker brown */
+      color: #FDF5E6; /* Keep cream */
     }
   `;
 
