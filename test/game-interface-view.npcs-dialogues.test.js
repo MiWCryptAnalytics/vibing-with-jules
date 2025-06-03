@@ -62,7 +62,7 @@ class MockGameInterfaceViewForDialogues {
     this.allNpcs = allNpcsMap;
     this._updateRenderedInSceneNpcs();
   }
-  
+
   setAllDialogues(allDialogues) {
     this.allDialogues = allDialogues;
     // No need to update in-scene NPCs for dialogue changes
@@ -137,7 +137,7 @@ class MockGameInterfaceViewForDialogues {
   }
   
   // This method is being replaced by _updateRenderedInSceneNpcs and direct access to _renderedInSceneNpcs
-  // _getRenderedNpcIds() { 
+  // _getRenderedNpcIds() {
   //   if (this.locationData && this.locationData.npcIds && this.locationData.npcIds.length > 0 && this.allNpcs && this.allNpcs.size > 0) {
   //     return this.locationData.npcIds.filter(npcId => this.allNpcs.has(npcId));
   //   }
@@ -182,33 +182,36 @@ async function testNpcDialogueInteractions() {
   assertEqual(view._renderedInSceneNpcs.length, 0, "Test 1.5: No in-scene NPCs if locationData.npcIds missing/empty");
 
   // --- Test _handleNpcClick (dialogue initiation logic) ---
-  // This part is testing the original _handleNpcClick, which is fine.
-  // Simulate a click via the old way (e.g. text list) for npc1
-  view.setLocationData({ id: "loc_for_npc1_dialogue", name: "Pirate Cove", npcIds: ["npc1"] }); // Ensure npc1 is in this location
-  view._handleNpcClick("npc1"); // Simulate click from a text list or similar
-  assertEqual(view._activeDialogueNpcId, "npc1", "Test 2.1: Active NPC ID set via _handleNpcClick");
-  assertEqual(view._currentDialogueNodeId, "start", "Test 2.2: Current node ID set to start via _handleNpcClick");
-  assertNotNull(view._currentDialogueNode, "Test 2.3: Current dialogue node set via _handleNpcClick");
+  // This part tests that _handleNpcClick sets up the state correctly for the dialog overlay to appear.
+  view.setLocationData({ id: "loc_for_npc1_dialogue", name: "Pirate Cove", npcIds: ["npc1"] });
+  view._handleNpcClick("npc1"); // This could be from a text list click or an in-scene NPC click
+  assertEqual(view._activeDialogueNpcId, "npc1", "Test 2.1: Active NPC ID set (condition for overlay)");
+  assertEqual(view._currentDialogueNodeId, "start", "Test 2.2: Current node ID set (condition for overlay)");
+  assertNotNull(view._currentDialogueNode, "Test 2.3: Current dialogue node set (condition for overlay)");
   if (view._currentDialogueNode) {
-    assertEqual(view._currentDialogueNode.npcText, "Arr, matey!", "Test 2.4: Correct NPC text for start node (via _handleNpcClick)");
+    assertEqual(view._currentDialogueNode.npcText, "Arr, matey!", "Test 2.4: Correct NPC text for start node");
   }
 
-  // --- Test dialogue progression (already good) ---
+  // --- Test dialogue progression (via _handlePlayerChoiceEvent) ---
   assertTrue(view._currentDialogueNode && view._currentDialogueNode.playerChoices.length > 0, "Test 3.1: Start node has choices");
   if (view._currentDialogueNode && view._currentDialogueNode.playerChoices.length > 0) {
-    view._handlePlayerChoice(view._currentDialogueNode.playerChoices[0]); 
-    assertEqual(view._currentDialogueNodeId, "greet_reply", "Test 3.2: Dialogue advances to next node ID");
-    assertNotNull(view._currentDialogueNode, "Test 3.3: Current node updated");
+    const choice1 = view._currentDialogueNode.playerChoices[0];
+    view._handlePlayerChoiceEvent({ detail: { choice: choice1 } }); // Simulate event from npc-dialog-overlay
+
+    assertEqual(view._currentDialogueNodeId, "greet_reply", "Test 3.2: Dialogue advances to next node ID via event");
+    assertNotNull(view._currentDialogueNode, "Test 3.3: Current node updated via event");
     if(view._currentDialogueNode) {
-      assertEqual(view._currentDialogueNode.npcText, "Ahoy!", "Test 3.4: Correct NPC text for new node");
+      assertEqual(view._currentDialogueNode.npcText, "Ahoy!", "Test 3.4: Correct NPC text for new node via event");
     }
 
     assertTrue(view._currentDialogueNode && view._currentDialogueNode.playerChoices.length > 0, "Test 3.5: greet_reply node has choices");
      if (view._currentDialogueNode && view._currentDialogueNode.playerChoices.length > 0) {
-        view._handlePlayerChoice(view._currentDialogueNode.playerChoices[0]); 
-        assertNull(view._activeDialogueNpcId, "Test 3.6: Active NPC ID null after END");
-        assertNull(view._currentDialogueNodeId, "Test 3.7: Current node ID null after END");
-        assertNull(view._currentDialogueNode, "Test 3.8: Current node null after END");
+        const choice2 = view._currentDialogueNode.playerChoices[0];
+        view._handlePlayerChoiceEvent({ detail: { choice: choice2 } }); // Simulate event for 'END' choice
+
+        assertNull(view._activeDialogueNpcId, "Test 3.6: Active NPC ID null after END choice via event");
+        assertNull(view._currentDialogueNodeId, "Test 3.7: Current node ID null after END choice via event");
+        assertNull(view._currentDialogueNode, "Test 3.8: Current node null after END choice via event");
     }
   }
   
@@ -216,7 +219,7 @@ async function testNpcDialogueInteractions() {
   view = new MockGameInterfaceViewForDialogues(); // Fresh view
   view.setAllNpcs(new Map([["npc2", npc2]])); // npc2 has no dialogue defined in view.allDialogues
   view.setLocationData({ id: "loc_for_npc2_nodialogue", npcIds: ["npc2"] });
-  view._handleNpcClick("npc2"); 
+  view._handleNpcClick("npc2");
   assertNull(view._currentDialogueNode, "Test 4.1: Dialogue node null for NPC with no dialogue tree");
   assertMatch(view._lastFoundMessage, "nothing to say", "Test 4.2: Message for NPC with no dialogue");
 
@@ -237,17 +240,17 @@ async function testNpcDialogueInteractions() {
   assertTrue(view._renderedInSceneNpcs.includes("npc1"), "Test 5.5: NPC1 (with position) is in _renderedInSceneNpcs for loc_scene2");
   assertTrue(view._renderedInSceneNpcs.includes("npc2"), "Test 5.6: NPC2 (with position) is in _renderedInSceneNpcs for loc_scene2");
   assertTrue(!view._renderedInSceneNpcs.includes("npc3NoPos"), "Test 5.7: NPC3 (no position) is still NOT in _renderedInSceneNpcs");
-  
+
   view.setLocationData({ id: "loc_market", name: "Market Location", npcIds: ["npc1", "npc2"], isMarket: true });
   assertEqual(view._renderedInSceneNpcs.length, 0, "Test 5.8: No in-scene NPCs rendered in a market location");
 
   view.setLocationData({ id: "loc_scene_empty_npcs", name: "Scene Empty NPCs", npcIds: [] });
   assertEqual(view._renderedInSceneNpcs.length, 0, "Test 5.9: No in-scene NPCs rendered if location.npcIds is empty");
-  
+
   // Test 6: Clicking In-Scene NPC
   view.setLocationData({ id: "loc_scene_for_click", name: "Click Test Scene", npcIds: ["npc1", "npc2"] }); // npc1 has dialogue
   view._endDialogue(); // Ensure no prior dialogue state
-  
+
   let clickHandled = view._simulateInSceneNpcClick("npc1");
   assertTrue(clickHandled, "Test 6.1: _simulateInSceneNpcClick returns true for valid in-scene NPC");
   assertEqual(view._activeDialogueNpcId, "npc1", "Test 6.2: Active NPC ID set after in-scene click");
@@ -256,14 +259,15 @@ async function testNpcDialogueInteractions() {
   if (view._currentDialogueNode) {
     assertEqual(view._currentDialogueNode.npcText, "Arr, matey!", "Test 6.5: Correct NPC text from in-scene click");
   }
-  view._endDialogue(); 
-
-  // Test 7: Clicking Non-Existent/Non-Rendered In-Scene NPC
-  view.setLocationData({ id: "loc_scene_for_bad_click", name: "Bad Click Test Scene", npcIds: ["npc2"] }); // npc2 is present, npc3NoPos is not rendered
-  view.setAllNpcs(new Map([["npc2", npc2], ["npc3NoPos", npc3NoPos]])); // Ensure npc3NoPos is in allNpcs but not rendered
   view._endDialogue();
 
-  clickHandled = view._simulateInSceneNpcClick("npc3NoPos"); // npc3NoPos has no position data
+  // Test 7: Clicking Non-Existent/Non-Rendered In-Scene NPC (These tests are about _simulateInSceneNpcClick, not dialogue progression)
+  // These remain valid as they test the conditions for *initiating* a dialogue via in-scene click.
+  view.setLocationData({ id: "loc_scene_for_bad_click", name: "Bad Click Test Scene", npcIds: ["npc2"] });
+  view.setAllNpcs(new Map([["npc2", npc2], ["npc3NoPos", npc3NoPos]]));
+  view._endDialogue(); // Reset dialogue state
+
+  let clickHandled = view._simulateInSceneNpcClick("npc3NoPos");
   assertTrue(!clickHandled, "Test 7.1: _simulateInSceneNpcClick returns false for NPC not rendered (no position)");
   assertNull(view._activeDialogueNpcId, "Test 7.2: Dialogue not initiated for non-rendered NPC (no position)");
 
@@ -272,11 +276,80 @@ async function testNpcDialogueInteractions() {
   assertNull(view._activeDialogueNpcId, "Test 7.4: Dialogue not initiated for non-existent NPC ID");
 
   view.setLocationData({ id: "loc_market_for_click_test", name: "Market Click Test", npcIds: ["npc1"], isMarket: true });
-  view.setAllNpcs(new Map([["npc1", npc1]])); // Ensure npc1 is in allNpcs
-  view._endDialogue();
-  clickHandled = view._simulateInSceneNpcClick("npc1"); // npc1 is in a market, so not "in-scene" rendered
+  view.setAllNpcs(new Map([["npc1", npc1]]));
+  view._endDialogue(); // Reset dialogue state
+  clickHandled = view._simulateInSceneNpcClick("npc1");
   assertTrue(!clickHandled, "Test 7.5: _simulateInSceneNpcClick returns false for NPC in market location");
   assertNull(view._activeDialogueNpcId, "Test 7.6: Dialogue not initiated for NPC in market location via in-scene click");
+
+  // Test 8: Dialogue dismissal (simulating event with no choice from overlay)
+  console.log("--- Starting Test 8: Dialogue Dismissal ---");
+  view.setLocationData({ id: "loc_for_dismiss_test", name: "Dismiss Test Location", npcIds: ["npc1"] });
+  view.setAllNpcs(new Map([["npc1", npc1]]));
+  view.setAllDialogues({ "npc1": dialogueNpc1 });
+  view._handleNpcClick("npc1"); // Start a dialogue
+  assertNotNull(view._currentDialogueNode, "Test 8.1: Dialogue should be active before dismissal");
+
+  view._handlePlayerChoiceEvent({ detail: {} }); // Simulate event with no choice (e.g. scrim click/escape)
+
+  assertNull(view._activeDialogueNpcId, "Test 8.2: Active NPC ID null after dismissal event");
+  assertNull(view._currentDialogueNodeId, "Test 8.3: Current node ID null after dismissal event");
+  assertNull(view._currentDialogueNode, "Test 8.4: Current node null after dismissal event");
+
+  // --- Test 9: NPC Re-engagement ---
+  console.log("--- Starting Test 9: NPC Re-engagement ---");
+  view = new MockGameInterfaceViewForDialogues(); // Fresh view for re-engagement tests
+  view.setAllNpcs(new Map([["npc1", npc1]]));
+  view.setAllDialogues({ "npc1": dialogueNpc1 });
+  view.setLocationData({ id: "loc_re_engage", name: "Re-engagement Place", npcIds: ["npc1"] });
+
+  // Scenario 9.1: Re-engage after completing a dialogue
+  console.log("--- Scenario 9.1: Re-engage after completion ---");
+  view._handleNpcClick("npc1"); // First interaction
+  assertNotNull(view._currentDialogueNode, "Test 9.1.1: Dialogue active after first click");
+
+  // Complete the dialogue
+  let choiceToGreet = view._currentDialogueNode.playerChoices[0];
+  view._handlePlayerChoiceEvent({ detail: { choice: choiceToGreet } }); // Hello
+  let choiceToEnd = view._currentDialogueNode.playerChoices[0];
+  view._handlePlayerChoiceEvent({ detail: { choice: choiceToEnd } }); // Bye (END)
+
+  assertNull(view._currentDialogueNode, "Test 9.1.2: Dialogue ended after completion");
+
+  // Re-engage the same NPC
+  view._handleNpcClick("npc1"); // Second interaction with npc1
+  assertNotNull(view._currentDialogueNode, "Test 9.1.3: Dialogue re-activated after second click");
+  assertEqual(view._activeDialogueNpcId, "npc1", "Test 9.1.4: Active NPC is npc1 on re-engagement");
+  assertEqual(view._currentDialogueNodeId, "start", "Test 9.1.5: Dialogue restarts from 'start' node on re-engagement");
+  if (view._currentDialogueNode) {
+    assertEqual(view._currentDialogueNode.npcText, dialogueNpc1.start.npcText, "Test 9.1.6: Dialogue shows initial text on re-engagement");
+  }
+  view._endDialogue(); // Clean up
+
+  // Scenario 9.2: Re-engage after dismissing a dialogue mid-way
+  console.log("--- Scenario 9.2: Re-engage after dismissal ---");
+  view._handleNpcClick("npc1"); // First interaction
+  assertNotNull(view._currentDialogueNode, "Test 9.2.1: Dialogue active after first click");
+
+  // Make one choice (not to END)
+  choiceToGreet = view._currentDialogueNode.playerChoices[0];
+  view._handlePlayerChoiceEvent({ detail: { choice: choiceToGreet } }); // Hello
+  assertNotNull(view._currentDialogueNode, "Test 9.2.2: Dialogue still active mid-way");
+  assertEqual(view._currentDialogueNodeId, "greet_reply", "Test 9.2.3: Dialogue is at 'greet_reply' node");
+
+  // Simulate dismissal
+  view._handlePlayerChoiceEvent({ detail: {} }); // Dismiss event
+  assertNull(view._currentDialogueNode, "Test 9.2.4: Dialogue ended after dismissal");
+
+  // Re-engage the same NPC
+  view._handleNpcClick("npc1"); // Second interaction with npc1
+  assertNotNull(view._currentDialogueNode, "Test 9.2.5: Dialogue re-activated after dismissal and re-click");
+  assertEqual(view._activeDialogueNpcId, "npc1", "Test 9.2.6: Active NPC is npc1 on re-engagement post-dismissal");
+  assertEqual(view._currentDialogueNodeId, "start", "Test 9.2.7: Dialogue restarts from 'start' node post-dismissal");
+  if (view._currentDialogueNode) {
+    assertEqual(view._currentDialogueNode.npcText, dialogueNpc1.start.npcText, "Test 9.2.8: Dialogue shows initial text post-dismissal");
+  }
+  view._endDialogue(); // Clean up
 
 
   console.log(`--- ${testSuiteName} ---`);
