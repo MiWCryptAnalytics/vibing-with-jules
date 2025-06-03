@@ -88,7 +88,7 @@ def main():
 
   # Generate portraits
   print("Proceeding with portrait generation...")
-  updated_npcs = generate_portraits_for_npcs(npc_data, dialogues_to_pass)
+  updated_npcs = generate_portraits_for_npcs(npc_data, dialogues_to_pass, base_path)
 
   if updated_npcs: # generate_portraits_for_npcs always returns a list
     print("Finished processing NPCs for portrait generation.")
@@ -127,12 +127,17 @@ def save_npc_data(filepath, npc_data_list):
     print(f"ERROR: An unexpected error occurred while saving NPC data to {filepath}. Error: {e}")
     return False
 
-def generate_portraits_for_npcs(npcs_data_list, all_dialogues_dict):
+def generate_portraits_for_npcs(npcs_data_list, all_dialogues_dict, project_root_path):
   """
   Generates portraits for NPCs using the Gemini API.
+
+  Args:
+    npcs_data_list: A list of NPC data dictionaries.
+    all_dialogues_dict: A dictionary of dialogue data.
+    project_root_path: The absolute path to the project's root directory.
   """
   updated_npcs_data_list = []
-  portraits_dir = "../www/assets/images/portraits/"
+  portraits_dir = os.path.join(project_root_path, "www", "assets", "images", "portraits")
   os.makedirs(portraits_dir, exist_ok=True)
 
   try:
