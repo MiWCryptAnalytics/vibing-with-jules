@@ -1,9 +1,15 @@
 import json
 import os
-import subprocess
-import base64
-from google.cloud import aiplatform
+# subprocess was not used
+# base64 is not needed for Gemini raw image bytes
+# from google.cloud import aiplatform # Replaced with google.generativeai
 from google.api_core.exceptions import GoogleAPIError
+
+# New imports for Gemini API
+from google import genai
+from google.genai import types
+from PIL import Image
+from io import BytesIO
 
 def load_npc_data(filepath):
   """
@@ -56,22 +62,18 @@ if __name__ == "__main__":
   dialogue_data = load_dialogue_data(dialogues_filepath)
 
   if npc_data:
-    print(f"Successfully loaded {len(npc_data)} NPCs.")
-    if npc_data: # Check if npc_data is not empty
-        print(f"The first NPC is: {npc_data[0].get('name', 'N/A')}")
+    print(f"Successfully loaded {len(npc_data)} NPCs.") # Redundant inner check removed for clarity
+    print(f"The first NPC is: {npc_data[0].get('name', 'N/A')}")
 
   if dialogue_data:
     print(f"Successfully loaded dialogues for {len(dialogue_data)} NPCs.")
 
   project_id = os.getenv("GOOGLE_CLOUD_PROJECT")
-  vertex_ai_region = os.getenv("VERTEX_AI_REGION")
 
   if not project_id:
     print("ERROR: GOOGLE_CLOUD_PROJECT environment variable not set. Please set it before running the script.")
-  if not vertex_ai_region:
-    print("ERROR: VERTEX_AI_REGION environment variable not set. Please set it before running the script (e.g., 'us-central1').")
 
-  if not project_id or not vertex_ai_region:
+  if not project_id: # Simplified condition
     # Attempt to load data even if env vars are missing, to allow other parts of the script to function if needed
     if npc_data is None:
         print("Could not load NPC data.")
@@ -82,7 +84,7 @@ if __name__ == "__main__":
     return # Exit main if env vars are missing
 
   if npc_data and dialogue_data:
-    updated_npcs = generate_portraits_for_npcs(npc_data, dialogue_data, project_id, vertex_ai_region)
+    updated_npcs = generate_portraits_for_npcs(npc_data, dialogue_data)
     print("Finished processing NPCs.")
     if updated_npcs and len(updated_npcs) > 0 and updated_npcs[0].get('portraitImage'):
         print(f"DEBUG: First NPC's updated portrait path: {updated_npcs[0].get('portraitImage')}")
@@ -102,11 +104,11 @@ if __name__ == "__main__":
       print(f"Failed to save updated NPC data to {npcs_file_to_save}")
   elif 'npc_data' in locals() and npc_data and ('dialogue_data' not in locals() or not dialogue_data): # NPC data loaded, but not dialogue
       print("NPC data was loaded, but dialogue data was not. No portraits generated, so not saving NPC data.")
-  elif project_id and vertex_ai_region and ('npc_data' not in locals() or not npc_data): # Env vars set, but no NPC data
+  elif project_id and ('npc_data' not in locals() or not npc_data): # Env vars set, but no NPC data
       print("Project and region configured, but no NPC data loaded. Not saving.")
   else:
-    if not project_id or not vertex_ai_region:
-        print("Skipping saving NPC data due to missing GOOGLE_CLOUD_PROJECT or VERTEX_AI_REGION variables.")
+    if not project_id:
+        print("Skipping saving NPC data due to missing GOOGLE_CLOUD_PROJECT variable.")
     else:
         print("No updated NPC data to save (e.g., initial data loading might have failed or no NPCs processed).")
 
@@ -133,23 +135,26 @@ def save_npc_data(filepath, npc_data_list):
     print(f"ERROR: An unexpected error occurred while saving NPC data to {filepath}. Error: {e}")
     return False
 
-def generate_portraits_for_npcs(npcs_data_list, all_dialogues_dict, project_id, vertex_ai_region):
+def generate_portraits_for_npcs(npcs_data_list, all_dialogues_dict):
   """
-  Generates portraits for NPCs using Vertex AI Imagen.
+  Generates portraits for NPCs using the Gemini API.
   """
   updated_npcs_data_list = []
   portraits_dir = "../www/assets/images/portraits/"
   os.makedirs(portraits_dir, exist_ok=True)
 
   try:
-    aiplatform.init(project=project_id, location=vertex_ai_region)
-    # Using a slightly older but generally available model version for wider compatibility.
-    # If "imagegeneration@006" is confirmed available and preferred, it can be used.
-    # For now, using "imagegeneration@005" as it's broadly available.
-    model = aiplatform.ImageGenerationModel.from_pretrained("imagegeneration@005")
+    client = genai.Client()
+    # Model name for Gemini Flash image generation, as per the example
+    model_name = "gemini-2.0-flash-preview-image-generation"
+  except ImportError:
+    print("ERROR: The 'google-generativeai' library is not installed. Please install it using 'pip install google-generativeai'.")
+    # Return original list if core library is missing
+    return [npc.copy() for npc in npcs_data_list]
   except Exception as e:
-    print(f"ERROR: Failed to initialize Vertex AI or load model: {e}")
-    print("Ensure GOOGLE_CLOUD_PROJECT and VERTEX_AI_REGION are correctly set and you have authenticated with GCP.")
+    print(f"ERROR: Failed to initialize Gemini Client: {e}")
+    print("Ensure GOOGLE_CLOUD_PROJECT is correctly set (if using ADC) and you have authenticated for Google Cloud/Gemini "
+          "(e.g., 'gcloud auth application-default login' or by setting GOOGLE_API_KEY).")
     # Return original list if AI platform init fails
     return [npc.copy() for npc in npcs_data_list]
 
@@ -163,7 +168,7 @@ def generate_portraits_for_npcs(npcs_data_list, all_dialogues_dict, project_id, 
     prompt_text = f"Portrait of {npc_name}: {npc_description}."
 
     # Add style cue
-    prompt_text += " Pirate character portrait, fantasy art, detailed illustration style."
+    prompt_text += " Pirate character portrait, fantasy art, detailed illustration style. Square image, 1:1 aspect ratio."
 
     # Attempt to add dialogue to prompt
     npc_dialogues = all_dialogues_dict.get(npc_id)
@@ -192,54 +197,54 @@ def generate_portraits_for_npcs(npcs_data_list, all_dialogues_dict, project_id, 
     print(f"INFO: Generating image for {npc_id} with prompt: {prompt_text}")
 
     image_filename = f"{npc_id}_portrait.png"
+    prompt_filename = f"{npc_id}_prompt.txt"
     full_image_path = os.path.join(portraits_dir, image_filename)
+    full_prompt_path = os.path.join(portraits_dir, prompt_filename)
 
     try:
-        response = model.generate_images(
-            prompt=prompt_text,
-            number_of_images=1,
-            aspect_ratio="1:1", # Square
-            # For models like imagegeneration@005, explicit size parameters might not be available
-            # or might be handled differently (e.g. via generation_parameters in some SDK versions)
-            # The default is often 1024x1024, but smaller might be implicitly chosen by API for speed/cost.
-            # If specific sizing like 512x512 is critical and available, add the parameter here.
-            # e.g. seed=12345 # for reproducibility if needed
+        response = client.models.generate_content(
+            model=model_name,
+            contents=prompt_text,
+            generation_config=types.GenerateContentConfig(
+                response_modalities=['IMAGE'],
+            safety_settings={
+                types.HarmCategory.HARM_CATEGORY_HARASSMENT: types.HarmBlockThreshold.BLOCK_NONE,
+                types.HarmCategory.HARM_CATEGORY_HATE_SPEECH: types.HarmBlockThreshold.BLOCK_NONE,
+                types.HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT: types.HarmBlockThreshold.BLOCK_NONE,
+                types.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT: types.HarmBlockThreshold.BLOCK_NONE,
+            })
         )
 
-        if response and response.images:
-            # Assuming response.images[0]._image_bytes is the way to get base64 encoded bytes
-            # This can vary slightly by SDK version. If it's raw bytes, no b64decode needed.
-            # If it's a base64 string, then decode.
-            # Based on common usage, _image_bytes from Vertex AI SDK is often raw bytes already.
-            # Let's assume it's base64 encoded string for now as per plan, and adjust if testing shows otherwise.
-            generated_image_data = response.images[0]._image_bytes # This might be base64 string or raw bytes
+        image_bytes_to_save = None
+        if response.candidates and response.candidates[0].content and response.candidates[0].content.parts:
+            for part in response.candidates[0].content.parts:
+                if part.inline_data and part.inline_data.mime_type.startswith("image/"):
+                    image_bytes_to_save = part.inline_data.data
+                    break # Found the image
+        
+        if image_bytes_to_save:
+            try:
+                img = Image.open(BytesIO(image_bytes_to_save))
+                img.save(full_image_path) # PIL infers format from extension, or use format='PNG'
 
-            image_bytes_to_save = None
-            if isinstance(generated_image_data, str):
-                # If it's a string, it's likely base64 encoded
-                image_bytes_to_save = base64.b64decode(generated_image_data)
-            elif isinstance(generated_image_data, bytes):
-                # If it's already bytes, use directly
-                image_bytes_to_save = generated_image_data
-            else:
-                print(f"ERROR: Image data for {npc_id} is in an unexpected format: {type(generated_image_data)}")
-                updated_npcs_data_list.append(npc_copy) # Add original copy back
-                continue
+                with open(full_prompt_path, "w") as f:
+                    f.write(prompt_text)
 
+                print(f"SUCCESS: Generated and saved portrait and prompt for {npc_id} to {full_image_path} and {full_prompt_path}")
+                new_portrait_image_path = f"assets/images/portraits/{image_filename}"
+                npc_copy['portraitImage'] = new_portrait_image_path
+                print(f"DEBUG: NPC {npc_id} portraitImage updated to: {new_portrait_image_path}")
 
-            with open(full_image_path, "wb") as f:
-                f.write(image_bytes_to_save)
-
-            print(f"SUCCESS: Generated and saved portrait for {npc_id} to {full_image_path}")
-
-            new_portrait_image_path = f"assets/images/portraits/{image_filename}"
-            npc_copy['portraitImage'] = new_portrait_image_path
-            print(f"DEBUG: NPC {npc_id} portraitImage updated to: {new_portrait_image_path}")
-
-        elif response:
-             print(f"ERROR: Imagen API call succeeded for {npc_id} but returned no images in attribute response.images. Response: {response}")
+            except ImportError: # Should be caught at top level, but as a safeguard here for PIL/BytesIO
+                print("ERROR: Pillow or io library might be missing. Please ensure 'Pillow' is installed ('pip install Pillow'). Cannot save image.")
+                # npc_copy remains without portraitImage, will be appended later
+            except Exception as e:
+                print(f"ERROR: Failed to save image for {npc_id}. Error: {e}")
+                # npc_copy remains without portraitImage, will be appended later
+        elif response and response.candidates and not (response.candidates[0].content and response.candidates[0].content.parts):
+             print(f"ERROR: Gemini API call succeeded for {npc_id} but returned no content parts. Candidate: {response.candidates[0]}")
         else:
-            print(f"ERROR: Imagen API call for {npc_id} returned a None or empty response.")
+            print(f"ERROR: Gemini API call for {npc_id} returned no image or an unexpected response: {response}")
 
     except GoogleAPIError as e:
         print(f"ERROR: Failed to generate image for {npc_id} due to Google API Error. Error: {e}")
@@ -247,10 +252,11 @@ def generate_portraits_for_npcs(npcs_data_list, all_dialogues_dict, project_id, 
         print("ERROR: google-cloud-aiplatform library is not installed. Please install it using 'pip install google-cloud-aiplatform'")
         # If this happens, we can't continue generating images, so we return what we have so far.
         # Add remaining NPCs as original to the list
-        current_npc_index = npcs_data_list.index(npc) # Find current NPC to add remaining ones
-        for i in range(current_npc_index, len(npcs_data_list)):
-            updated_npcs_data_list.append(npcs_data_list[i].copy())
-        return updated_npcs_data_list
+        # This specific ImportError for google-cloud-aiplatform is now less relevant.
+        # ImportError for google-generativeai is handled at the function start.
+        # If other ImportErrors occur here (e.g. a sub-dependency of genai not caught above),
+        # it's an unexpected state.
+        print(f"ERROR: An unexpected ImportError occurred: {e}")
     except Exception as e:
         print(f"ERROR: An unexpected error occurred while generating image for {npc_id}. Error: {e}")
 
