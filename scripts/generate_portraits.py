@@ -156,101 +156,115 @@ def generate_portraits_for_npcs(npcs_data_list, all_dialogues_dict):
     npc_name = npc_copy.get('name', 'Unknown Name')
     npc_description = npc_copy.get('description', 'No description available.')
 
-    # Base prompt
-    prompt_text = f"Portrait of {npc_name}: {npc_description}."
-
-    # Add style cue
-    prompt_text += " Pirate character portrait, fantasy art, detailed illustration style. Square image, 1:1 aspect ratio."
-
-    # Attempt to add dialogue to prompt
-    npc_dialogues = all_dialogues_dict.get(npc_id)
-    if npc_dialogues and isinstance(npc_dialogues, list) and len(npc_dialogues) > 0:
-        # Look for the first 'npcText' in the dialogue entries
-        dialogue_line_1 = None
-        for entry in npc_dialogues:
-            if 'npcText' in entry and entry['npcText']:
-                dialogue_line_1 = entry['npcText']
-                break
-        if dialogue_line_1:
-            prompt_text += f" They might say: '{dialogue_line_1}'"
-
-        # Attempt to get a second dialogue line if available
-        dialogue_line_2 = None
-        count = 0
-        for entry in npc_dialogues:
-            if 'npcText' in entry and entry['npcText']:
-                count += 1
-                if count == 2:
-                    dialogue_line_2 = entry['npcText']
-                    break
-        if dialogue_line_2:
-            prompt_text += f" Another thing they might say is: '{dialogue_line_2}'"
-
-    print(f"INFO: Generating image for {npc_id} with prompt: {prompt_text}")
-
     image_filename = f"{npc_id}_portrait.png"
     prompt_filename = f"{npc_id}_prompt.txt"
     full_image_path = os.path.join(portraits_dir, image_filename)
     full_prompt_path = os.path.join(portraits_dir, prompt_filename)
+    # This is the relative path that will be stored in the npcs.json file
+    relative_portrait_path = f"assets/images/portraits/{image_filename}"
 
-    try:
-        response = client.models.generate_content(
-            model=model_name,
-            contents=prompt_text,
-            generation_config=types.GenerateContentConfig(
-                response_modalities=['IMAGE'],
-            safety_settings={
-                types.HarmCategory.HARM_CATEGORY_HARASSMENT: types.HarmBlockThreshold.BLOCK_NONE,
-                types.HarmCategory.HARM_CATEGORY_HATE_SPEECH: types.HarmBlockThreshold.BLOCK_NONE,
-                types.HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT: types.HarmBlockThreshold.BLOCK_NONE,
-                types.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT: types.HarmBlockThreshold.BLOCK_NONE,
-            })
-        )
+    if os.path.exists(full_image_path):
+        print(f"INFO: Portrait for {npc_id} ({npc_name}) already exists at {full_image_path}. Skipping generation.")
+        npc_copy['portraitImage'] = relative_portrait_path
+        # Assuming if image exists, prompt file also exists from previous run.
+    else:
+        # Base prompt
+        prompt_text = f"Portrait of {npc_name}: {npc_description}."
 
-        image_bytes_to_save = None
-        if response.candidates and response.candidates[0].content and response.candidates[0].content.parts:
-            for part in response.candidates[0].content.parts:
-                if part.inline_data and part.inline_data.mime_type.startswith("image/"):
-                    image_bytes_to_save = part.inline_data.data
-                    break # Found the image
-        
-        if image_bytes_to_save:
-            try:
-                img = Image.open(BytesIO(image_bytes_to_save))
-                img.save(full_image_path) # PIL infers format from extension, or use format='PNG'
+        # Add style cue
+        prompt_text += " Pirate character portrait, fantasy art, detailed illustration style. Square image, 1:1 aspect ratio."
 
-                with open(full_prompt_path, "w") as f:
-                    f.write(prompt_text)
+        # Attempt to add dialogue to prompt
+        npc_dialogues = all_dialogues_dict.get(npc_id)
+        if npc_dialogues and isinstance(npc_dialogues, list) and len(npc_dialogues) > 0:
+            # Look for the first 'npcText' in the dialogue entries
+            dialogue_line_1 = None
+            for entry in npc_dialogues:
+                if 'npcText' in entry and entry['npcText']:
+                    dialogue_line_1 = entry['npcText']
+                    break
+            if dialogue_line_1:
+                prompt_text += f" They might say: '{dialogue_line_1}'"
 
-                print(f"SUCCESS: Generated and saved portrait and prompt for {npc_id} to {full_image_path} and {full_prompt_path}")
-                new_portrait_image_path = f"assets/images/portraits/{image_filename}"
-                npc_copy['portraitImage'] = new_portrait_image_path
-                print(f"DEBUG: NPC {npc_id} portraitImage updated to: {new_portrait_image_path}")
+            # Attempt to get a second dialogue line if available
+            dialogue_line_2 = None
+            count = 0
+            for entry in npc_dialogues:
+                if 'npcText' in entry and entry['npcText']:
+                    count += 1
+                    if count == 2:
+                        dialogue_line_2 = entry['npcText']
+                        break
+            if dialogue_line_2:
+                prompt_text += f" Another thing they might say is: '{dialogue_line_2}'"
 
-            except ImportError: # Should be caught at top level, but as a safeguard here for PIL/BytesIO
-                print("ERROR: Pillow or io library might be missing. Please ensure 'Pillow' is installed ('pip install Pillow'). Cannot save image.")
-                # npc_copy remains without portraitImage, will be appended later
-            except Exception as e:
-                print(f"ERROR: Failed to save image for {npc_id}. Error: {e}")
-                # npc_copy remains without portraitImage, will be appended later
-        elif response and response.candidates and not (response.candidates[0].content and response.candidates[0].content.parts):
-             print(f"ERROR: Gemini API call succeeded for {npc_id} but returned no content parts. Candidate: {response.candidates[0]}")
-        else:
-            print(f"ERROR: Gemini API call for {npc_id} returned no image or an unexpected response: {response}")
+        print(f"INFO: Generating image for {npc_id} ({npc_name}) with prompt: {prompt_text}")
 
-    except GoogleAPIError as e:
-        print(f"ERROR: Failed to generate image for {npc_id} due to Google API Error. Error: {e}")
-    except ImportError:
-        print("ERROR: google-cloud-aiplatform library is not installed. Please install it using 'pip install google-cloud-aiplatform'")
-        # If this happens, we can't continue generating images, so we return what we have so far.
-        # Add remaining NPCs as original to the list
-        # This specific ImportError for google-cloud-aiplatform is now less relevant.
-        # ImportError for google-generativeai is handled at the function start.
-        # If other ImportErrors occur here (e.g. a sub-dependency of genai not caught above),
-        # it's an unexpected state.
-        print(f"ERROR: An unexpected ImportError occurred: {e}")
-    except Exception as e:
-        print(f"ERROR: An unexpected error occurred while generating image for {npc_id}. Error: {e}")
+        try:
+            response = client.models.generate_content(
+                model=model_name,
+                contents=prompt_text,
+                config=types.GenerateContentConfig(
+                  #response_modalities=['IMAGE'],
+                  safety_settings=[types.SafetySetting(
+                        category=types.HarmCategory.HARM_CATEGORY_HATE_SPEECH,
+                        threshold=types.HarmBlockThreshold.BLOCK_NONE,
+                    ),
+                    types.SafetySetting(
+                        category=types.HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
+                        threshold=types.HarmBlockThreshold.BLOCK_NONE,
+                    ),
+                    types.SafetySetting(
+                        category=types.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+                        threshold=types.HarmBlockThreshold.BLOCK_NONE,
+                    ),
+                    types.SafetySetting(
+                        category=types.HarmCategory.HARM_CATEGORY_HARASSMENT,
+                        threshold=types.HarmBlockThreshold.BLOCK_NONE
+                    )],
+            ))
+
+            image_bytes_to_save = None
+            if response.candidates and response.candidates[0].content and response.candidates[0].content.parts:
+                for part in response.candidates[0].content.parts:
+                    if part.inline_data and part.inline_data.mime_type.startswith("image/"):
+                        image_bytes_to_save = part.inline_data.data
+                        break # Found the image
+            
+            if image_bytes_to_save:
+                try:
+                    img = Image.open(BytesIO(image_bytes_to_save))
+                    img.save(full_image_path) # PIL infers format from extension, or use format='PNG'
+
+                    with open(full_prompt_path, "w") as f:
+                        f.write(prompt_text)
+
+                    print(f"SUCCESS: Generated and saved portrait and prompt for {npc_id} ({npc_name}) to {full_image_path} and {full_prompt_path}")
+                    npc_copy['portraitImage'] = relative_portrait_path
+                    print(f"DEBUG: NPC {npc_id} portraitImage updated to: {relative_portrait_path}")
+
+                except ImportError: # Should be caught at top level, but as a safeguard here for PIL/BytesIO
+                    print("ERROR: Pillow or io library might be missing. Please ensure 'Pillow' is installed ('pip install Pillow'). Cannot save image.")
+                    # npc_copy remains without portraitImage, will be appended later
+                except Exception as e:
+                    print(f"ERROR: Failed to save image for {npc_id} ({npc_name}). Error: {e}")
+                    # npc_copy remains without portraitImage, will be appended later
+            elif response and response.candidates and not (response.candidates[0].content and response.candidates[0].content.parts):
+                 print(f"ERROR: Gemini API call succeeded for {npc_id} ({npc_name}) but returned no content parts. Candidate: {response.candidates[0]}")
+            else:
+                print(f"ERROR: Gemini API call for {npc_id} ({npc_name}) returned no image or an unexpected response: {response}")
+
+        except GoogleAPIError as e:
+            print(f"ERROR: Failed to generate image for {npc_id} ({npc_name}) due to Google API Error. Error: {e}")
+        except ImportError:
+            # This specific ImportError for google-cloud-aiplatform is now less relevant.
+            # ImportError for google-generativeai is handled at the function start.
+            # If other ImportErrors occur here (e.g. a sub-dependency of genai not caught above),
+            # it's an unexpected state.
+            print(f"ERROR: An unexpected ImportError occurred: {e}") # Note: 'e' might be undefined here if this specific except block is hit due to genai not being imported.
+                                                                # However, the genai import is checked at the start of the function.
+        except Exception as e:
+            print(f"ERROR: An unexpected error occurred while generating image for {npc_id} ({npc_name}). Error: {e}")
 
     updated_npcs_data_list.append(npc_copy) # Add npc_copy (modified or not)
 
