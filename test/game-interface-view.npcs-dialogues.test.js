@@ -296,6 +296,61 @@ async function testNpcDialogueInteractions() {
   assertNull(view._currentDialogueNodeId, "Test 8.3: Current node ID null after dismissal event");
   assertNull(view._currentDialogueNode, "Test 8.4: Current node null after dismissal event");
 
+  // --- Test 9: NPC Re-engagement ---
+  console.log("--- Starting Test 9: NPC Re-engagement ---");
+  view = new MockGameInterfaceViewForDialogues(); // Fresh view for re-engagement tests
+  view.setAllNpcs(new Map([["npc1", npc1]]));
+  view.setAllDialogues({ "npc1": dialogueNpc1 });
+  view.setLocationData({ id: "loc_re_engage", name: "Re-engagement Place", npcIds: ["npc1"] });
+
+  // Scenario 9.1: Re-engage after completing a dialogue
+  console.log("--- Scenario 9.1: Re-engage after completion ---");
+  view._handleNpcClick("npc1"); // First interaction
+  assertNotNull(view._currentDialogueNode, "Test 9.1.1: Dialogue active after first click");
+
+  // Complete the dialogue
+  let choiceToGreet = view._currentDialogueNode.playerChoices[0];
+  view._handlePlayerChoiceEvent({ detail: { choice: choiceToGreet } }); // Hello
+  let choiceToEnd = view._currentDialogueNode.playerChoices[0];
+  view._handlePlayerChoiceEvent({ detail: { choice: choiceToEnd } }); // Bye (END)
+
+  assertNull(view._currentDialogueNode, "Test 9.1.2: Dialogue ended after completion");
+
+  // Re-engage the same NPC
+  view._handleNpcClick("npc1"); // Second interaction with npc1
+  assertNotNull(view._currentDialogueNode, "Test 9.1.3: Dialogue re-activated after second click");
+  assertEqual(view._activeDialogueNpcId, "npc1", "Test 9.1.4: Active NPC is npc1 on re-engagement");
+  assertEqual(view._currentDialogueNodeId, "start", "Test 9.1.5: Dialogue restarts from 'start' node on re-engagement");
+  if (view._currentDialogueNode) {
+    assertEqual(view._currentDialogueNode.npcText, dialogueNpc1.start.npcText, "Test 9.1.6: Dialogue shows initial text on re-engagement");
+  }
+  view._endDialogue(); // Clean up
+
+  // Scenario 9.2: Re-engage after dismissing a dialogue mid-way
+  console.log("--- Scenario 9.2: Re-engage after dismissal ---");
+  view._handleNpcClick("npc1"); // First interaction
+  assertNotNull(view._currentDialogueNode, "Test 9.2.1: Dialogue active after first click");
+
+  // Make one choice (not to END)
+  choiceToGreet = view._currentDialogueNode.playerChoices[0];
+  view._handlePlayerChoiceEvent({ detail: { choice: choiceToGreet } }); // Hello
+  assertNotNull(view._currentDialogueNode, "Test 9.2.2: Dialogue still active mid-way");
+  assertEqual(view._currentDialogueNodeId, "greet_reply", "Test 9.2.3: Dialogue is at 'greet_reply' node");
+
+  // Simulate dismissal
+  view._handlePlayerChoiceEvent({ detail: {} }); // Dismiss event
+  assertNull(view._currentDialogueNode, "Test 9.2.4: Dialogue ended after dismissal");
+
+  // Re-engage the same NPC
+  view._handleNpcClick("npc1"); // Second interaction with npc1
+  assertNotNull(view._currentDialogueNode, "Test 9.2.5: Dialogue re-activated after dismissal and re-click");
+  assertEqual(view._activeDialogueNpcId, "npc1", "Test 9.2.6: Active NPC is npc1 on re-engagement post-dismissal");
+  assertEqual(view._currentDialogueNodeId, "start", "Test 9.2.7: Dialogue restarts from 'start' node post-dismissal");
+  if (view._currentDialogueNode) {
+    assertEqual(view._currentDialogueNode.npcText, dialogueNpc1.start.npcText, "Test 9.2.8: Dialogue shows initial text post-dismissal");
+  }
+  view._endDialogue(); // Clean up
+
 
   console.log(`--- ${testSuiteName} ---`);
   if (results.length > 0) { results.forEach(r => console.log(r)); }
