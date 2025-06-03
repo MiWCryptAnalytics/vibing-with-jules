@@ -92,6 +92,16 @@ class MenuView extends LitElement {
     this.dispatchEvent(navigateEvent);
   }
 
+  _resetGameState() {
+    // Dispatch an event that the app-shell will listen for
+    const resetEvent = new CustomEvent('reset-game-state', {
+      bubbles: true,
+      composed: true
+    });
+    this.dispatchEvent(resetEvent);
+    this.message = msg('Game state reset initiated...', {id: 'menu-debug-reset-initiated'});
+  }
+
   _changeMessage() {
     const messages = [
       msg('Lit is working!', {id: 'lit-working'}),
@@ -117,6 +127,12 @@ class MenuView extends LitElement {
       <h3>${msg('Simple Interactivity Test', {id: 'menu-interactivity-title'})}</h3>
       <p>${this.message}</p>
       <button @click=${this._changeMessage}>${msg('Change Message', {id: 'menu-change-message-button'})}</button>
+
+      <hr>
+      <h3>${msg('Debug Options', {id: 'menu-debug-title'})}</h3>
+      <ul>
+        <li><button @click=${this._resetGameState}>${msg('Reset Game State', {id: 'menu-debug-reset-game'})}</button></li>
+      </ul>
     `;
   }
 }

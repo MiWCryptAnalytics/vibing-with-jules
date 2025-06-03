@@ -126,6 +126,7 @@ class AppShell extends LitElement {
     this.allNpcs = new Map(); // Initialize allNpcs as a Map
     this.allDialogues = {}; // Initialize allDialogues as an Object
     this.playerAlignment = "neutral"; // Initialize player alignment
+    this._isResetting = false; // Flag to indicate if a reset operation is in progress
 
     this._boundHandleHashChange = this._handleHashChange.bind(this);
     this._boundSaveGameState = this._saveGameState.bind(this); // For beforeunload
@@ -148,13 +149,26 @@ class AppShell extends LitElement {
     const loadedFromStorage = await this._loadGameState(); 
 
     if (!loadedFromStorage) {
-      // No valid game state loaded, determine initial view from URL hash or default
+      // THIS IS THE "NEW GAME" or "RESET" PATH
+      console.log('AppShell: No valid game state loaded or game reset. Initializing new game state.');
+      
+      // Explicitly set all core game state properties to their initial new-game values
+      this.playerInventory = []; // Ensure inventory is empty
       // Grant initial resources for a new game
       this.playerResources = { gold: 100, silver: 50, rum: 5 };
-      console.log('AppShell: New game started. Granted initial resources:', this.playerResources);
+      this.currentLocationData = null; // No specific location initially
+      this.playerAlignment = "neutral"; // Default alignment
 
+      console.log('AppShell: New game started. Initial state set:', {
+        inventory: this.playerInventory,
+        resources: this.playerResources,
+        location: this.currentLocationData,
+        alignment: this.playerAlignment
+      });
+
+      // Determine initial view
       const validViews = ['map', 'game', 'inventory', 'research', 'menu', 'splash'];
-      const hash = window.location.hash.substring(1);
+      const hash = window.location.hash.substring(1); // Should be empty after reset
       if (hash && validViews.includes(hash)) {
         this.currentView = hash;
       } else {
@@ -228,8 +242,7 @@ class AppShell extends LitElement {
 
   async _loadAllPois() {
     try {
-      // Corrected path: If www is server root, from /src/app-shell.js, ../data/ goes to /data/
-      const response = await fetch('../data/pois.json'); // Or '/data/pois.json'
+      const response = await fetch('data/pois.json');
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -245,7 +258,7 @@ class AppShell extends LitElement {
 
   async _loadAllItems() {
     try {
-      const response = await fetch('../data/items.json');
+      const response = await fetch('data/items.json');
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -264,7 +277,7 @@ class AppShell extends LitElement {
 
   async _loadAllNpcs() {
     try {
-      const response = await fetch('../data/npcs.json');
+      const response = await fetch('data/npcs.json');
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -283,7 +296,7 @@ class AppShell extends LitElement {
 
   async _loadAllDialogues() {
     try {
-      const response = await fetch('../data/dialogues.json');
+      const response = await fetch('data/dialogues.json');
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -359,6 +372,11 @@ class AppShell extends LitElement {
   }
 
   _saveGameState() {
+    if (this._isResetting) {
+      console.log('AppShell: Game save skipped during reset process.');
+      return;
+    }
+
     const gameState = {
       currentView: this.currentView,
       currentLocationId: this.currentLocationData ? this.currentLocationData.id : null,
@@ -585,6 +603,32 @@ class AppShell extends LitElement {
     this._updatePlayerResources(event.detail);
   }
 
+  _handleResetGameState() {
+    this._isResetting = true; // Set the flag at the beginning of the reset process
+    console.warn('AppShell: DEBUG - Resetting game state as requested by menu-view.');
+    this._clearSavedGameState();
+
+    // Optional: Verify clearance (for debugging during development)
+    if (localStorage.getItem(this._localStorageKey) || localStorage.getItem(this._localStorageKey + '_checksum')) {
+        console.error("AppShell: DEBUG - Game state NOT fully cleared from localStorage immediately after _clearSavedGameState(). This is unexpected.");
+    } else {
+        console.log("AppShell: DEBUG - Game state confirmed cleared from localStorage.");
+    }
+
+    // Clear the URL hash to ensure a fresh start to the splash screen
+    window.location.hash = ''; 
+    console.log("AppShell: DEBUG - URL hash cleared.");
+
+    // Temporarily remove the beforeunload listener to prevent saving state during reset-reload
+    window.removeEventListener('beforeunload', this._boundSaveGameState);
+    console.log("AppShell: DEBUG - Temporarily removed beforeunload listener for reset.");
+
+    // Reload the application to ensure a completely fresh start.
+    console.log("AppShell: DEBUG - Initiating page reload for reset.");
+    window.location.reload(true); // Force reload from server, bypassing cache for assets
+    // Note: _isResetting will be false in the new AppShell instance after reload.
+  }
+
   render() {
     return html`
       ${this.currentView !== 'splash' ? html`
@@ -619,7 +663,10 @@ class AppShell extends LitElement {
       case 'splash':
         return html`<splash-view @navigate=${this._handleNavigate}></splash-view>`;
       case 'menu':
-        return html`<menu-view @navigate=${this._handleNavigate}></menu-view>`;
+        return html`<menu-view 
+                      @navigate=${this._handleNavigate}
+                      @reset-game-state=${this._handleResetGameState}
+                    ></menu-view>`;
       case 'map':
         return html`<map-view 
                     .playerInventory=${this.playerInventory} 
