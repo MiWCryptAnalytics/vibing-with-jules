@@ -93,6 +93,7 @@ class GameInterfaceView extends LitElement {
     allItems: { type: Object }, 
     allNpcs: { type: Object },      // Added for NPC data
     allDialogues: { type: Object }, // Added for dialogue data
+    playerAlignment: { type: String }, // Added for player alignment
     _lastFoundMessage: { type: String, state: true },
     _activeDialogueNpcId: { type: String, state: true },
     _currentDialogueNodeId: { type: String, state: true },
@@ -107,6 +108,7 @@ class GameInterfaceView extends LitElement {
     this.allItems = new Map(); 
     this.allNpcs = new Map();      // Initialize allNpcs
     this.allDialogues = {};    // Initialize allDialogues
+    this.playerAlignment = "neutral"; // Initialize player alignment
     this._lastFoundMessage = '';
     this._activeDialogueNpcId = null;
     this._currentDialogueNodeId = null;
@@ -211,14 +213,48 @@ class GameInterfaceView extends LitElement {
   }
 
   _handleNpcClick(npcId) {
-    if (!this.allDialogues || !this.allNpcs) {
-      console.error("Dialogue or NPC data not loaded!");
+    if (!this.allDialogues || !this.allNpcs || !this.playerAlignment) {
+      console.error("Dialogue, NPC data, or Player Alignment not loaded/passed!");
       return;
     }
     const npcDetails = this.allNpcs.get(npcId);
-    const dialogueTree = this.allDialogues[npcId];
 
-    if (npcDetails && dialogueTree) {
+    if (!npcDetails) {
+        console.error(`NPC details not found for NPC ID: ${npcId}`);
+        this._lastFoundMessage = "Cannot find details for this person.";
+        setTimeout(() => { this._lastFoundMessage = ''; this.requestUpdate(); }, 3000);
+        return;
+    }
+
+    const playerAlignment = this.playerAlignment;
+    const npcAlignment = npcDetails.alignment;
+
+    const alignmentsConflict =
+        (playerAlignment === "good" && npcAlignment === "evil") ||
+        (playerAlignment === "evil" && npcAlignment === "good");
+
+    if (alignmentsConflict) {
+        this._activeDialogueNpcId = npcId; // Keep original NPC ID for "NPC Name says:"
+        this._currentDialogueNodeId = "ALIGNMENT_CONFLICT_NODE"; // Special ID for conflict
+        
+        const conflictDialogueTree = this.allDialogues["_ALIGNMENT_CONFLICTS"];
+        if (conflictDialogueTree && conflictDialogueTree["ALIGNMENT_CONFLICT_NODE"]) {
+            this._currentDialogueNode = conflictDialogueTree["ALIGNMENT_CONFLICT_NODE"];
+        } else {
+            // Fallback if the new dialogue isn't loaded correctly (should not happen)
+            console.error("Alignment conflict dialogue node not found in dialogues.json!");
+            this._currentDialogueNode = { 
+                npcText: msg(`Error: Alignment conflict dialogue missing. Your ${playerAlignment} vs ${npcAlignment}.`),
+                playerChoices: [{ text: msg("Leave"), nextNodeId: "END" }]
+            };
+        }
+        this.requestUpdate();
+        return; 
+    }
+
+    // Proceed with normal dialogue loading if no conflict
+    const dialogueTree = this.allDialogues[npcId];
+    if (dialogueTree) { // npcDetails is already confirmed to exist
       this._activeDialogueNpcId = npcId;
       // Determine start node: often npcId_start or first key.
       const startNodeId = Object.keys(dialogueTree)[0]; // Simple assumption: first node is start
@@ -226,17 +262,17 @@ class GameInterfaceView extends LitElement {
       if (dialogueTree[startNodeId]) {
         this._currentDialogueNodeId = startNodeId;
         this._currentDialogueNode = dialogueTree[startNodeId];
-        this.requestUpdate();
       } else {
         console.error(`No start node found for NPC ${npcId} (tried ${startNodeId})`);
         this._lastFoundMessage = `Hmm, ${npcDetails.name} doesn't seem to want to talk.`;
-        setTimeout(() => { this._lastFoundMessage = '';}, 3000);
+        setTimeout(() => { this._lastFoundMessage = ''; this.requestUpdate(); }, 3000);
       }
     } else {
-      console.error(`NPC details or dialogue tree not found for NPC ID: ${npcId}`);
-      this._lastFoundMessage = "They have nothing to say.";
-       setTimeout(() => { this._lastFoundMessage = '';}, 3000);
+      console.log(`No specific dialogue tree for NPC ID: ${npcId}. They might have nothing to say.`);
+      this._lastFoundMessage = `${npcDetails.name} has nothing to say to you.`;
+       setTimeout(() => { this._lastFoundMessage = ''; this.requestUpdate(); }, 3000);
     }
+    this.requestUpdate();
   }
 
   _handlePlayerChoice(choice) {

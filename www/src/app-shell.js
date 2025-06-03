@@ -116,6 +116,7 @@ class AppShell extends LitElement {
     this.allItems = new Map(); // Initialize allItems as a Map
     this.allNpcs = new Map(); // Initialize allNpcs as a Map
     this.allDialogues = {}; // Initialize allDialogues as an Object
+    this.playerAlignment = "neutral"; // Initialize player alignment
 
     this._boundHandleHashChange = this._handleHashChange.bind(this);
     this._boundSaveGameState = this._saveGameState.bind(this); // For beforeunload
@@ -317,6 +318,7 @@ class AppShell extends LitElement {
           this.playerInventory = savedState.playerInventory || [];
           // Restore playerResources, defaulting if not found in saved state
           this.playerResources = savedState.playerResources || { gold: 0, silver: 0, rum: 0 };
+          this.playerAlignment = savedState.playerAlignment || "neutral"; // Load player alignment
 
           if (savedState.currentLocationId) {
             // POIs might not be loaded yet. If so, store ID to resolve later.
@@ -353,6 +355,7 @@ class AppShell extends LitElement {
       currentLocationId: this.currentLocationData ? this.currentLocationData.id : null,
       playerInventory: this.playerInventory,
       playerResources: this.playerResources, // Include playerResources in saved state
+      playerAlignment: this.playerAlignment, // Include playerAlignment in saved state
       timestamp: Date.now()
     };
     try {
@@ -621,6 +624,7 @@ class AppShell extends LitElement {
                       .allItems=${this.allItems} /* Pass allItems */
                       .allNpcs=${this.allNpcs} /* Pass allNpcs */
                       .allDialogues=${this.allDialogues} /* Pass allDialogues */
+                      .playerAlignment=${this.playerAlignment} /* Pass playerAlignment */
                       @navigate=${this._handleNavigate}
                       @add-to-inventory=${this._handleAddToInventory}
                       @remove-from-inventory=${this._handleRemoveFromInventory}
