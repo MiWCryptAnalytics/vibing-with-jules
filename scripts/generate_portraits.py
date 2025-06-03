@@ -145,7 +145,10 @@ def generate_portraits_for_npcs(npcs_data_list, all_dialogues_dict, project_root
     # Model name for Gemini Flash image generation, as per the example
     #model_name = "gemini-2.0-flash-preview-image-generation"
     #model_name = "gemini-2.0-flash"
-    model_name = "imagen-3.0-fast-generate-001"
+    #model_name = "imagen-3.0-fast-generate-001"
+    #model_name = "imagen-4.0-generate-001"
+    model_name = "imagen-4.0-generate-preview-05-20"
+
 
   except ImportError:
     print("ERROR: The 'google-generativeai' library is not installed. Please install it using 'pip install google-generativeai'.")
@@ -177,10 +180,11 @@ def generate_portraits_for_npcs(npcs_data_list, all_dialogues_dict, project_root
         # Assuming if image exists, prompt file also exists from previous run.
     else:
         # Base prompt
-        prompt_text = f"High Quality DSLR portrait of {npc_name}: {npc_description}."
+        #prompt_text = f"High Quality DSLR portrait of {npc_name}: {npc_description}."
+        prompt_text = f"Gritty, hyperrealistic portrait of {npc_name}, a notorious pirate: {npc_description}."
 
         # Add style cue
-        prompt_text += " Pirate character portrait, high quality, visual effects, photogenic, beautiful. Square image, 1:1 aspect ratio."
+        prompt_text += "Low-key lighting, casting long shadows, highlighting rugged features and weathered attire. Volumetric fog or sea spray in the air. Close-up shot, focusing on a captivating, fierce gaze. Artstation trending, highly detailed, character design. Square, 1:1. --ar 1:1 --q 2 --no cartoon, painting, disfigured"
 
         # Attempt to add dialogue to prompt
         npc_dialogues = all_dialogues_dict.get(npc_id)
