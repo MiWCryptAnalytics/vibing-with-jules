@@ -53,64 +53,56 @@ def load_dialogue_data(filepath):
     print(f"Error: Could not parse JSON data from {filepath}")
     return None
 
-if __name__ == "__main__":
-  # Assuming the script is in 'scripts' and npcs.json is in 'www/data'
-  npcs_filepath = "../www/data/npcs.json"
-  dialogues_filepath = "../www/data/dialogues.json"
+def main():
+  """
+  Main function to load NPC and dialogue data, generate portraits, and save updated data.
+  """
+  # File paths
+  base_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) # Assuming script is in 'scripts' dir
+  npcs_filepath = os.path.join(base_path, "www", "data", "npcs.json")
+  dialogues_filepath = os.path.join(base_path, "www", "data", "dialogues.json")
+  npcs_file_to_save = npcs_filepath # Save back to the same file
 
+  # Load data
   npc_data = load_npc_data(npcs_filepath)
   dialogue_data = load_dialogue_data(dialogues_filepath)
 
-  if npc_data:
-    print(f"Successfully loaded {len(npc_data)} NPCs.") # Redundant inner check removed for clarity
-    print(f"The first NPC is: {npc_data[0].get('name', 'N/A')}")
+  if not npc_data:
+    print("Could not load NPC data. Exiting.")
+    return
+  print(f"Successfully loaded {len(npc_data)} NPCs. First NPC: {npc_data[0].get('name', 'N/A')}")
 
-  if dialogue_data:
+  dialogues_to_pass = {}
+  if not dialogue_data:
+    print("Could not load dialogue data. Portrait generation will proceed without dialogue context.")
+  else:
     print(f"Successfully loaded dialogues for {len(dialogue_data)} NPCs.")
+    dialogues_to_pass = dialogue_data
 
+  # Check for environment variable
   project_id = os.getenv("GOOGLE_CLOUD_PROJECT")
-
   if not project_id:
-    print("ERROR: GOOGLE_CLOUD_PROJECT environment variable not set. Please set it before running the script.")
+    print("ERROR: GOOGLE_CLOUD_PROJECT environment variable not set. "
+          "Portrait generation will be skipped. Exiting.")
+    return
 
-  if not project_id: # Simplified condition
-    # Attempt to load data even if env vars are missing, to allow other parts of the script to function if needed
-    if npc_data is None:
-        print("Could not load NPC data.")
-    if dialogue_data is None:
-        print("Could not load dialogue data.")
-    if npc_data and dialogue_data:
-         print("NPC and Dialogue data loaded, but skipping portrait generation due to missing environment variables.")
-    return # Exit main if env vars are missing
+  # Generate portraits
+  print("Proceeding with portrait generation...")
+  updated_npcs = generate_portraits_for_npcs(npc_data, dialogues_to_pass)
 
-  if npc_data and dialogue_data:
-    updated_npcs = generate_portraits_for_npcs(npc_data, dialogue_data)
-    print("Finished processing NPCs.")
-    if updated_npcs and len(updated_npcs) > 0 and updated_npcs[0].get('portraitImage'):
+  if updated_npcs: # generate_portraits_for_npcs always returns a list
+    print("Finished processing NPCs for portrait generation.")
+    if len(updated_npcs) > 0 and updated_npcs[0].get('portraitImage') and "placeholder" not in updated_npcs[0].get('portraitImage', ''):
         print(f"DEBUG: First NPC's updated portrait path: {updated_npcs[0].get('portraitImage')}")
-    elif updated_npcs and len(updated_npcs) > 0:
-        print(f"DEBUG: First NPC processed, but portraitImage might not have been updated (e.g. API error). Original name: {updated_npcs[0].get('name')}")
+    elif len(updated_npcs) > 0:
+        print(f"DEBUG: First NPC processed. Portrait path: {updated_npcs[0].get('portraitImage', 'Not set')}. Check logs for success/failure.")
 
-  elif not npc_data:
-    print("Could not load NPC data. Skipping portrait generation.")
-  elif not dialogue_data:
-    print("Could not load dialogue data. Skipping portrait generation.")
-
-  if 'updated_npcs' in locals() and updated_npcs:
-    npcs_file_to_save = "../www/data/npcs.json"
     if save_npc_data(npcs_file_to_save, updated_npcs):
       print(f"NPC data with updated portrait paths saved to {npcs_file_to_save}")
     else:
       print(f"Failed to save updated NPC data to {npcs_file_to_save}")
-  elif 'npc_data' in locals() and npc_data and ('dialogue_data' not in locals() or not dialogue_data): # NPC data loaded, but not dialogue
-      print("NPC data was loaded, but dialogue data was not. No portraits generated, so not saving NPC data.")
-  elif project_id and ('npc_data' not in locals() or not npc_data): # Env vars set, but no NPC data
-      print("Project and region configured, but no NPC data loaded. Not saving.")
   else:
-    if not project_id:
-        print("Skipping saving NPC data due to missing GOOGLE_CLOUD_PROJECT variable.")
-    else:
-        print("No updated NPC data to save (e.g., initial data loading might have failed or no NPCs processed).")
+    print("Portrait generation did not return updated NPC data. Not saving.")
 
 def save_npc_data(filepath, npc_data_list):
   """
@@ -263,3 +255,6 @@ def generate_portraits_for_npcs(npcs_data_list, all_dialogues_dict):
     updated_npcs_data_list.append(npc_copy) # Add npc_copy (modified or not)
 
   return updated_npcs_data_list
+
+if __name__ == "__main__":
+  main()
