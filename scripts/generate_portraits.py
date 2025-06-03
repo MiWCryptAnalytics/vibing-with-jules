@@ -138,7 +138,10 @@ def generate_portraits_for_npcs(npcs_data_list, all_dialogues_dict):
   try:
     client = genai.Client()
     # Model name for Gemini Flash image generation, as per the example
-    model_name = "gemini-2.0-flash-preview-image-generation"
+    #model_name = "gemini-2.0-flash-preview-image-generation"
+    #model_name = "gemini-2.0-flash"
+    model_name = "imagen-3.0-fast-generate-001"
+
   except ImportError:
     print("ERROR: The 'google-generativeai' library is not installed. Please install it using 'pip install google-generativeai'.")
     # Return original list if core library is missing
@@ -201,41 +204,25 @@ def generate_portraits_for_npcs(npcs_data_list, all_dialogues_dict):
         print(f"INFO: Generating image for {npc_id} ({npc_name}) with prompt: {prompt_text}")
 
         try:
-            response = client.models.generate_content(
+            response = client.models.generate_images(
                 model=model_name,
-                contents=prompt_text,
-                config=types.GenerateContentConfig(
-                  #response_modalities=['IMAGE'],
-                  safety_settings=[types.SafetySetting(
-                        category=types.HarmCategory.HARM_CATEGORY_HATE_SPEECH,
-                        threshold=types.HarmBlockThreshold.BLOCK_NONE,
-                    ),
-                    types.SafetySetting(
-                        category=types.HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
-                        threshold=types.HarmBlockThreshold.BLOCK_NONE,
-                    ),
-                    types.SafetySetting(
-                        category=types.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
-                        threshold=types.HarmBlockThreshold.BLOCK_NONE,
-                    ),
-                    types.SafetySetting(
-                        category=types.HarmCategory.HARM_CATEGORY_HARASSMENT,
-                        threshold=types.HarmBlockThreshold.BLOCK_NONE
-                    )],
-            ))
+                prompt=prompt_text,
+                config=types.GenerateImagesConfig(
+                  number_of_images=1,
+                  include_rai_reason=True,
+                  output_mime_type='image/jpeg',
+              )
+            )
 
             image_bytes_to_save = None
-            if response.candidates and response.candidates[0].content and response.candidates[0].content.parts:
-                for part in response.candidates[0].content.parts:
-                    if part.inline_data and part.inline_data.mime_type.startswith("image/"):
-                        image_bytes_to_save = part.inline_data.data
-                        break # Found the image
+            if response.generated_images and response.generated_images[0].image:
+                image_bytes_to_save = response.generated_images[0].image.image_bytes
             
             if image_bytes_to_save:
                 try:
                     img = Image.open(BytesIO(image_bytes_to_save))
                     img.save(full_image_path) # PIL infers format from extension, or use format='PNG'
-
+                    
                     with open(full_prompt_path, "w") as f:
                         f.write(prompt_text)
 
