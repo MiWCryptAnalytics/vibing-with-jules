@@ -6,7 +6,8 @@
   "scripts": {
     "start": "wds --node-resolve --open www/index.html --watch",
     "localize:extract": "lit-localize extract --config www/lit-localize.json",
-    "localize:build": "lit-localize build --config www/lit-localize.json"
+    "localize:build": "lit-localize build --config www/lit-localize.json",
+    "generate-portraits": "python3 scripts/generate_portraits.py"
   },
   "dependencies": {
     "@material/web": "^1.0.0",
