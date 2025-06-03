@@ -6,7 +6,8 @@
     "icon": "person",
     "defaultLocationId": "tortuga_town",
     "portraitImage": "../www/assets/images/portraits/one_eyed_jack_portrait.png",
-    "alignment": "neutral"
+    "alignment": "neutral",
+    "position": { "x": "20%", "y": "50%" }
   },
   {
     "id": "npc_mysterious_woman",
@@ -15,7 +16,8 @@
     "icon": "face_3",
     "defaultLocationId": "hidden_lagoon",
     "portraitImage": "../www/assets/images/portraits/mysterious_woman_portrait.png",
-    "alignment": "neutral"
+    "alignment": "neutral",
+    "position": { "x": "75%", "y": "30%" }
   },
   {
     "id": "npc_shady_merchant",
@@ -24,7 +26,8 @@
     "icon": "store",
     "defaultLocationId": "port_royal_market",
     "portraitImage": "../www/assets/images/portraits/shady_merchant_portrait.png",
-    "alignment": "neutral"
+    "alignment": "neutral",
+    "position": { "x": "50%", "y": "50%" }
   },
   {
     "id": "npc_kraken_abyss",
@@ -33,7 +36,8 @@
     "icon": "person_pin",
     "defaultLocationId": "kraken_abyss",
     "portraitImage": "../www/assets/images/portraits/placeholder_npc_1.png",
-    "alignment": "neutral"
+    "alignment": "neutral",
+    "position": { "x": "60%", "y": "70%" }
   },
   {
     "id": "npc_cursed_galleon_graveyard",
@@ -42,7 +46,8 @@
     "icon": "person_pin",
     "defaultLocationId": "cursed_galleon_graveyard",
     "portraitImage": "../www/assets/images/portraits/placeholder_npc_2.png",
-    "alignment": "neutral"
+    "alignment": "neutral",
+    "position": { "x": "30%", "y": "40%" }
   },
   {
     "id": "npc_mermaid_rock",
@@ -51,7 +56,8 @@
     "icon": "person_pin",
     "defaultLocationId": "mermaid_rock",
     "portraitImage": "../www/assets/images/portraits/placeholder_npc_3.png",
-    "alignment": "neutral"
+    "alignment": "neutral",
+    "position": { "x": "80%", "y": "80%" }
   },
   {
     "id": "npc_blackbeards_hidden_cache",
@@ -60,7 +66,8 @@
     "icon": "person_pin",
     "defaultLocationId": "blackbeards_hidden_cache",
     "portraitImage": "../www/assets/images/portraits/placeholder_npc_4.png",
-    "alignment": "neutral"
+    "alignment": "neutral",
+    "position": { "x": "45%", "y": "55%" }
   },
   {
     "id": "npc_stormy_cape_of_no_return",
@@ -69,7 +76,8 @@
     "icon": "person_pin",
     "defaultLocationId": "stormy_cape_of_no_return",
     "portraitImage": "../www/assets/images/portraits/placeholder_npc_5.png",
-    "alignment": "neutral"
+    "alignment": "neutral",
+    "position": { "x": "25%", "y": "65%" }
   },
   {
     "id": "npc_davy_jones_locker_entrance",
@@ -78,7 +86,8 @@
     "icon": "person_pin",
     "defaultLocationId": "davy_jones_locker_entrance",
     "portraitImage": "../www/assets/images/portraits/placeholder_npc_6.png",
-    "alignment": "neutral"
+    "alignment": "neutral",
+    "position": { "x": "50%", "y": "20%" }
   },
   {
     "id": "npc_cannibal_island",
@@ -87,7 +96,8 @@
     "icon": "person_pin",
     "defaultLocationId": "cannibal_island",
     "portraitImage": "../www/assets/images/portraits/placeholder_npc_7.png",
-    "alignment": "neutral"
+    "alignment": "neutral",
+    "position": { "x": "70%", "y": "75%" }
   },
   {
     "id": "npc_smugglers_secret_strait",
@@ -96,7 +106,8 @@
     "icon": "person_pin",
     "defaultLocationId": "smugglers_secret_strait",
     "portraitImage": "../www/assets/images/portraits/placeholder_npc_8.png",
-    "alignment": "neutral"
+    "alignment": "neutral",
+    "position": { "x": "15%", "y": "85%" }
   },
   {
     "id": "npc_treasure_fleet_wreckage_site",
@@ -105,7 +116,8 @@
     "icon": "person_pin",
     "defaultLocationId": "treasure_fleet_wreckage_site",
     "portraitImage": "../www/assets/images/portraits/placeholder_npc_9.png",
-    "alignment": "neutral"
+    "alignment": "neutral",
+    "position": { "x": "65%", "y": "35%" }
   },
   {
     "id": "npc_fort_caroline_ruins",
@@ -114,7 +126,8 @@
     "icon": "person_pin",
     "defaultLocationId": "fort_caroline_ruins",
     "portraitImage": "../www/assets/images/portraits/placeholder_npc_10.png",
-    "alignment": "neutral"
+    "alignment": "neutral",
+    "position": { "x": "40%", "y": "25%" }
   },
   {
     "id": "npc_ship_trap_island",
@@ -123,7 +136,8 @@
     "icon": "person_pin",
     "defaultLocationId": "ship_trap_island",
     "portraitImage": "../www/assets/images/portraits/placeholder_npc_11.png",
-    "alignment": "neutral"
+    "alignment": "neutral",
+    "position": { "x": "55%", "y": "45%" }
   },
   {
     "id": "npc_marooners_rock",
@@ -132,7 +146,8 @@
     "icon": "person_pin",
     "defaultLocationId": "marooners_rock",
     "portraitImage": "../www/assets/images/portraits/placeholder_npc_12.png",
-    "alignment": "neutral"
+    "alignment": "neutral",
+    "position": { "x": "20%", "y": "70%" }
   },
   {
     "id": "npc_the_leviathans_ribcage",
@@ -141,7 +156,8 @@
     "icon": "person_pin",
     "defaultLocationId": "the_leviathans_ribcage",
     "portraitImage": "../www/assets/images/portraits/placeholder_npc_13.png",
-    "alignment": "neutral"
+    "alignment": "neutral",
+    "position": { "x": "80%", "y": "15%" }
   },
   {
     "id": "npc_coral_reef_labyrinth",
@@ -150,7 +166,8 @@
     "icon": "person_pin",
     "defaultLocationId": "coral_reef_labyrinth",
     "portraitImage": "../www/assets/images/portraits/placeholder_npc_14.png",
-    "alignment": "neutral"
+    "alignment": "neutral",
+    "position": { "x": "35%", "y": "80%" }
   },
   {
     "id": "npc_skeleton_key_islet",
@@ -159,7 +176,8 @@
     "icon": "person_pin",
     "defaultLocationId": "skeleton_key_islet",
     "portraitImage": "../www/assets/images/portraits/placeholder_npc_15.png",
-    "alignment": "neutral"
+    "alignment": "neutral",
+    "position": { "x": "60%", "y": "10%" }
   },
   {
     "id": "npc_the_barnacle_bank",
@@ -168,7 +186,8 @@
     "icon": "person_pin",
     "defaultLocationId": "the_barnacle_bank",
     "portraitImage": "../www/assets/images/portraits/placeholder_npc_16.png",
-    "alignment": "neutral"
+    "alignment": "neutral",
+    "position": { "x": "40%", "y": "60%" }
   },
   {
     "id": "npc_ghost_ship_anchorage",
@@ -177,7 +196,8 @@
     "icon": "person_pin",
     "defaultLocationId": "ghost_ship_anchorage",
     "portraitImage": "../www/assets/images/portraits/placeholder_npc_17.png",
-    "alignment": "neutral"
+    "alignment": "neutral",
+    "position": { "x": "70%", "y": "20%" }
   },
   {
     "id": "npc_sea_serpents_pass",
@@ -186,7 +206,8 @@
     "icon": "person_pin",
     "defaultLocationId": "sea_serpents_pass",
     "portraitImage": "../www/assets/images/portraits/placeholder_npc_18.png",
-    "alignment": "neutral"
+    "alignment": "neutral",
+    "position": { "x": "25%", "y": "30%" }
   },
   {
     "id": "npc_dead_mans_chest_island",
@@ -195,7 +216,8 @@
     "icon": "person_pin",
     "defaultLocationId": "dead_mans_chest_island",
     "portraitImage": "../www/assets/images/portraits/placeholder_npc_19.png",
-    "alignment": "neutral"
+    "alignment": "neutral",
+    "position": { "x": "55%", "y": "75%" }
   },
   {
     "id": "npc_rum_runners_rendezvous",
@@ -204,7 +226,8 @@
     "icon": "person_pin",
     "defaultLocationId": "rum_runners_rendezvous",
     "portraitImage": "../www/assets/images/portraits/placeholder_npc_20.png",
-    "alignment": "neutral"
+    "alignment": "neutral",
+    "position": { "x": "10%", "y": "50%" }
   },
   {
     "id": "npc_spyglass_hill",
@@ -213,7 +236,8 @@
     "icon": "person_pin",
     "defaultLocationId": "spyglass_hill",
     "portraitImage": "../www/assets/images/portraits/placeholder_npc_21.png",
-    "alignment": "neutral"
+    "alignment": "neutral",
+    "position": { "x": "85%", "y": "40%" }
   },
   {
     "id": "npc_mutineers_gallows",
@@ -222,7 +246,8 @@
     "icon": "person_pin",
     "defaultLocationId": "mutineers_gallows",
     "portraitImage": "../www/assets/images/portraits/placeholder_npc_22.png",
-    "alignment": "neutral"
+    "alignment": "neutral",
+    "position": { "x": "30%", "y": "90%" }
   },
   {
     "id": "npc_buried_doubloon_beach",
@@ -231,7 +256,8 @@
     "icon": "person_pin",
     "defaultLocationId": "buried_doubloon_beach",
     "portraitImage": "../www/assets/images/portraits/placeholder_npc_23.png",
-    "alignment": "neutral"
+    "alignment": "neutral",
+    "position": { "x": "65%", "y": "5%" }
   },
   {
     "id": "npc_captains_quarrel_cove",
@@ -240,7 +266,8 @@
     "icon": "person_pin",
     "defaultLocationId": "captains_quarrel_cove",
     "portraitImage": "../www/assets/images/portraits/placeholder_npc_24.png",
-    "alignment": "neutral"
+    "alignment": "neutral",
+    "position": { "x": "50%", "y": "65%" }
   },
   {
     "id": "npc_wandering_bard",
@@ -248,7 +275,8 @@
     "description": "A cheerful bard strumming lively shanties, always ready with an encouraging word or a tale of heroism.",
     "icon": "music_note",
     "portraitImage": "../www/assets/images/portraits/placeholder_random_npc_1.png",
-    "alignment": "good"
+    "alignment": "good",
+    "position": { "x": "50%", "y": "50%" }
   },
   {
     "id": "npc_shipwrecked_sailor",
@@ -256,7 +284,8 @@
     "description": "A grateful sailor rescued from a deserted island, eager to repay your kindness.",
     "icon": "person_pin",
     "portraitImage": "../www/assets/images/portraits/placeholder_random_npc_2.png",
-    "alignment": "good"
+    "alignment": "good",
+    "position": { "x": "40%", "y": "60%" }
   },
   {
     "id": "npc_helpful_islander",
@@ -264,7 +293,8 @@
     "description": "A native islander offering guidance or a rare fruit, asking for nothing in return.",
     "icon": "emoji_people",
     "portraitImage": "../www/assets/images/portraits/placeholder_random_npc_3.png",
-    "alignment": "good"
+    "alignment": "good",
+    "position": { "x": "60%", "y": "40%" }
   },
   {
     "id": "npc_retired_naval_officer",
@@ -272,7 +302,8 @@
     "description": "An old, honorable naval officer who shares wisdom about the seas and despises pirates but respects courage.",
     "icon": "military_tech",
     "portraitImage": "../www/assets/images/portraits/placeholder_random_npc_4.png",
-    "alignment": "good"
+    "alignment": "good",
+    "position": { "x": "55%", "y": "45%" }
   },
   {
     "id": "npc_traveling_merchant",
@@ -280,7 +311,8 @@
     "description": "A pragmatic merchant sailing a small sloop, offering common goods at fair prices.",
     "icon": "store",
     "portraitImage": "../www/assets/images/portraits/placeholder_random_npc_5.png",
-    "alignment": "neutral"
+    "alignment": "neutral",
+    "position": { "x": "45%", "y": "55%" }
   },
   {
     "id": "npc_hermit_crab_collector",
@@ -288,7 +320,8 @@
     "description": "An eccentric individual obsessed with collecting rare hermit crab shells, willing to trade information for unique finds.",
     "icon": "bug_report",
     "portraitImage": "../www/assets/images/portraits/placeholder_random_npc_6.png",
-    "alignment": "neutral"
+    "alignment": "neutral",
+    "position": { "x": "30%", "y": "70%" }
   },
   {
     "id": "npc_castaway_cartographer",
@@ -296,7 +329,8 @@
     "description": "A cartographer who claims to have lost his valuable maps, seeking passage to any port.",
     "icon": "map",
     "portraitImage": "../www/assets/images/portraits/placeholder_random_npc_7.png",
-    "alignment": "neutral"
+    "alignment": "neutral",
+    "position": { "x": "70%", "y": "30%" }
   },
   {
     "id": "npc_superstitious_fisherman",
@@ -304,7 +338,8 @@
     "description": "A fisherman guided by omens and rituals, wary of strangers but knowledgeable about local waters.",
     "icon": "phishing",
     "portraitImage": "../www/assets/images/portraits/placeholder_random_npc_8.png",
-    "alignment": "neutral"
+    "alignment": "neutral",
+    "position": { "x": "20%", "y": "80%" }
   },
   {
     "id": "npc_cutthroat_buccaneer",
@@ -312,7 +347,8 @@
     "description": "A menacing pirate spoiling for a fight, demanding tribute or your life.",
     "icon": "sports_kabaddi",
     "portraitImage": "../www/assets/images/portraits/placeholder_random_npc_9.png",
-    "alignment": "evil"
+    "alignment": "evil",
+    "position": { "x": "80%", "y": "20%" }
   },
   {
     "id": "npc_deceptive_siren",
@@ -320,7 +356,8 @@
     "description": "A beautiful creature whose enchanting song lures sailors to their doom, or at least to part with their gold.",
     "icon": "voice_over_record",
     "portraitImage": "../www/assets/images/portraits/placeholder_random_npc_10.png",
-    "alignment": "evil"
+    "alignment": "evil",
+    "position": { "x": "75%", "y": "75%" }
   },
   {
     "id": "npc_cursed_treasure_guardian",
@@ -328,7 +365,8 @@
     "description": "A spectral guardian bound to a cursed treasure, attacking anyone who comes near.",
     "icon": "ghost",
     "portraitImage": "../www/assets/images/portraits/placeholder_random_npc_11.png",
-    "alignment": "evil"
+    "alignment": "evil",
+    "position": { "x": "25%", "y": "25%" }
   },
   {
     "id": "npc_ruthless_slave_trader",
@@ -336,6 +374,7 @@
     "description": "A vile individual looking to capture unsuspecting sailors for a quick profit.",
     "icon": "money_off",
     "portraitImage": "../www/assets/images/portraits/placeholder_random_npc_12.png",
-    "alignment": "evil"
+    "alignment": "evil",
+    "position": { "x": "60%", "y": "60%" }
   }
 ]

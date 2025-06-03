@@ -58,6 +58,28 @@ class GameInterfaceView extends LitElement {
       color: #FDF5E6; /* cream */
       text-shadow: 1px 1px 2px #3C2F2F; /* dark brown shadow */
     }
+    .in-scene-npc {
+      position: absolute;
+      width: 55px; 
+      height: 55px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+      border: 2px dashed #FFD700; /* Dashed gold border */
+      border-radius: 50%; /* Circular shape */
+      background-color: rgba(0, 0, 0, 0.15); /* Subtle dark background */
+    }
+    .in-scene-npc:hover {
+      transform: scale(1.15);
+      box-shadow: 0 0 12px #FFD700; /* Gold glow */
+    }
+    .in-scene-npc md-icon {
+      font-size: 38px; 
+      color: #FDF5E6; /* Cream icon color */
+      text-shadow: 1px 1px 2px #3C2F2F; /* Dark brown shadow */
+    }
     .actions-panel {
       position: absolute;
       bottom: 20px;
@@ -450,9 +472,11 @@ class GameInterfaceView extends LitElement {
 
     let contentHtml;
     let npcListHtml = html``;
+    let inSceneNpcsHtml = html``; // For NPCs rendered directly in the scene
 
     // Render NPCs if present
     if (this.locationData && this.locationData.npcIds && this.locationData.npcIds.length > 0 && this.allNpcs.size > 0) {
+      // This is the existing NPC list, potentially for a side panel or market view
       npcListHtml = html`
         <div class="npc-list">
           <h4>${msg('People Here', {id: 'npc-list-header'})}:</h4>
@@ -467,6 +491,26 @@ class GameInterfaceView extends LitElement {
           })}
         </div>
       `;
+
+      // New logic for rendering NPCs directly in the scene
+      if (!this.locationData.isMarket) { // Only render in-scene if not a market view
+        inSceneNpcsHtml = html`
+          ${this.locationData.npcIds.map(npcId => {
+            const npc = this.allNpcs.get(npcId);
+            if (npc && npc.position && npc.position.x && npc.position.y) {
+              return html`
+                <div class="in-scene-npc"
+                     style="left: ${npc.position.x}; top: ${npc.position.y};"
+                     title="${npc.name}"
+                     @click=${() => this._handleNpcClick(npc.id)}>
+                  <md-icon>${npc.icon || 'person'}</md-icon>
+                </div>
+              `;
+            }
+            return '';
+          })}
+        `;
+      }
     }
 
     if (this.locationData.isMarket) {
@@ -502,7 +546,8 @@ class GameInterfaceView extends LitElement {
       `;
     } else { // Not a market, render hidden objects and NPCs
       contentHtml = html`
-        ${npcListHtml}
+        ${npcListHtml} {/* This is the existing list, could be removed or kept depending on final UI */}
+        
         ${this.locationData.hiddenObjects?.map(objInLocation => {
           let itemDetails = null;
           let displayId = objInLocation.id; 
@@ -552,6 +597,7 @@ class GameInterfaceView extends LitElement {
           }
           return ''; 
         })}
+        ${inSceneNpcsHtml} {/* Add new in-scene NPCs here, after hidden objects */}
       `;
     }
 
