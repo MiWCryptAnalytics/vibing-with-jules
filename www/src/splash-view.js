@@ -5,21 +5,41 @@ class SplashView extends LitElement {
   static styles = css`
     :host {
       text-align: center;
+      /* Conceptual: background-image: url('assets/images/theme/splash_bg.png'); */
     }
     h1 {
-      font-size: 2.5em;
-      margin-bottom: 0.5em;
+      /* Inherits 'PirateFont', cursive and color: #2F1E1E from global */
+      font-size: 3.5em; /* Larger */
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+      margin-bottom: 0.5em; /* Keep */
     }
     p {
-      font-size: 1.2em;
+      /* Inherits 'MainTextFont', serif and color: #3C2F2F from global */
+      font-size: 1.2em; /* Keep */
     }
     a {
-      display: inline-block;
-      margin-top: 20px;
-      padding: 10px 20px;
-      /* Style inherited from global style.css but can be specific here */
-      text-decoration: none;
-      font-weight: bold;
+      display: inline-block; /* Keep */
+      margin-top: 20px; /* Keep */
+      padding: 15px 30px; /* Updated */
+      /* Inherits font-weight: bold and text-decoration: none from global 'a' */
+      background-color: #7A5C5C; /* medium brown */
+      color: #FDF5E6 !important; /* cream text, important to override global link color */
+      border: 2px solid #2F1E1E; /* darker brown border */
+      box-shadow: 3px 3px 5px rgba(0,0,0,0.3);
+      border-radius: 0; /* Ensure no rounded corners if any were inherited */
+      transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out, transform 0.1s ease-in-out, box-shadow 0.2s ease-in-out;
+    }
+    a:hover {
+      background-color: #2F1E1E; /* darker brown */
+      color: #FDF5E6 !important; /* cream text */
+      border-color: #000; /* black border on hover */
+      text-decoration: none; /* Keep no underline for button feel */
+      transform: translateY(-2px); /* Lifts the button slightly */
+      box-shadow: 5px 5px 7px rgba(0,0,0,0.4); /* Slightly larger shadow */
+    }
+    a:active {
+      transform: translateY(1px); /* Simulates being pressed down */
+      box-shadow: 2px 2px 3px rgba(0,0,0,0.3); /* Smaller shadow */
     }
   `;
 

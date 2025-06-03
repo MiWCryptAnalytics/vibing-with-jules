@@ -14,49 +14,60 @@ class AppShell extends LitElement {
   static styles = css`
   :host {
     display: block;
-    font-family: sans-serif; /* Moved from body style.css for component encapsulation */
+    /* font-family is now inherited from body global style */
   }
 
   .top-nav {
-    background-color: #333;
+    background-color: #3C2F2F; /* dark brown fallback */
+    background-image: url('assets/images/theme/wood_texture.png'); /* Placeholder */
     padding: 10px 0;
     display: flex;
     justify-content: center; /* Center links horizontally */
     position: sticky; /* Make it sticky to the top */
     top: 0;
     z-index: 1000; /* Ensure it's above other content */
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* Keep shadow for depth */
+    border-bottom: 2px solid #2F1E1E; /* Darker brown plank edge */
   }
 
   .top-nav a {
-    color: white;
-    padding: 10px 15px;
+    color: #FDF5E6; /* cream */
+    font-family: 'PirateFont', cursive; /* Thematic display font */
+    padding: 10px 20px; /* Adjusted padding */
     text-decoration: none;
-    margin: 0 5px;
-    border-radius: 4px;
-    transition: background-color 0.3s;
+    margin: 0; /* Remove margin if using borders as dividers */
+    border-right: 1px solid #2F1E1E; /* Darkest brown divider */
+    text-shadow: 1px 1px 1px rgba(0,0,0,0.7); /* Subtle depth */
+    transition: background-color 0.3s, text-shadow 0.3s;
+  }
+
+  .top-nav a:last-child {
+    border-right: none; /* Remove divider from last item */
   }
 
   .top-nav a:hover,
-  .top-nav a.active { /* We can add 'active' class later if needed */
-    background-color: #555;
+  .top-nav a.active {
+    background-color: #7A5C5C; /* medium brown */
+    color: #FDF5E6; /* Ensure text color remains cream for contrast */
+    text-shadow: 1px 1px 2px rgba(255,255,255,0.3); /* Pop text on hover/active */
   }
 
   .app-header {
-    background-color: #f0f0f0; /* Light background for header */
+    background-color: transparent; /* Let global body background show */
     padding: 15px;
     text-align: center;
-    border-bottom: 1px solid #ddd;
+    /* border-bottom: 1px solid #ddd; */ /* Removed, can be thematic border later */
   }
 
   .app-header h1 {
     margin: 0;
     font-size: 1.8em;
+    /* font-family and color will be inherited from global h1 styles */
   }
 
   .app-header p { /* For the 'Current View' debug message */
-    font-size: 0.8em;
-    color: #666;
+    font-size: 0.8em; /* Keep or adjust as needed */
+    color: #7A5C5C; /* medium brown, less obtrusive */
     margin: 5px 0 0;
   }
 
@@ -65,24 +76,22 @@ class AppShell extends LitElement {
   }
 
   .view-container {
-    /* Original styles from app-shell were:
-    border: 1px solid #ccc;
+    border: 2px solid #7A5C5C; /* medium brown, thicker */
+    /* border-image-source: url('assets/images/theme/ornate_frame.png'); */ /* Conceptual for future */
+    /* border-image-slice: 10; */
+    /* border-image-width: 10px; */
+    /* border-image-repeat: round; */
     padding: 16px;
-    margin-top: 16px;
-    We can keep these or adjust them. Let's remove margin-top as main-content has padding.
-    */
-    border: 1px solid #ccc;
-    padding: 16px;
-    background-color: #fff; /* Ensure view container has a background */
+    background-color: rgba(253, 245, 230, 0.8); /* semi-transparent cream */
   }
 
   .app-footer {
     text-align: center;
     padding: 15px;
-    background-color: #f0f0f0; /* Match header */
-    border-top: 1px solid #ddd;
-    font-size: 0.9em;
-    color: #555;
+    background-color: transparent; /* Let global body background show */
+    /* border-top: 1px solid #ddd; */ /* Removed */
+    font-size: 0.9em; /* Keep or adjust as needed */
+    color: #3C2F2F; /* dark brown */
   }
 `;
 

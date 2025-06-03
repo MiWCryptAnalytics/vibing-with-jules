@@ -21,27 +21,26 @@ class GameInterfaceView extends LitElement {
       background-position: center;
       position: relative; /* For positioning hidden objects */
       overflow: hidden;
-      border: 1px solid #444; /* Optional border for the viewport */
-      box-shadow: inset 0 0 30px rgba(0,0,0,0.5); /* Inner shadow for depth */
+      border: 3px solid #3C2F2F; /* dark brown */
+      box-shadow: inset 0 0 30px rgba(0,0,0,0.5); /* Inner shadow for depth - Keep */
     }
     .location-title {
       position: absolute;
       top: 10px;
       left: 50%;
       transform: translateX(-50%);
-      background-color: rgba(0, 0, 0, 0.7);
-      color: white;
-      padding: 8px 15px;
-      border-radius: 4px;
-      font-size: 1.2em;
+      background-color: #3C2F2F; /* dark brown */
+      color: #FDF5E6; /* cream text */
+      padding: 10px 20px; /* Adjusted */
+      border-radius: 0px; /* Removed radius */
+      font-family: 'PirateFont', cursive; /* Placeholder */
+      font-size: 1.4em; /* Adjusted */
       z-index: 10;
     }
     .hidden-object {
       position: absolute;
       width: 50px; /* Adjust size as needed */
       height: 50px; /* Adjust size as needed */
-      /* background-color: rgba(255, 255, 0, 0.3); Semi-transparent highlight */
-      /* border: 1px dashed yellow; */
       cursor: pointer;
       display: flex;
       align-items: center;
@@ -51,35 +50,45 @@ class GameInterfaceView extends LitElement {
     .hidden-object:hover {
       transform: scale(1.1);
     }
+    .hidden-object:active {
+      transform: scale(1); /* Slight press feedback */
+    }
     .hidden-object md-icon {
-      font-size: 36px; /* Make icon larger */
-      color: rgba(255, 255, 255, 0.7); /* Make it slightly transparent */
-      text-shadow: 0 0 5px black; /* Add shadow for visibility */
+      font-size: 36px; /* Keep */
+      color: #FDF5E6; /* cream */
+      text-shadow: 1px 1px 2px #3C2F2F; /* dark brown shadow */
     }
     .actions-panel {
       position: absolute;
       bottom: 20px;
       left: 50%;
       transform: translateX(-50%);
-      background-color: rgba(0, 0, 0, 0.75);
-      padding: 10px;
-      border-radius: 8px;
+      background-color: rgba(60, 47, 47, 0.85); /* slightly transparent dark brown */
+      padding: 15px; /* Adjusted */
+      border-radius: 3px; /* Slight curve */
       display: flex;
       gap: 10px;
       z-index: 10;
     }
-    .actions-panel md-filled-button {
-      /* Custom styles for buttons if needed */
+    /* General md-filled-button styling for this view */
+    md-filled-button {
+      --md-filled-button-container-color: #7A5C5C; /* medium brown */
+      --md-filled-button-label-text-color: #FDF5E6; /* cream */
+      --md-filled-button-hover-container-color: #2F1E1E; /* darker brown */
+      --md-filled-button-pressed-container-color: #1A1111; /* even darker */
+      --md-filled-button-container-shape: 0px; /* no rounded corners */
+      --md-filled-button-label-text-font: 'MainTextFont', serif; /* Placeholder */
     }
     .found-message {
       position: absolute;
       top: 20%;
       left: 50%;
       transform: translate(-50%, -50%);
-      background-color: rgba(30, 150, 30, 0.9);
-      color: white;
+      background-color: #7A5C5C; /* medium brown */
+      color: #FDF5E6; /* cream text */
       padding: 15px 25px;
-      border-radius: 8px;
+      border-radius: 0px; /* Removed radius */
+      border: 1px solid #2F1E1E; /* darker brown border */
       font-size: 1.1em;
       z-index: 20;
       box-shadow: 0 2px 10px rgba(0,0,0,0.3);
@@ -587,15 +596,21 @@ customElements.define('game-interface-view', GameInterfaceView);
 /* Styles for Market, NPCs, and Dialogue */
 GameInterfaceView.styles = [GameInterfaceView.styles, css`
   .market-interface {
-    padding-top: 10px; /* Adjusted padding */
-    height: calc(100% - 100px); /* Adjust based on title and action panel */
+    padding-top: 10px; 
+    height: calc(100% - 100px); 
     overflow-y: auto;
   }
   .market-list {
     max-width: 700px;
     margin: 0 auto;
-    background-color: rgba(255, 255, 255, 0.9); 
-    border-radius: 8px;
+    background-color: rgba(253, 245, 230, 0.9); /* semi-transparent cream/parchment */
+    border-radius: 3px; /* Slight curve */
+  }
+  /* Targeting md-list-item within market for theme */
+  .market-list md-list-item {
+    --md-list-item-label-text-color: #3C2F2F;
+    --md-list-item-supporting-text-color: #7A5C5C;
+    --md-list-item-leading-icon-color: #3C2F2F;
   }
   .tradable-good .trade-actions {
     display: flex;
@@ -605,39 +620,53 @@ GameInterfaceView.styles = [GameInterfaceView.styles, css`
   }
   .tradable-good .price-tag {
     font-size: 0.9em;
-    color: #333;
+    color: #2F1E1E; /* darker brown */
+    font-family: 'MainTextFont', serif; /* Placeholder */
   }
   .tradable-good md-filled-button {
-    --md-filled-button-container-height: 36px;
+    /* Should pick up general md-filled-button styles */
+    --md-filled-button-container-height: 36px; /* Keep specific height if needed */
   }
 
   .npc-list {
-    background-color: rgba(0,0,0,0.1);
+    background-color: rgba(60, 47, 47, 0.15); /* very transparent dark brown */
     padding: 8px;
-    margin: 50px auto 10px auto; /* Below title, before other content */
+    margin: 50px auto 10px auto; 
     max-width: 700px;
-    border-radius: 4px;
+    border-radius: 3px; /* Slight curve */
   }
   .npc-list h4 {
     margin: 0 0 5px 0;
-    color: white;
+    color: #FDF5E6; /* cream text */
+    font-family: 'PirateFont', cursive; /* Placeholder */
     font-size: 0.9em;
   }
   .npc-presence {
-    display: inline-flex; /* Changed to inline-flex */
+    display: inline-flex; 
     align-items: center;
-    background-color: rgba(255, 255, 255, 0.8);
+    background-color: #E0D8C9; /* darker parchment */
+    color: #3C2F2F; /* dark brown text */
+    border: 1px solid #7A5C5C; /* medium brown border */
     padding: 5px 10px;
-    margin: 5px; /* Added margin for spacing between NPCs */
-    border-radius: 16px;
+    margin: 5px; 
+    border-radius: 16px; /* Keep rounded for 'tag' feel */
     cursor: pointer;
     box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    font-family: 'MainTextFont', serif; /* Placeholder */
+    transition: background-color 0.2s ease-in-out, transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
   }
   .npc-presence:hover {
-    background-color: white;
+    background-color: #FDF5E6; /* lighter parchment */
+    transform: translateY(-2px) scale(1.03);
+    box-shadow: 0 3px 6px rgba(0,0,0,0.2); /* Enhanced shadow */
+  }
+  .npc-presence:active {
+    transform: translateY(0px) scale(1);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.2); /* Reset shadow */
   }
   .npc-presence md-icon {
     margin-right: 8px;
+    color: #3C2F2F; /* dark brown */
   }
 
   .dialogue-overlay {
@@ -646,39 +675,44 @@ GameInterfaceView.styles = [GameInterfaceView.styles, css`
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.6);
+    background-color: rgba(0, 0, 0, 0.7); /* Darken overlay slightly */
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 100; /* Ensure it's above other UI elements */
+    z-index: 100; 
   }
   .dialogue-panel {
-    background-color: white;
+    background-color: #FDF5E6; /* parchment */
+    /* Conceptual: background-image: url('assets/images/theme/parchment_texture_dialogue.png'); */
     padding: 20px;
-    border-radius: 8px;
+    border: 2px solid #3C2F2F; /* dark brown */
+    border-radius: 3px; /* Slight curve */
     box-shadow: 0 5px 15px rgba(0,0,0,0.3);
     width: 80%;
     max-width: 500px;
     text-align: left;
   }
   .npc-name-dialogue {
-    font-weight: bold;
+    font-family: 'PirateFont', cursive; /* Placeholder */
+    font-weight: bold; /* Keep if desired with pirate font */
     margin-bottom: 10px;
     font-size: 1.1em;
-    color: #333;
+    color: #2F1E1E; /* darkest brown */
   }
   .npc-text {
     margin-bottom: 15px;
     line-height: 1.6;
-    color: #555;
+    font-family: 'MainTextFont', serif; /* Placeholder */
+    color: #3C2F2F; /* dark brown */
   }
   .player-choices {
     display: flex;
     flex-direction: column;
     gap: 10px;
   }
-  .player-choice-button {
-    width: 100%; /* Make buttons full width of panel */
-     --md-filled-button-container-color: #4a5568; /* A darker, more neutral color */
+  .player-choice-button { /* Targets md-filled-button used for player choices */
+    width: 100%; 
+    /* Inherits general md-filled-button styles. Specific overrides if needed: */
+    /* e.g. --md-filled-button-container-color: #5C3D3D; */
   }
 `];

@@ -1,18 +1,24 @@
 body {
-    font-family: sans-serif;
+    font-family: 'MainTextFont', serif;
     margin: 0;
     padding: 20px;
     line-height: 1.6;
+    background-color: #FDF5E6; /* cream/parchment */
+    background-image: url('assets/images/theme/parchment_bg.png');
+    color: #3C2F2F; /* dark brown */
 }
 
 h1, h2, h3, h4, h5, h6 {
     margin-bottom: 0.5em;
     font-weight: bold;
+    font-family: 'PirateFont', cursive;
+    color: #2F1E1E; /* slightly darker brown */
 }
 
 a {
-    color: #007bff;
+    color: #0A2F51; /* dark blue */
     text-decoration: none;
+    font-weight: bold;
 }
 
 a:hover {
@@ -30,54 +36,30 @@ ul {
 }
 
 ul li {
-    margin-bottom: 10px;
+    margin-bottom: 10px; /* This might be adjusted per component later */
 }
 
 ul li a {
     display: block;
     padding: 10px 15px;
-    background-color: #f0f0f0;
-    border-radius: 5px;
+    background-color: transparent;
+    border: 1px solid #7A5C5C; /* medium brown border */
+    color: #3C2F2F; /* dark brown text */
+    border-radius: 0; /* remove rounded corners */
 }
 
 ul li a:hover {
-    background-color: #e0e0e0;
+    background-color: #7A5C5C; /* medium brown background */
+    color: #FDF5E6; /* cream text */
+    border-color: #2F1E1E; /* darker brown border */
 }
 
-/* Light Theme (Default) */
-.theme-light {
-    background-color: #ffffff;
-    color: #333333;
-}
-
-.theme-light a {
-    color: #0056b3; /* Slightly darker blue for better contrast on white */
-}
-
-.theme-light ul li a {
-    background-color: #e9ecef; /* Lighter grey for light theme menu items */
-    color: #333333;
-}
-
-.theme-light ul li a:hover {
-    background-color: #ced4da;
-}
-
-/* Dark Theme */
-.theme-dark {
-    background-color: #333333;
-    color: #ffffff;
-}
-
-.theme-dark a {
-    color: #80bfff; /* Lighter blue for dark theme */
-}
-
-.theme-dark ul li a {
-    background-color: #555555; /* Darker grey for dark theme menu items */
-    color: #ffffff;
-}
-
-.theme-dark ul li a:hover {
-    background-color: #777777;
+hr {
+    border: 0;
+    height: 2px;
+    background-image: url('assets/images/theme/rope_border_horizontal.png'); /* Placeholder */
+    background-repeat: repeat-x;
+    margin: 20px 0;
+    /* Fallback for when image is not available */
+    /* border-top: 2px dashed #7A5C5C; */
 }
