@@ -3,6 +3,7 @@ import { msg, updateWhenLocaleChanges } from '@lit/localize';
 import '@material/web/iconbutton/icon-button.js';
 import '@material/web/icon/icon.js';
 import '@material/web/button/filled-button.js';
+import './npc-dialog-overlay.js'; // Import the new component
 
 class GameInterfaceView extends LitElement {
   static styles = css`
@@ -60,7 +61,7 @@ class GameInterfaceView extends LitElement {
     }
     .in-scene-npc {
       position: absolute;
-      width: 55px; 
+      width: 55px;
       height: 55px;
       cursor: pointer;
       display: flex;
@@ -76,7 +77,7 @@ class GameInterfaceView extends LitElement {
       box-shadow: 0 0 12px #FFD700; /* Gold glow */
     }
     .in-scene-npc md-icon {
-      font-size: 38px; 
+      font-size: 38px;
       color: #FDF5E6; /* Cream icon color */
       text-shadow: 1px 1px 2px #3C2F2F; /* Dark brown shadow */
     }
@@ -136,7 +137,7 @@ class GameInterfaceView extends LitElement {
     this.locationData = null;
     this.playerInventory = [];
     this.playerResources = { gold: 0, silver: 0, rum: 0 };
-    this.allItems = new Map(); 
+    this.allItems = new Map();
     this.allNpcs = new Map();      // Initialize allNpcs
     this.allDialogues = {};    // Initialize allDialogues
     this.playerAlignment = "neutral"; // Initialize player alignment
@@ -144,6 +145,18 @@ class GameInterfaceView extends LitElement {
     this._activeDialogueNpcId = null;
     this._currentDialogueNodeId = null;
     this._currentDialogueNode = null;
+  }
+
+  _handlePlayerChoiceEvent(event) {
+    if (event.detail && event.detail.choice) {
+      this._handlePlayerChoice(event.detail.choice);
+    } else {
+      console.warn('GameInterfaceView: player-choice-selected event did not contain choice details.');
+      // If the dialog was dismissed (e.g. scrim click, escape), event.detail.choice might be undefined.
+      // The npc-dialog-overlay's own 'closed' handler already sets its 'open' to false.
+      // Here, we ensure the game state reflects that dialogue has ended.
+      this._endDialogue();
+    }
   }
 
   // Helper to format price object (e.g., { gold: 10 }) into "10 Gold"
@@ -547,7 +560,7 @@ class GameInterfaceView extends LitElement {
     } else { // Not a market, render hidden objects and NPCs
       contentHtml = html`
         ${npcListHtml} {/* This is the existing list, could be removed or kept depending on final UI */}
-        
+
         ${this.locationData.hiddenObjects?.map(objInLocation => {
           let itemDetails = null;
           let displayId = objInLocation.id; 
@@ -602,27 +615,22 @@ class GameInterfaceView extends LitElement {
     }
 
     // Dialogue Panel UI (rendered as an overlay)
-    const dialoguePanelHtml = this._currentDialogueNode ? html`
-      <div class="dialogue-overlay">
-        <div class="dialogue-panel">
-          <div class="npc-name-dialogue">${this.allNpcs.get(this._activeDialogueNpcId)?.name || 'Someone'} says:</div>
-          <p class="npc-text">${this._currentDialogueNode.npcText}</p>
-          <div class="player-choices">
-            ${this._currentDialogueNode.playerChoices.map(choice => html`
-              <md-filled-button class="player-choice-button" @click=${() => this._handlePlayerChoice(choice)}>
-                ${choice.text}
-              </md-filled-button>
-            `)}
-          </div>
-        </div>
-      </div>
-    ` : '';
+    // const oldDialoguePanelHtml = this._currentDialogueNode ? html` ... ` : ''; // Old logic removed
 
     return html`
       <div class="viewport" style="background-image: ${backgroundImage};">
         <div class="location-title">${this.locationData.name}</div>
         ${contentHtml}
-        ${dialoguePanelHtml}
+
+        ${this._currentDialogueNode && this._activeDialogueNpcId ? html`
+          <npc-dialog-overlay
+            .npcDetails=${this.allNpcs.get(this._activeDialogueNpcId)}
+            .dialogueNode=${this._currentDialogueNode}
+            .open=${true}
+            @player-choice-selected=${this._handlePlayerChoiceEvent}
+          ></npc-dialog-overlay>
+        ` : ''}
+
         ${this._lastFoundMessage ? html`<div class="found-message">${this._lastFoundMessage}</div>` : ''}
         ${this.locationData.actions && this.locationData.actions.length > 0 && !this._currentDialogueNode ? html`
           <div class="actions-panel">
@@ -715,50 +723,8 @@ GameInterfaceView.styles = [GameInterfaceView.styles, css`
     color: #3C2F2F; /* dark brown */
   }
 
-  .dialogue-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.7); /* Darken overlay slightly */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 100; 
-  }
-  .dialogue-panel {
-    background-color: #FDF5E6; /* parchment */
-    /* Conceptual: background-image: url('assets/images/theme/parchment_texture_dialogue.png'); */
-    padding: 20px;
-    border: 2px solid #3C2F2F; /* dark brown */
-    border-radius: 3px; /* Slight curve */
-    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-    width: 80%;
-    max-width: 500px;
-    text-align: left;
-  }
-  .npc-name-dialogue {
-    font-family: 'PirateFont', cursive; /* Placeholder */
-    font-weight: bold; /* Keep if desired with pirate font */
-    margin-bottom: 10px;
-    font-size: 1.1em;
-    color: #2F1E1E; /* darkest brown */
-  }
-  .npc-text {
-    margin-bottom: 15px;
-    line-height: 1.6;
-    font-family: 'MainTextFont', serif; /* Placeholder */
-    color: #3C2F2F; /* dark brown */
-  }
-  .player-choices {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-  .player-choice-button { /* Targets md-filled-button used for player choices */
-    width: 100%; 
-    /* Inherits general md-filled-button styles. Specific overrides if needed: */
-    /* e.g. --md-filled-button-container-color: #5C3D3D; */
-  }
+  /* Old dialogue panel CSS removed:
+  .dialogue-overlay, .dialogue-panel, .npc-name-dialogue, .npc-text, .player-choices, .player-choice-button
+  are no longer used by game-interface-view.js directly.
+  Their styling is now handled by npc-dialog-overlay.js. */
 `];
