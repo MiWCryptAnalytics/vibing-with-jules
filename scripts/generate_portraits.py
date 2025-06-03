@@ -164,7 +164,7 @@ def generate_portraits_for_npcs(npcs_data_list, all_dialogues_dict, project_root
     npc_name = npc_copy.get('name', 'Unknown Name')
     npc_description = npc_copy.get('description', 'No description available.')
 
-    image_filename = f"{npc_id}_portrait.png"
+    image_filename = f"{npc_id}_portrait.jpg"
     prompt_filename = f"{npc_id}_prompt.txt"
     full_image_path = os.path.join(portraits_dir, image_filename)
     full_prompt_path = os.path.join(portraits_dir, prompt_filename)
@@ -177,10 +177,10 @@ def generate_portraits_for_npcs(npcs_data_list, all_dialogues_dict, project_root
         # Assuming if image exists, prompt file also exists from previous run.
     else:
         # Base prompt
-        prompt_text = f"Portrait of {npc_name}: {npc_description}."
+        prompt_text = f"High Quality DSLR portrait of {npc_name}: {npc_description}."
 
         # Add style cue
-        prompt_text += " Pirate character portrait, fantasy art, detailed illustration style. Square image, 1:1 aspect ratio."
+        prompt_text += " Pirate character portrait, high quality, visual effects, photogenic, beautiful. Square image, 1:1 aspect ratio."
 
         # Attempt to add dialogue to prompt
         npc_dialogues = all_dialogues_dict.get(npc_id)
@@ -214,6 +214,7 @@ def generate_portraits_for_npcs(npcs_data_list, all_dialogues_dict, project_root
                 prompt=prompt_text,
                 config=types.GenerateImagesConfig(
                   number_of_images=1,
+                  personGeneration="allow_all",
                   include_rai_reason=True,
                   output_mime_type='image/jpeg',
               )
@@ -226,6 +227,8 @@ def generate_portraits_for_npcs(npcs_data_list, all_dialogues_dict, project_root
             if image_bytes_to_save:
                 try:
                     img = Image.open(BytesIO(image_bytes_to_save))
+                    # Resize the image to 512x512 pixels
+                    img = img.resize((512, 512))
                     img.save(full_image_path) # PIL infers format from extension, or use format='PNG'
                     
                     with open(full_prompt_path, "w") as f:
