@@ -23,6 +23,7 @@ class GameInterfaceView extends LitElement {
       position: relative; /* For positioning hidden objects */
       overflow: hidden;
       border: 3px solid #3C2F2F; /* dark brown */
+      /* Vignette effect from map-view, if desired here too */
       box-shadow: inset 0 0 30px rgba(0,0,0,0.5); /* Inner shadow for depth - Keep */
     }
     .location-title {
@@ -71,6 +72,7 @@ class GameInterfaceView extends LitElement {
       border: 2px dashed #FFD700; /* Dashed gold border */
       border-radius: 50%; /* Circular shape */
       background-color: rgba(0, 0, 0, 0.15); /* Subtle dark background */
+      overflow: hidden; /* To clip the image to the circle */
     }
     .in-scene-npc:hover {
       transform: scale(1.15);
@@ -80,6 +82,12 @@ class GameInterfaceView extends LitElement {
       font-size: 38px;
       color: #FDF5E6; /* Cream icon color */
       text-shadow: 1px 1px 2px #3C2F2F; /* Dark brown shadow */
+    }
+    .in-scene-npc .npc-portrait-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover; /* Ensures the image covers the area, might crop */
+      /* border-radius: 50%; // Not strictly needed due to parent's overflow:hidden and border-radius */
     }
     .actions-panel {
       position: absolute;
@@ -516,7 +524,11 @@ class GameInterfaceView extends LitElement {
                      style="left: ${npc.position.x}; top: ${npc.position.y};"
                      title="${npc.name}"
                      @click=${() => this._handleNpcClick(npc.id)}>
-                  <md-icon>${npc.icon || 'person'}</md-icon>
+                  ${npc.portraitImage ? html`
+                    <img src="${npc.portraitImage}" alt="Portrait of ${npc.name}" class="npc-portrait-image">
+                  ` : html`
+                    <md-icon>${npc.icon || 'person'}</md-icon>
+                  `}
                 </div>
               `;
             }
