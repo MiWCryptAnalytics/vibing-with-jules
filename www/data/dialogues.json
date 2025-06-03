@@ -18,6 +18,11 @@
           "text": "I'm looking for adventure... and treasure!",
           "nextNodeId": "jack_adventure",
           "action": null
+        },
+        {
+          "text": "Tell me a funny story, pirate.",
+          "nextNodeId": "jack_funny_story_start",
+          "action": null
         }
       ]
     },
@@ -65,6 +70,71 @@
       "playerChoices": [
         {
           "text": "Farewell, Jack.",
+          "nextNodeId": "END",
+          "action": null
+        }
+      ]
+    },
+    "jack_funny_story_start": {
+      "id": "jack_funny_story_start",
+      "npcText": "A funny story, eh? Alright, settle down. Reminds me of this one time, I had a parrot, see? Smartest bird I ever knew. Went into a tavern, and the blasted thing hops on the bar and squawks, 'A keg o' rum for me captain, and a cracker for me!' So the barkeep says...",
+      "playerChoices": [
+        {
+          "text": "And what did the barkeep say?",
+          "nextNodeId": "jack_parrot_punchline",
+          "action": null
+        },
+        {
+          "text": "That's not very funny yet.",
+          "nextNodeId": "jack_skeptical",
+          "action": null
+        }
+      ]
+    },
+    "jack_skeptical": {
+      "id": "jack_skeptical",
+      "npcText": "Hold yer seahorses, I'm gettin' to the good part! Patience, lad/lass, patience. A good story is like a fine grog, needs time to be savored.",
+      "playerChoices": [
+        {
+          "text": "Alright, alright, go on.",
+          "nextNodeId": "jack_parrot_punchline",
+          "action": null
+        }
+      ]
+    },
+    "jack_parrot_punchline": {
+      "id": "jack_parrot_punchline",
+      "npcText": "The barkeep, he looks at the parrot, then at me, then back at the parrot and says, 'That'll be ten gold pieces for the rum. The cracker's on the house for the bird, but he better not try to pay with doubloons he's... *found*.' Har har! Turns out the parrot had been swipin' coins from the collection plate at the church!",
+      "playerChoices": [
+        {
+          "text": "Hah! That's a good one!",
+          "nextNodeId": "jack_laugh_end",
+          "action": null
+        },
+        {
+          "text": "Got any more like that?",
+          "nextNodeId": "jack_parrot_another",
+          "action": null
+        }
+      ]
+    },
+    "jack_laugh_end": {
+      "id": "jack_laugh_end",
+      "npcText": "Aye, gets 'em every time. Now, if ye'll excuse me, I've got a thirst that needs quench'n'.",
+      "playerChoices": [
+        {
+          "text": "See you around, Jack.",
+          "nextNodeId": "END",
+          "action": null
+        }
+      ]
+    },
+    "jack_parrot_another": {
+      "id": "jack_parrot_another",
+      "npcText": "Afraid that's the only one fit for polite company, matey. The rest are a bit too... *piratey*, if ye catch my drift. Maybe another time, eh?",
+      "playerChoices": [
+        {
+          "text": "Understood. Thanks for the story!",
           "nextNodeId": "END",
           "action": null
         }
