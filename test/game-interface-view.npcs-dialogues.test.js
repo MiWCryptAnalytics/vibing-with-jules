@@ -38,6 +38,8 @@ class MockGameInterfaceViewForDialogues {
     this.locationData = null;
     this.playerInventory = [];
     this.playerResources = { gold: 0, silver: 0, rum: 0 };
+    this.playerStats = {}; // Added for conditional dialogs
+    this.gameState = {}; // Added for conditional dialogs & effects
     this.allItems = new Map();
     this.allNpcs = new Map();
     this.allDialogues = {};
@@ -51,6 +53,10 @@ class MockGameInterfaceViewForDialogues {
 
     this.dispatchEvent = (event) => { this.dispatchedEvents.push({ type: event.type, detail: event.detail }); };
     this.requestUpdate = () => { /* console.log("MockGameInterfaceView: requestUpdate called for dialogue test"); */ };
+  }
+
+  clearDispatchedEvents() { // Added this method
+    this.dispatchedEvents = [];
   }
 
   setLocationData(locationData) {
@@ -96,34 +102,108 @@ class MockGameInterfaceViewForDialogues {
 
     if (npcDetails && dialogueTree) {
       this._activeDialogueNpcId = npcId;
-      const startNodeId = Object.keys(dialogueTree)[0]; 
+      const startNodeId = Object.keys(dialogueTree)[0];
       if (dialogueTree[startNodeId]) {
         this._currentDialogueNodeId = startNodeId;
-        this._currentDialogueNode = dialogueTree[startNodeId];
-      } else { 
+        let rawNode = { ...dialogueTree[startNodeId] }; // Clone to avoid modifying original mock
+
+        // Simulate the filtering that npc-dialog-overlay would do
+        if (rawNode.playerChoices) {
+            rawNode.playerChoices = rawNode.playerChoices.filter(choice => this._isChoiceAvailable(choice));
+        }
+        this._currentDialogueNode = rawNode;
+
+      } else {
         console.error(`No start node found for NPC ${npcId} (tried ${startNodeId})`);
         this._lastFoundMessage = `${npcDetails.name} doesn't seem to want to talk.`;
       }
-    } else { 
+    } else {
       console.error(`NPC details or dialogue tree not found for NPC ID: ${npcId}`);
       this._lastFoundMessage = "They have nothing to say.";
     }
     this.requestUpdate();
   }
 
-  _handlePlayerChoice(choice) {
+  // Duplicating _isChoiceAvailable from npc-dialog-overlay for mock simulation
+  _isChoiceAvailable(choice) {
+    if (!choice.condition) {
+      return true;
+    }
+    const { type, stat, variable, value, operator = '===' } = choice.condition;
+    let conditionMet = false;
+    switch (type) {
+      case 'playerStat':
+        if (this.playerStats && typeof this.playerStats[stat] !== 'undefined') {
+          const statValue = this.playerStats[stat];
+          switch (operator) {
+            case '===': conditionMet = statValue === value; break;
+            case '>=': conditionMet = statValue >= value; break;
+            case '<=': conditionMet = statValue <= value; break;
+            case '>': conditionMet = statValue > value; break;
+            case '<': conditionMet = statValue < value; break;
+            case '!==': conditionMet = statValue !== value; break;
+            default: console.warn(`Unsupported operator: ${operator}`);
+          }
+        }
+        break;
+      case 'gameState':
+        if (this.gameState && typeof this.gameState[variable] !== 'undefined') {
+          const stateValue = this.gameState[variable];
+           switch (operator) {
+            case '===': conditionMet = stateValue === value; break;
+            case '!==': conditionMet = stateValue !== value; break;
+            default: console.warn(`Unsupported operator for gameState: ${operator}`);
+          }
+        }
+        break;
+      default:
+        console.warn(`Unknown condition type: ${type}`);
+        return false;
+    }
+    return conditionMet;
+  }
+
+  _handlePlayerChoice(choice) { // This method processes the choice object
     if (!this._activeDialogueNpcId || !this.allDialogues) { console.error("Dialogue not active or data missing."); return; }
+
+    // Simulate effect dispatching (from npc-dialog-overlay's _handleChoiceClick)
+    if (choice.effects) {
+      choice.effects.forEach(effect => {
+        if (effect.type === 'updatePlayerStat') {
+          this.dispatchEvent(new CustomEvent('update-player-stat', {
+            detail: { stat: effect.stat, change: effect.change, value: effect.value },
+            bubbles: true, composed: true
+          }));
+        } else if (effect.type === 'setGameState') {
+          this.dispatchEvent(new CustomEvent('set-game-state', {
+            detail: { variable: effect.variable, value: effect.value },
+            bubbles: true, composed: true
+          }));
+        } else if (effect.type === 'gameEvent') {
+          this.dispatchEvent(new CustomEvent('game-event', {
+            detail: { eventName: effect.eventName, detail: effect.detail },
+            bubbles: true, composed: true
+          }));
+        }
+      });
+    }
+
     if (choice.nextNodeId === "END") {
       this._endDialogue();
     } else {
       const dialogueTree = this.allDialogues[this._activeDialogueNpcId];
-      const nextNode = dialogueTree ? dialogueTree[choice.nextNodeId] : null;
-      if (nextNode) {
+      const nextNodeRaw = dialogueTree ? dialogueTree[choice.nextNodeId] : null;
+      if (nextNodeRaw) {
         this._currentDialogueNodeId = choice.nextNodeId;
-        this._currentDialogueNode = nextNode;
-      } else { 
+        let rawNode = { ...nextNodeRaw }; // Clone
+        if (rawNode.playerChoices) {
+            rawNode.playerChoices = rawNode.playerChoices.filter(c => this._isChoiceAvailable(c));
+        }
+        this._currentDialogueNode = rawNode;
+
+      } else {
         console.error(`Dialogue node "${choice.nextNodeId}" not found for NPC "${this._activeDialogueNpcId}". Ending dialogue.`);
-        this._endDialogue(); 
+        this._endDialogue();
       }
     }
     this.requestUpdate();
@@ -196,7 +276,7 @@ async function testNpcDialogueInteractions() {
   assertTrue(view._currentDialogueNode && view._currentDialogueNode.playerChoices.length > 0, "Test 3.1: Start node has choices");
   if (view._currentDialogueNode && view._currentDialogueNode.playerChoices.length > 0) {
     const choice1 = view._currentDialogueNode.playerChoices[0];
-    view._handlePlayerChoiceEvent({ detail: { choice: choice1 } }); // Simulate event from npc-dialog-overlay
+    view._handlePlayerChoiceEvent({ detail: { choice: choice1 } });
 
     assertEqual(view._currentDialogueNodeId, "greet_reply", "Test 3.2: Dialogue advances to next node ID via event");
     assertNotNull(view._currentDialogueNode, "Test 3.3: Current node updated via event");
@@ -205,7 +285,7 @@ async function testNpcDialogueInteractions() {
     }
 
     assertTrue(view._currentDialogueNode && view._currentDialogueNode.playerChoices.length > 0, "Test 3.5: greet_reply node has choices");
-     if (view._currentDialogueNode && view._currentDialogueNode.playerChoices.length > 0) {
+     if (view._currentDialogueNode && view._currentDialogueNode.playerChoices.length > 0) { // Guarding access
         const choice2 = view._currentDialogueNode.playerChoices[0];
         view._handlePlayerChoiceEvent({ detail: { choice: choice2 } }); // Simulate event for 'END' choice
 
@@ -290,7 +370,7 @@ async function testNpcDialogueInteractions() {
   view._handleNpcClick("npc1"); // Start a dialogue
   assertNotNull(view._currentDialogueNode, "Test 8.1: Dialogue should be active before dismissal");
 
-  view._handlePlayerChoiceEvent({ detail: {} }); // Simulate event with no choice (e.g. scrim click/escape)
+  view._handlePlayerChoiceEvent({ detail: { choice: {} } }); // Simulate event with empty choice (dismissal)
 
   assertNull(view._activeDialogueNpcId, "Test 8.2: Active NPC ID null after dismissal event");
   assertNull(view._currentDialogueNodeId, "Test 8.3: Current node ID null after dismissal event");
@@ -332,13 +412,17 @@ async function testNpcDialogueInteractions() {
   assertNotNull(view._currentDialogueNode, "Test 9.2.1: Dialogue active after first click");
 
   // Make one choice (not to END)
-  choiceToGreet = view._currentDialogueNode.playerChoices[0];
-  view._handlePlayerChoiceEvent({ detail: { choice: choiceToGreet } }); // Hello
-  assertNotNull(view._currentDialogueNode, "Test 9.2.2: Dialogue still active mid-way");
-  assertEqual(view._currentDialogueNodeId, "greet_reply", "Test 9.2.3: Dialogue is at 'greet_reply' node");
+  if(view._currentDialogueNode && view._currentDialogueNode.playerChoices.length > 0) { // Guarding access
+    choiceToGreet = view._currentDialogueNode.playerChoices[0];
+    view._handlePlayerChoiceEvent({ detail: { choice: choiceToGreet } }); // Hello
+    assertNotNull(view._currentDialogueNode, "Test 9.2.2: Dialogue still active mid-way");
+    assertEqual(view._currentDialogueNodeId, "greet_reply", "Test 9.2.3: Dialogue is at 'greet_reply' node");
+  } else {
+    testsFailed++; results.push("FAIL: Test 9.2 setup error - no choices found on first node for dismissal test.");
+  }
 
   // Simulate dismissal
-  view._handlePlayerChoiceEvent({ detail: {} }); // Dismiss event
+  view._handlePlayerChoiceEvent({ detail: { choice: {} } }); // Dismiss event with empty choice object
   assertNull(view._currentDialogueNode, "Test 9.2.4: Dialogue ended after dismissal");
 
   // Re-engage the same NPC
@@ -351,6 +435,212 @@ async function testNpcDialogueInteractions() {
   }
   view._endDialogue(); // Clean up
 
+  // --- Test 10: Conditional Choices ---
+  console.log("--- Starting Test 10: Conditional Choices ---");
+  const npcCond = { id: "npc_cond", name: "Conditional Carl", icon: "person", position: { x: "10%", y: "10%" }};
+  const dialogueCond = {
+    "start": { id: "start", npcText: "State your condition.", playerChoices: [
+      { text: "Strong (Str >= 10)", nextNodeId: "s_path", condition: { type: "playerStat", stat: "strength", operator: ">=", value: 10 } },
+      { text: "Lucky (isLuckyDay === true)", nextNodeId: "l_path", condition: { type: "gameState", variable: "isLuckyDay", operator: "===", value: true } },
+      { text: "Normal", nextNodeId: "n_path" }
+    ]},
+    "s_path": {id: "s_path", npcText: "You are strong!", playerChoices:[]},
+    "l_path": {id: "l_path", npcText: "You are lucky!", playerChoices:[]},
+    "n_path": {id: "n_path", npcText: "You are normal.", playerChoices:[]}
+  };
+  view = new MockGameInterfaceViewForDialogues();
+  view.setAllNpcs(new Map([["npc_cond", npcCond]]));
+  view.setAllDialogues({ "npc_cond": dialogueCond });
+  view.setLocationData({ id: "loc_cond", name: "Conditional Place", npcIds: ["npc_cond"] });
+
+  // Scenario 10.1: Strength condition met
+  view.playerStats = { strength: 12 };
+  view.gameState = { isLuckyDay: false };
+  view._handleNpcClick("npc_cond");
+  assertNotNull(view._currentDialogueNode, "Test 10.1.1: Dialogue node loaded for conditional test");
+  assertEqual(view._currentDialogueNode.playerChoices.length, 2, "Test 10.1.2: Correct number of choices (Strong, Normal)");
+  assertTrue(view._currentDialogueNode.playerChoices.some(c => c.nextNodeId === "s_path"), "Test 10.1.3: 'Strong' choice available");
+  assertTrue(view._currentDialogueNode.playerChoices.some(c => c.nextNodeId === "n_path"), "Test 10.1.4: 'Normal' choice available");
+  assertTrue(!view._currentDialogueNode.playerChoices.some(c => c.nextNodeId === "l_path"), "Test 10.1.5: 'Lucky' choice NOT available");
+
+  // Scenario 10.2: Lucky condition met
+  view.playerStats = { strength: 5 };
+  view.gameState = { isLuckyDay: true };
+  view._handleNpcClick("npc_cond");
+  assertEqual(view._currentDialogueNode.playerChoices.length, 2, "Test 10.2.1: Correct number of choices (Lucky, Normal)");
+  assertTrue(view._currentDialogueNode.playerChoices.some(c => c.nextNodeId === "l_path"), "Test 10.2.2: 'Lucky' choice available");
+  assertTrue(!view._currentDialogueNode.playerChoices.some(c => c.nextNodeId === "s_path"), "Test 10.2.3: 'Strong' choice NOT available");
+
+  // Scenario 10.3: No conditions met (only normal)
+  view.playerStats = { strength: 5 };
+  view.gameState = { isLuckyDay: false };
+  view._handleNpcClick("npc_cond");
+  assertEqual(view._currentDialogueNode.playerChoices.length, 1, "Test 10.3.1: Correct number of choices (Normal only)");
+  assertTrue(view._currentDialogueNode.playerChoices.some(c => c.nextNodeId === "n_path"), "Test 10.3.2: Only 'Normal' choice available");
+
+  // --- Test 11: Event Triggering Effects ---
+  console.log("--- Starting Test 11: Event Triggering Effects ---");
+  const npcEffect = { id: "npc_effect", name: "Effect Eddie", icon: "person", position: { x: "10%", y: "10%" }};
+  const dialogueEffect = {
+    "start": { id: "start", npcText: "Push the button.", playerChoices: [
+      { text: "Push Me", nextNodeId: "END", effects: [
+        { type: "updatePlayerStat", stat: "karma", change: 1 },
+        { type: "updatePlayerStat", stat: "xp", value: 100 }, // Test direct set
+        { type: "setGameState", variable: "buttonPressed", value: true },
+        { type: "gameEvent", eventName: "special_button", detail: { power: "extreme" } }
+      ]}
+    ]}
+  };
+  view = new MockGameInterfaceViewForDialogues();
+  view.setAllNpcs(new Map([["npc_effect", npcEffect]]));
+  view.setAllDialogues({ "npc_effect": dialogueEffect });
+  view.setLocationData({ id: "loc_effect", name: "Effect Place", npcIds: ["npc_effect"] });
+  view.dispatchedEvents = []; // Clear any previous events
+
+  view._handleNpcClick("npc_effect");
+  assertNotNull(view._currentDialogueNode, "Test 11.1: Dialogue node loaded for effect test");
+  if (view._currentDialogueNode && view._currentDialogueNode.playerChoices && view._currentDialogueNode.playerChoices.length > 0) {
+    const effectChoice = view._currentDialogueNode.playerChoices[0];
+    view._handlePlayerChoiceEvent({ detail: { choice: effectChoice } }); // Simulate click
+
+    assertEqual(view.dispatchedEvents.length, 4, "Test 11.2: Correct number of events dispatched");
+
+    const updateStatEvent1 = view.dispatchedEvents.find(e => e.type === 'update-player-stat' && e.detail.stat === 'karma');
+    assertNotNull(updateStatEvent1, "Test 11.3: 'update-player-stat' for karma dispatched");
+    assertDeepEqual(updateStatEvent1.detail, { stat: "karma", change: 1, value: undefined }, "Test 11.4: Correct detail for karma update");
+
+    const updateStatEvent2 = view.dispatchedEvents.find(e => e.type === 'update-player-stat' && e.detail.stat === 'xp');
+    assertNotNull(updateStatEvent2, "Test 11.5: 'update-player-stat' for xp dispatched");
+    assertDeepEqual(updateStatEvent2.detail, { stat: "xp", value: 100, change: undefined }, "Test 11.6: Correct detail for xp set");
+
+    const setStateEvent = view.dispatchedEvents.find(e => e.type === 'set-game-state');
+    assertNotNull(setStateEvent, "Test 11.7: 'set-game-state' event dispatched");
+    assertDeepEqual(setStateEvent.detail, { variable: "buttonPressed", value: true }, "Test 11.8: Correct detail for set-game-state");
+
+    const gameEvent = view.dispatchedEvents.find(e => e.type === 'game-event');
+    assertNotNull(gameEvent, "Test 11.9: 'game-event' dispatched");
+    assertDeepEqual(gameEvent.detail, { eventName: "special_button", detail: { power: "extreme" } }, "Test 11.10: Correct detail for game-event");
+  } else {
+    testsFailed++; results.push("FAIL: Test 11 setup error - no choices found for effectChoice.");
+  }
+
+  // --- Test 12: _handlePuzzleResolved() ---
+  console.log("--- Starting Test 12: _handlePuzzleResolved ---");
+  view = new MockGameInterfaceViewForDialogues(); // Fresh view
+  const mockNpcId = "npc_puzzle_giver";
+  view.allDialogues = {
+    [mockNpcId]: {
+      "puzzle_success_node": { id: "puzzle_success_node", npcText: "You solved it!", playerChoices: [] },
+      "puzzle_failure_node": { id: "puzzle_failure_node", npcText: "You failed!", playerChoices: [] },
+      "puzzle_skip_node": { id: "puzzle_skip_node", npcText: "Skipped.", playerChoices: [] }
+    }
+  };
+
+  // Add _handlePuzzleResolved to the mock (based on the real implementation from game-interface-view.js)
+  view._handlePuzzleResolved = function(event) {
+      const { puzzle, outcome } = event.detail;
+      let nextNodeId = null;
+      let effectsToApply = null;
+      switch (outcome) {
+          case 'success': nextNodeId = puzzle.successDialogNodeId; effectsToApply = puzzle.successEffects; break;
+          case 'failure': nextNodeId = puzzle.failureDialogNodeId; effectsToApply = puzzle.failureEffects; break;
+          case 'skipped': nextNodeId = puzzle.skipDialogNodeId || puzzle.failureDialogNodeId; break;
+      }
+      if (effectsToApply) {
+          effectsToApply.forEach(effect => {
+              if (effect.type === 'SET_GAME_STATE') this.dispatchEvent(new CustomEvent('set-game-state', { detail: { variable: effect.variable, value: effect.value }, bubbles:true, composed:true }));
+              else if (effect.type === 'UPDATE_PLAYER_STAT') this.dispatchEvent(new CustomEvent('update-resources', { detail: { [effect.stat]: effect.change || effect.value }, bubbles:true, composed:true }));
+              else if (effect.type === 'ADD_ITEM') this.dispatchEvent(new CustomEvent('add-to-inventory', { detail: { item: { id: effect.itemId } }, bubbles:true, composed:true})); // Simulating item object for app-shell
+              else if (effect.type === 'REMOVE_ITEM') this.dispatchEvent(new CustomEvent('remove-from-inventory', { detail: { itemId: effect.itemId }, bubbles:true, composed:true}));
+          });
+      }
+      if (nextNodeId && this._activeDialogueNpcId) this._handlePlayerChoice({ nextNodeId: nextNodeId });
+      else if (!nextNodeId) this._endDialogue();
+      this.requestUpdate();
+  };
+
+  view._activeDialogueNpcId = mockNpcId;
+
+  const mockPuzzleData = {
+    id: "TEST_PUZZLE_001",
+    description: "A test puzzle for game-interface-view.",
+    successDialogNodeId: "puzzle_success_node",
+    failureDialogNodeId: "puzzle_failure_node",
+    skipDialogNodeId: "puzzle_skip_node",
+    successEffects: [{ type: "SET_GAME_STATE", variable: "testPuzzleSolved", value: true }],
+    failureEffects: [{ type: "UPDATE_PLAYER_STAT", stat: "karma", change: -1 }]
+  };
+
+  // Test 12.1: Success outcome
+  view.clearDispatchedEvents();
+  view._handlePuzzleResolved({ detail: { puzzle: mockPuzzleData, outcome: 'success' } });
+  assertEqual(view._currentDialogueNodeId, "puzzle_success_node", "Test 12.1.1: Dialog advances to successDialogNodeId.");
+  let dispatchedSetStateEvent = view.dispatchedEvents.find(e => e.type === 'set-game-state');
+  assertNotNull(dispatchedSetStateEvent, "Test 12.1.2: SET_GAME_STATE effect processed for success.");
+  if(dispatchedSetStateEvent) {
+    assertDeepEqual(dispatchedSetStateEvent.detail, { variable: "testPuzzleSolved", value: true }, "Test 12.1.3: Correct detail for SET_GAME_STATE.");
+  }
+  view._endDialogue();
+
+  // Test 12.2: Failure outcome
+  view._activeDialogueNpcId = mockNpcId;
+  view.clearDispatchedEvents();
+  view._handlePuzzleResolved({ detail: { puzzle: mockPuzzleData, outcome: 'failure' } });
+  assertEqual(view._currentDialogueNodeId, "puzzle_failure_node", "Test 12.2.1: Dialog advances to failureDialogNodeId.");
+  let dispatchedUpdateStatEvent = view.dispatchedEvents.find(e => e.type === 'update-resources');
+  assertNotNull(dispatchedUpdateStatEvent, "Test 12.2.2: UPDATE_PLAYER_STAT effect processed for failure (via update-resources).");
+   if(dispatchedUpdateStatEvent) {
+    assertDeepEqual(dispatchedUpdateStatEvent.detail, { "karma": -1 }, "Test 12.2.3: Correct detail for UPDATE_PLAYER_STAT.");
+  }
+  view._endDialogue();
+
+  // Test 12.3: Skipped outcome
+  view._activeDialogueNpcId = mockNpcId;
+  view.clearDispatchedEvents();
+  view._handlePuzzleResolved({ detail: { puzzle: mockPuzzleData, outcome: 'skipped' } });
+  assertEqual(view._currentDialogueNodeId, "puzzle_skip_node", "Test 12.3.1: Dialog advances to skipDialogNodeId.");
+  assertEqual(view.dispatchedEvents.length, 0, "Test 12.3.2: No effects processed for skip (as per mockPuzzleData).");
+  view._endDialogue();
+
+  // --- Test 13: Dialog Choice Triggering Puzzle ---
+  // This test verifies that _handlePlayerChoice (which simulates part of npc-dialog-overlay's effect processing)
+  // correctly dispatches 'trigger-puzzle' if such an effect is present.
+  console.log("--- Starting Test 13: Dialog Choice Triggering Puzzle ---");
+  view = new MockGameInterfaceViewForDialogues();
+  const puzzleTriggerNpcId = "npc_puzzle_triggerer";
+  const puzzleIdToTrigger = "PUZZLE_XYZ";
+  view.allDialogues = {
+    [puzzleTriggerNpcId]: {
+      "start_node": {
+        id: "start_node",
+        npcText: "Want to try a puzzle?",
+        playerChoices: [
+          { text: "Yes!", nextNodeId: null, effects: [{ type: "TRIGGER_PUZZLE", puzzleId: puzzleIdToTrigger }] },
+          { text: "No.", nextNodeId: "END" }
+        ]
+      }
+    }
+  };
+  view._activeDialogueNpcId = puzzleTriggerNpcId;
+  view._currentDialogueNodeId = "start_node";
+  view._currentDialogueNode = view.allDialogues[puzzleTriggerNpcId]["start_node"];
+  view.playerStats = {};
+  view.gameState = {};
+
+  view.clearDispatchedEvents();
+
+  const puzzleTriggerChoice = view._currentDialogueNode.playerChoices[0];
+  view._handlePlayerChoice(puzzleTriggerChoice);
+
+  const triggerPuzzleEvent = view.dispatchedEvents.find(e => e.type === 'trigger-puzzle');
+  assertNotNull(triggerPuzzleEvent, "Test 13.1: 'trigger-puzzle' event dispatched by mock effect handler.");
+  if (triggerPuzzleEvent) {
+    assertEqual(triggerPuzzleEvent.detail.puzzleId, puzzleIdToTrigger, "Test 13.2: Correct puzzleId in 'trigger-puzzle' event.");
+  }
+  // Check that the dialog state is ended/paused because the choice was a puzzle trigger
+  // In the mock, _handlePlayerChoice calls _endDialogue if nextNodeId is null.
+  assertNull(view._currentDialogueNodeId, "Test 13.3: Dialogue node ID should be null as dialog ends/pauses for puzzle trigger.");
+  view._endDialogue();
 
   console.log(`--- ${testSuiteName} ---`);
   if (results.length > 0) { results.forEach(r => console.log(r)); }
@@ -362,9 +652,25 @@ async function testNpcDialogueInteractions() {
   return testsFailed === 0;
 }
 
+// Method inside MockGameInterfaceViewForDialogues to handle player choice events
+MockGameInterfaceViewForDialogues.prototype._handlePlayerChoiceEvent = function({ detail: { choice } }) {
+  // If no choice is provided (e.g., dialog dismissed by scrim click or escape), end dialogue.
+  // Also check if choice is an empty object, as that's how we're simulating dismissal now.
+  if (!choice || Object.keys(choice).length === 0) {
+    this._endDialogue();
+    return;
+  }
+  this._handlePlayerChoice(choice); // Call the internal processing method
+};
+
+
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = { testNpcDialogueInteractions, MockGameInterfaceViewForDialogues };
 } else if (typeof window !== 'undefined') {
   window.testNpcDialogueInteractions = testNpcDialogueInteractions;
   window.MockGameInterfaceViewForDialogues = MockGameInterfaceViewForDialogues;
 }
+// --- Test 10: Conditional Choices ---
+// (This section will be added by the replace operation below the existing function)
+// --- Test 11: Event Triggering Effects ---
+// (This section will be added by the replace operation below the existing function)

@@ -1,0 +1,93 @@
+[
+  {
+    "id": "ESMERALDA_MOON_RIDDLE",
+    "puzzle_type": "RIDDLE",
+    "description": "Esmeralda fixes her gaze upon you, a knowing smile playing on her lips. 'The sea shows many faces, but only one never weeps, though it is always full. What is it?' she asks, her voice a low whisper.",
+    "successDialogNodeId": "esmeralda_moon_riddle_success",
+    "failureDialogNodeId": "esmeralda_moon_riddle_failure",
+    "skipDialogNodeId": "esmeralda_moon_riddle_skip",
+    "successEffects": [
+      {"type": "SET_GAME_STATE", "variable": "esmeralda_moon_riddle_solved", "value": true},
+      {"type": "UPDATE_PLAYER_STAT", "stat": "wisdom", "change": 1}
+    ],
+    "failureEffects": [
+      {"type": "UPDATE_PLAYER_STAT", "stat": "standing_esmeralda", "change": -1}
+    ],
+    "data": {
+      "question": "The sea shows many faces, but only one never weeps, though it is always full. What is it?",
+      "answers": ["moon", "the moon", "reflection of the moon", "moon's reflection"],
+      "max_attempts": 3
+    }
+  },
+  {
+    "id": "CRIMSON_MAP_CIPHER",
+    "puzzle_type": "CIPHER",
+    "description": "You found a tattered piece of parchment with strange symbols. It looks like a cipher used by the Crimson Marauders. It might lead to a piece of Varkos's map!",
+    "successDialogNodeId": "moreau_cipher_challenge_success",
+    "failureDialogNodeId": "moreau_cipher_challenge_failure",
+    "skipDialogNodeId": "moreau_cipher_challenge_skip",
+    "successEffects": [
+      {"type": "ADD_ITEM", "itemId": "decoded_map_fragment_1"},
+      {"type": "SET_GAME_STATE", "variable": "map_fragment_1_found", "value": true}
+    ],
+    "data": {
+      "cipherText": "GSV XLZGH GSZG WRHVXIV ORV RM HRLOVMXV",
+      "cipherType": "ATBASH", // Could also be "CAESAR", "SUBSTITUTION" etc.
+      "solution": "THE COAST THAT WHISPERS LIE IN SILENCE", // Example solution
+      "hints": [
+        "Think of reversing the alphabet.",
+        "A=Z, B=Y..."
+      ]
+    }
+  },
+  {
+    "id": "TORTUGA_SPY_DEDUCTION",
+    "puzzle_type": "LOGIC_DEDUCTION",
+    "description": "Captain Moreau pulls you aside. 'There's a rat in Tortuga, feeding information to the Royal Navy. I have a few suspects. Help me identify the spy before they compromise my operations.'",
+    "successDialogNodeId": "MOREAU_SPY_IDENTIFIED_SUCCESS",
+    "failureDialogNodeId": "MOREAU_SPY_IDENTIFIED_FAILURE",
+    "successEffects": [
+      {"type": "UPDATE_PLAYER_STAT", "stat": "standing_moreau", "change": 2},
+      {"type": "ADD_RESOURCE", "resource": "gold", "amount": 100}
+    ],
+    "failureEffects": [
+      {"type": "UPDATE_PLAYER_STAT", "stat": "standing_moreau", "change": -1},
+      {"type": "SET_GAME_STATE", "variable": "tortuga_spy_escaped", "value": true}
+    ],
+    "data": {
+      "suspects": [
+        {"id": "suspect1", "name": "Silas the Slip", "clues": ["Seen near the docks late at night.", "Always asks too many questions about ship movements."]},
+        {"id": "suspect2", "name": "One-Eyed Willem", "clues": ["Has a new fancy coat he can't afford.", "Was unusually quiet when the 'Sea Serpent' was mentioned."]},
+        {"id": "suspect3", "name": "Lisette the Lucky", "clues": ["Boasts about connections in Port Royal.", "Avoids any talk of the Navy."]}
+      ],
+      "correctSuspectId": "suspect2",
+      "evidenceRequired": ["fancy_coat_proof", "ships_log_discrepancy"] // Hypothetical item/flag IDs
+    }
+  },
+  {
+    "id": "ANCIENT_ARTIFACT_ASSEMBLY",
+    "puzzle_type": "OBJECT_ASSEMBLY",
+    "description": "Silas Blackwood presents you with a collection of broken pieces. 'This, my friend, is said to be the Amulet of the Sunken Star. Reassemble it, and its power could be yours... or mine, for a price.'",
+    "successDialogNodeId": "silas_artifact_assembly_success",
+    "failureDialogNodeId": "silas_artifact_assembly_failure",
+    "skipDialogNodeId": "silas_artifact_assembly_skip",
+    "successEffects": [
+      {"type": "ADD_ITEM", "itemId": "amulet_sunken_star_complete"},
+      {"type": "UPDATE_PLAYER_STAT", "stat": "standing_silas", "change": 1}
+    ],
+    "failureEffects": [
+      {"type": "REMOVE_ITEM", "itemId": "artifact_piece_1"}, // Or just make them unusable
+      {"type": "REMOVE_ITEM", "itemId": "artifact_piece_2"},
+      {"type": "SET_GAME_STATE", "variable": "artifact_pieces_broken", "value": true}
+    ],
+    "data": {
+      "required_pieces": [
+        {"itemId": "artifact_piece_1", "description": "A curved piece of obsidian with strange carvings."},
+        {"itemId": "artifact_piece_2", "description": "A smooth, sun-bleached coral fragment."},
+        {"itemId": "artifact_piece_3", "description": "A pearl that hums with a faint energy."}
+      ],
+      "assembly_instructions_hint": "The obsidian forms the backing, the coral fits into its curve, and the pearl sits at the center.",
+      "correct_order_or_configuration": ["artifact_piece_1", "artifact_piece_2", "artifact_piece_3"] // Example
+    }
+  }
+]

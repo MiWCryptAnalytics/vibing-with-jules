@@ -8,6 +8,8 @@ class NpcDialogOverlay extends LitElement {
     npcDetails: { type: Object },
     dialogueNode: { type: Object },
     open: { type: Boolean, reflect: true }, // reflect: true to keep attribute in sync
+    playerStats: { type: Object }, // Added for conditional dialogs
+    gameState: { type: Object }, // Added for conditional dialogs & effects
   };
 
   static styles = css`
@@ -141,7 +143,52 @@ class NpcDialogOverlay extends LitElement {
     this.npcDetails = null;
     this.dialogueNode = null;
     this.open = false;
+    this.playerStats = {}; // Initialize
+    this.gameState = {}; // Initialize
     this._selectedChoiceValue = null; // To temporarily store the value for closed event
+  }
+
+  // Helper function to check if a choice should be available based on conditions
+  _isChoiceAvailable(choice) {
+    if (!choice.condition) {
+      return true; // No condition, always available
+    }
+
+    const { type, stat, variable, value, operator = '===' } = choice.condition;
+
+    let conditionMet = false;
+    switch (type) {
+      case 'playerStat':
+        if (this.playerStats && typeof this.playerStats[stat] !== 'undefined') {
+          const statValue = this.playerStats[stat];
+          switch (operator) {
+            case '===': conditionMet = statValue === value; break;
+            case '>=': conditionMet = statValue >= value; break;
+            case '<=': conditionMet = statValue <= value; break;
+            case '>': conditionMet = statValue > value; break;
+            case '<': conditionMet = statValue < value; break;
+            case '!==': conditionMet = statValue !== value; break;
+            default: console.warn(`Unsupported operator: ${operator}`);
+          }
+        }
+        break;
+      case 'gameState':
+        if (this.gameState && typeof this.gameState[variable] !== 'undefined') {
+          const stateValue = this.gameState[variable];
+           switch (operator) {
+            case '===': conditionMet = stateValue === value; break;
+            case '!==': conditionMet = stateValue !== value; break;
+            // Add other operators if needed for game state variables
+            default: console.warn(`Unsupported operator for gameState: ${operator}`);
+          }
+        }
+        break;
+      // TODO: Add 'npcAlignment' or other condition types if needed
+      default:
+        console.warn(`Unknown condition type: ${type}`);
+        return false;
+    }
+    return conditionMet;
   }
 
   updated(changedProperties) {
@@ -159,11 +206,45 @@ class NpcDialogOverlay extends LitElement {
   }
 
   _handleChoiceClick(choice) {
-    // Store the choice's nextNodeId or "END" to be used as returnValue
-    this._selectedChoiceValue = choice.nextNodeId || 'END';
     const dialog = this.shadowRoot.querySelector('md-dialog');
+
+    if (choice.effects) {
+      for (const effect of choice.effects) { // Changed to for...of for early exit
+        if (effect.type === 'TRIGGER_PUZZLE' && effect.puzzleId) {
+          this.dispatchEvent(new CustomEvent('trigger-puzzle', {
+            detail: { puzzleId: effect.puzzleId },
+            bubbles: true, composed: true
+          }));
+          this._selectedChoiceValue = 'puzzle_triggered'; // Special value
+          if (dialog) {
+            dialog.close(this._selectedChoiceValue);
+          }
+          return; // Exit after triggering puzzle
+        } else if (effect.type === 'updatePlayerStat') {
+          this.dispatchEvent(new CustomEvent('update-player-stat', {
+            detail: { stat: effect.stat, change: effect.change, value: effect.value },
+            bubbles: true, composed: true
+          }));
+        } else if (effect.type === 'setGameState') {
+          this.dispatchEvent(new CustomEvent('set-game-state', {
+            detail: { variable: effect.variable, value: effect.value },
+            bubbles: true, composed: true
+          }));
+        } else if (effect.type === 'gameEvent') {
+          this.dispatchEvent(new CustomEvent('game-event', {
+            detail: { eventName: effect.eventName, detail: effect.detail },
+            bubbles: true, composed: true
+          }));
+        } else {
+          console.warn(`Unknown effect type: ${effect.type}`);
+        }
+      }
+    }
+
+    // If no TRIGGER_PUZZLE effect caused an early exit, proceed as normal
+    this._selectedChoiceValue = choice.nextNodeId || 'END';
     if (dialog) {
-      dialog.close(this._selectedChoiceValue); // Pass the value to be available in event.target.returnValue
+      dialog.close(this._selectedChoiceValue);
     }
   }
 
@@ -185,7 +266,12 @@ class NpcDialogOverlay extends LitElement {
     // For now, we only dispatch if a valid choice was found.
     // Or, we could dispatch an event indicating dismissal if foundChoice is null and returnValue is not one of our choice values
 
-    if (foundChoice) {
+    if (returnValue === 'puzzle_triggered') {
+      // Puzzle was triggered, specific handling already done by app-shell via 'trigger-puzzle' event.
+      // GameInterfaceView will await 'puzzle-resolved'.
+      // Just ensure overlay is closed.
+      console.log('NpcDialogOverlay: Closed because a puzzle was triggered.');
+    } else if (foundChoice) {
       this.dispatchEvent(
         new CustomEvent('player-choice-selected', {
           detail: { choice: foundChoice },
@@ -195,11 +281,13 @@ class NpcDialogOverlay extends LitElement {
       );
     } else if (returnValue && returnValue !== 'scrim' && returnValue !== 'escape') {
         // This case might happen if close() was called with something not matching a choice
+        // and it wasn't 'puzzle_triggered'
         console.warn('NpcDialogOverlay: Dialog closed with unexpected returnValue:', returnValue);
     }
+
     // Ensure 'open' property is false, which might trigger another update if not already set.
     // This is important if the dialog was closed by user interaction (scrim/escape)
-    // rather than programmatically via a button click which already sets this.open = false.
+    // or by 'puzzle_triggered' without explicitly setting this.open = false in _handleChoiceClick.
     if (this.open) {
         this.open = false;
     }
@@ -229,7 +317,9 @@ class NpcDialogOverlay extends LitElement {
           </div>
         </form>
         <div slot="actions">
-          ${this.dialogueNode.playerChoices?.map(
+          ${this.dialogueNode.playerChoices
+            ?.filter(choice => this._isChoiceAvailable(choice))
+            .map(
             (choice) => html`
               <md-text-button
                 form="dialog-form"

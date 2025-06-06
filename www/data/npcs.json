@@ -493,5 +493,44 @@
       "x": "60%",
       "y": "60%"
     }
+  },
+  {
+    "id": "npc_captain_isabella_moreau",
+    "name": "Captain Isabella 'Izzy' Moreau",
+    "description": "A seasoned pirate captain with a hidden agenda. She's witty, resourceful, and fiercely independent. Her backstory involves a personal vendetta against 'The Crimson Marauders'.",
+    "icon": "person",
+    "defaultLocationId": "tortuga_town",
+    "portraitImage": "assets/images/portraits/placeholder_npc_isabella.png",
+    "alignment": "neutral",
+    "position": {
+      "x": "30%",
+      "y": "30%"
+    }
+  },
+  {
+    "id": "npc_silas_blackwood",
+    "name": "Silas 'Silver-Tongue' Blackwood",
+    "description": "A charismatic but untrustworthy merchant who deals in rare artifacts and information. He's always looking for an angle to exploit and has a network of spies throughout the Caribbean.",
+    "icon": "store",
+    "defaultLocationId": "port_royal_market",
+    "portraitImage": "assets/images/portraits/placeholder_npc_silas.png",
+    "alignment": "neutral",
+    "position": {
+      "x": "60%",
+      "y": "60%"
+    }
+  },
+  {
+    "id": "npc_esmeralda_valdez",
+    "name": "Esmeralda 'The Seer' Valdez",
+    "description": "A mysterious fortune teller who lives in a secluded cove. She speaks in riddles and offers cryptic clues about the future. Her motivations are unclear, but she seems to be guiding the player towards a specific destiny.",
+    "icon": "face_3",
+    "defaultLocationId": "hidden_lagoon",
+    "portraitImage": "assets/images/portraits/placeholder_npc_esmeralda.png",
+    "alignment": "neutral",
+    "position": {
+      "x": "80%",
+      "y": "80%"
+    }
   }
 ]
