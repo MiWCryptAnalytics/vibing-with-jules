@@ -10,12 +10,18 @@
     "hiddenObjects": [
       {
         "itemId": "item_rusty_key",
-        "position": { "x": "75%", "y": "60%" },
+        "position": {
+          "x": "75%",
+          "y": "60%"
+        },
         "foundMessage": "You found a Rusty Key!"
       },
       {
         "itemId": "item_ancient_scroll",
-        "position": { "x": "20%", "y": "45%" },
+        "position": {
+          "x": "20%",
+          "y": "45%"
+        },
         "foundMessage": "You discovered an Ancient Scroll!"
       },
       {
@@ -23,7 +29,10 @@
         "name": "Locked Chest",
         "description": "A sturdy chest, firmly locked. It looks like it needs a key.",
         "icon": "inventory_2",
-        "position": { "x": "50%", "y": "80%" },
+        "position": {
+          "x": "50%",
+          "y": "80%"
+        },
         "itemImage": "../www/assets/images/items/locked_chest_icon.png",
         "isInteractableFeature": true,
         "interaction": {
@@ -35,7 +44,11 @@
       }
     ],
     "actions": [
-      { "id": "action_return_map", "label": "Return to Map", "targetView": "map" }
+      {
+        "id": "action_return_map",
+        "label": "Return to Map",
+        "targetView": "map"
+      }
     ]
   },
   {
@@ -49,17 +62,27 @@
     "hiddenObjects": [
       {
         "itemId": "item_glowing_gem",
-        "position": { "x": "50%", "y": "85%" },
+        "position": {
+          "x": "50%",
+          "y": "85%"
+        },
         "foundMessage": "You unearthed a Glowing Gemstone!"
       },
       {
         "itemId": "item_captains_logbook",
-        "position": { "x": "30%", "y": "30%" },
+        "position": {
+          "x": "30%",
+          "y": "30%"
+        },
         "foundMessage": "You found an old Captain's Logbook!"
       }
     ],
     "actions": [
-      { "id": "action_return_map", "label": "Return to Map", "targetView": "map" }
+      {
+        "id": "action_return_map",
+        "label": "Return to Map",
+        "targetView": "map"
+      }
     ]
   },
   {
@@ -70,21 +93,33 @@
     "x": 300,
     "y": 100,
     "gameViewImage": "../www/assets/images/locations/smugglers_cove.png",
-    "requiredItems": ["item_ancient_scroll"],
+    "requiredItems": [
+      "item_ancient_scroll"
+    ],
     "hiddenObjects": [
       {
         "itemId": "item_treasure_map_fragment",
-        "position": { "x": "40%", "y": "70%" },
+        "position": {
+          "x": "40%",
+          "y": "70%"
+        },
         "foundMessage": "Ye found a piece of a Treasure Map!"
       },
       {
         "itemId": "item_bottle_of_grog",
-        "position": { "x": "65%", "y": "50%" },
+        "position": {
+          "x": "65%",
+          "y": "50%"
+        },
         "foundMessage": "Ahoy! A Bottle of Grog to quench yer thirst!"
       }
     ],
     "actions": [
-      { "id": "action_return_map", "label": "Return to Map", "targetView": "map" }
+      {
+        "id": "action_return_map",
+        "label": "Return to Map",
+        "targetView": "map"
+      }
     ]
   },
   {
@@ -98,7 +133,10 @@
     "hiddenObjects": [
       {
         "itemId": "item_sextant",
-        "position": { "x": "30%", "y": "40%" },
+        "position": {
+          "x": "30%",
+          "y": "40%"
+        },
         "foundMessage": "A trusty Sextant! Now ye can chart a course to riches!"
       },
       {
@@ -106,14 +144,23 @@
         "name": "Cache of Doubloons",
         "description": "A small, waterlogged chest spilling over with gold coins!",
         "icon": "paid",
-        "position": { "x": "70%", "y": "75%" },
+        "position": {
+          "x": "70%",
+          "y": "75%"
+        },
         "itemImage": "../www/assets/images/items/doubloons_cache_icon.png",
-        "grantsResources": { "gold": 50 },
+        "grantsResources": {
+          "gold": 50
+        },
         "foundMessage": "Shiver me timbers! Ye found a cache of 50 Gold Doubloons!"
       }
     ],
     "actions": [
-      { "id": "action_return_map", "label": "Return to Map", "targetView": "map" }
+      {
+        "id": "action_return_map",
+        "label": "Return to Map",
+        "targetView": "map"
+      }
     ]
   },
   {
@@ -127,12 +174,19 @@
     "hiddenObjects": [
       {
         "itemId": "item_pirate_flag",
-        "position": { "x": "50%", "y": "20%" },
+        "position": {
+          "x": "50%",
+          "y": "20%"
+        },
         "foundMessage": "The Jolly Roger! Fly it high and proud, pirate!"
       }
     ],
     "actions": [
-      { "id": "action_return_map", "label": "Return to Map", "targetView": "map" }
+      {
+        "id": "action_return_map",
+        "label": "Return to Map",
+        "targetView": "map"
+      }
     ]
   },
   {
@@ -144,7 +198,9 @@
     "y": 350,
     "gameViewImage": "../www/assets/images/locations/port_royal_market.jpg",
     "isMarket": true,
-    "npcIds": ["npc_shady_merchant"],
+    "npcIds": [
+      "npc_shady_merchant"
+    ],
     "tradableGoods": [
       {
         "goodId": "rum_bottle_supply_pr",
@@ -155,7 +211,9 @@
         "type": "resource",
         "resourceType": "rum",
         "quantity": 1,
-        "marketSellsToPlayerPrice": { "silver": 5 },
+        "marketSellsToPlayerPrice": {
+          "silver": 5
+        },
         "stock": 20
       },
       {
@@ -166,12 +224,18 @@
         "itemImage": "../www/assets/images/items/item_sextant_icon.png",
         "type": "item",
         "itemIdToTrade": "item_sextant",
-        "marketBuysFromPlayerPrice": { "gold": 15 },
+        "marketBuysFromPlayerPrice": {
+          "gold": 15
+        },
         "demand": 3
       }
     ],
     "actions": [
-      { "id": "action_return_map", "label": "Return to Map", "targetView": "map" }
+      {
+        "id": "action_return_map",
+        "label": "Return to Map",
+        "targetView": "map"
+      }
     ]
   },
   {
@@ -185,17 +249,27 @@
     "hiddenObjects": [
       {
         "itemId": "item_obsidian_shard",
-        "position": { "x": "40%", "y": "65%" },
+        "position": {
+          "x": "40%",
+          "y": "65%"
+        },
         "foundMessage": "You found a sharp Obsidian Shard!"
       },
       {
         "itemId": "item_cannonball",
-        "position": { "x": "70%", "y": "80%" },
+        "position": {
+          "x": "70%",
+          "y": "80%"
+        },
         "foundMessage": "You recovered a heavy Cannonball."
       }
     ],
     "actions": [
-      { "id": "action_return_map", "label": "Return to Map", "targetView": "map" }
+      {
+        "id": "action_return_map",
+        "label": "Return to Map",
+        "targetView": "map"
+      }
     ]
   },
   {
@@ -206,26 +280,41 @@
     "x": 50,
     "y": 250,
     "gameViewImage": "../www/assets/images/locations/hidden_lagoon.jpg",
-    "npcIds": ["npc_mysterious_woman"],
+    "npcIds": [
+      "npc_mysterious_woman"
+    ],
     "hiddenObjects": [
       {
         "itemId": "item_pearl_necklace",
-        "position": { "x": "25%", "y": "75%" },
+        "position": {
+          "x": "25%",
+          "y": "75%"
+        },
         "foundMessage": "You discovered a beautiful Pearl Necklace!"
       },
       {
         "itemId": "item_empty_bottle",
-        "position": { "x": "60%", "y": "60%" },
+        "position": {
+          "x": "60%",
+          "y": "60%"
+        },
         "foundMessage": "An empty bottle. This might be useful."
       },
       {
         "itemId": "item_parrot_companion",
-        "position": { "x": "45%", "y": "40%" },
+        "position": {
+          "x": "45%",
+          "y": "40%"
+        },
         "foundMessage": "A colorful parrot squawks and lands on your shoulder!"
       }
     ],
     "actions": [
-      { "id": "action_return_map", "label": "Return to Map", "targetView": "map" }
+      {
+        "id": "action_return_map",
+        "label": "Return to Map",
+        "targetView": "map"
+      }
     ]
   },
   {
@@ -237,7 +326,9 @@
     "y": 50,
     "gameViewImage": "../www/assets/images/locations/tortuga_town.jpg",
     "isMarket": true,
-    "npcIds": ["npc_one_eyed_jack"],
+    "npcIds": [
+      "npc_one_eyed_jack"
+    ],
     "tradableGoods": [
       {
         "goodId": "sell_empty_bottle_tt",
@@ -247,7 +338,9 @@
         "itemImage": "../www/assets/images/items/item_empty_bottle_icon.png",
         "type": "item",
         "itemIdToTrade": "item_empty_bottle",
-        "marketSellsToPlayerPrice": { "silver": 2 },
+        "marketSellsToPlayerPrice": {
+          "silver": 2
+        },
         "stock": 30
       },
       {
@@ -258,283 +351,526 @@
         "itemImage": "../www/assets/images/items/item_obsidian_shard_icon.png",
         "type": "item",
         "itemIdToTrade": "item_obsidian_shard",
-        "marketBuysFromPlayerPrice": { "gold": 10 },
+        "marketBuysFromPlayerPrice": {
+          "gold": 10
+        },
         "demand": 5
       }
     ],
     "hiddenObjects": [
       {
         "itemId": "item_rum_soaked_map",
-        "position": { "x": "70%", "y": "30%" },
+        "position": {
+          "x": "70%",
+          "y": "30%"
+        },
         "foundMessage": "You found a Rum-Soaked Map hidden under a loose floorboard!"
       }
     ],
     "actions": [
-      { "id": "action_return_map", "label": "Return to Map", "targetView": "map" }
+      {
+        "id": "action_return_map",
+        "label": "Return to Map",
+        "targetView": "map"
+      }
     ]
   },
   {
     "id": "kraken_abyss",
     "name": "Kraken's Abyss",
-    "description": "A terrifyingly deep trench rumored to be the lair of the legendary Kraken.",
+    "description": "A terrifyingly deep oceanic trench, its shadowy depths barely illuminated by faint bioluminescent flora. Colossal, unseen forms are hinted at in the oppressive darkness, fit for the lair of the legendary Kraken. The water is a cold, dark indigo, and the atmosphere is one of ancient mystery and immense pressure. Skeletal remains of colossal beasts litter the chasm floor.",
     "icon": "waves",
-    "x": 750, "y": 550,
+    "x": 750,
+    "y": 550,
     "gameViewImage": "../www/assets/images/locations/placeholder_poi_1.jpg",
     "hiddenObjects": [],
-    "actions": [{ "id": "action_return_map", "label": "Return to Map", "targetView": "map" }],
-    "npcIds": ["npc_kraken_abyss"]
+    "actions": [
+      {
+        "id": "action_return_map",
+        "label": "Return to Map",
+        "targetView": "map"
+      }
+    ],
+    "npcIds": [
+      "npc_kraken_abyss"
+    ]
   },
   {
     "id": "cursed_galleon_graveyard",
     "name": "Cursed Galleon Graveyard",
-    "description": "An eerie expanse of shattered shipwrecks, said to be haunted by their drowned crews.",
+    "description": "An eerie expanse of shattered shipwrecks, their ghostly forms silhouetted against a murky, twilight sky. Rotting timbers and tattered sails sway in the spectral currents, and the air is filled with the moans of drowned crews. Wisps of fog cling to the wreckage, and an unnatural silence hangs heavy, broken only by the creak of decaying wood. Beware the glint of ghostly cutlasses in the gloom.",
     "icon": "sailing",
-    "x": 100, "y": 300,
+    "x": 100,
+    "y": 300,
     "gameViewImage": "../www/assets/images/locations/placeholder_poi_2.jpg",
     "hiddenObjects": [],
-    "actions": [{ "id": "action_return_map", "label": "Return to Map", "targetView": "map" }],
-    "npcIds": ["npc_cursed_galleon_graveyard"]
+    "actions": [
+      {
+        "id": "action_return_map",
+        "label": "Return to Map",
+        "targetView": "map"
+      }
+    ],
+    "npcIds": [
+      "npc_cursed_galleon_graveyard"
+    ]
   },
   {
     "id": "mermaid_rock",
     "name": "Mermaid's Rock",
-    "description": "A cluster of sun-bleached rocks where sailors claim to hear enchanting songs.",
+    "description": "A cluster of sun-bleached, jagged rocks rising from turquoise waters, draped with vibrant seaweed. Sailors claim to hear enchanting, irresistible songs carried on the salty breeze, luring ships to their doom. Rainbow-hued fish dart through the clear shallows, and the rocks shimmer with an otherworldly glow at sunset. Perhaps a glint of scales can be seen in the surf.",
     "icon": "girl",
-    "x": 350, "y": 580,
+    "x": 350,
+    "y": 580,
     "gameViewImage": "../www/assets/images/locations/placeholder_poi_3.jpg",
     "hiddenObjects": [],
-    "actions": [{ "id": "action_return_map", "label": "Return to Map", "targetView": "map" }],
-    "npcIds": ["npc_mermaid_rock"]
+    "actions": [
+      {
+        "id": "action_return_map",
+        "label": "Return to Map",
+        "targetView": "map"
+      }
+    ],
+    "npcIds": [
+      "npc_mermaid_rock"
+    ]
   },
   {
     "id": "blackbeards_hidden_cache",
     "name": "Blackbeard's Hidden Cache",
-    "description": "Legend tells of a secret cave where Blackbeard stashed his most valuable treasures.",
+    "description": "A dark, dripping sea cave, its entrance hidden behind a waterfall of cascading jungle vines. Inside, the air is thick with the smell of salt and damp earth. Legend whispers this is where the infamous Blackbeard stashed chests overflowing with plundered gold, jewels, and cursed artifacts. The only light comes from phosphorescent moss clinging to the slick rock walls, revealing crude pirate markings.",
     "icon": "diamond",
-    "x": 50, "y": 50,
+    "x": 50,
+    "y": 50,
     "gameViewImage": "../www/assets/images/locations/placeholder_poi_4.jpg",
     "hiddenObjects": [],
-    "actions": [{ "id": "action_return_map", "label": "Return to Map", "targetView": "map" }],
-    "npcIds": ["npc_blackbeards_hidden_cache"]
+    "actions": [
+      {
+        "id": "action_return_map",
+        "label": "Return to Map",
+        "targetView": "map"
+      }
+    ],
+    "npcIds": [
+      "npc_blackbeards_hidden_cache"
+    ]
   },
   {
     "id": "stormy_cape_of_no_return",
     "name": "Stormy Cape of No Return",
-    "description": "A treacherous cape known for its sudden, violent storms that have claimed many ships.",
+    "description": "A treacherous, windswept cape where jagged black cliffs are constantly battered by furious, dark green waves. The sky above is a maelstrom of bruised purple clouds, and the air crackles with lightning. The bleached bones of countless ships litter the shores, a grim testament to the cape's violent, sudden storms. The roar of the thunder and the shriek of the wind are deafening.",
     "icon": "thunderstorm",
-    "x": 780, "y": 50,
+    "x": 780,
+    "y": 50,
     "gameViewImage": "../www/assets/images/locations/placeholder_poi_5.jpg",
     "hiddenObjects": [],
-    "actions": [{ "id": "action_return_map", "label": "Return to Map", "targetView": "map" }],
-    "npcIds": ["npc_stormy_cape_of_no_return"]
+    "actions": [
+      {
+        "id": "action_return_map",
+        "label": "Return to Map",
+        "targetView": "map"
+      }
+    ],
+    "npcIds": [
+      "npc_stormy_cape_of_no_return"
+    ]
   },
   {
     "id": "davy_jones_locker_entrance",
     "name": "Davy Jones' Locker Entrance",
-    "description": "A swirling whirlpool rumored to be an entrance to the fearsome Davy Jones' Locker.",
+    "description": "A monstrous, swirling whirlpool dominates the churning, dark-grey sea, its vortex dragging down debris and unfortunate ships. Seabirds circle high above, crying mournfully. It's rumored this watery abyss is a one-way passage to the fearsome Davy Jones' Locker, where the souls of drowned pirates are forever trapped. The air smells of brine and despair.",
     "icon": "water",
-    "x": 400, "y": 300,
+    "x": 400,
+    "y": 300,
     "gameViewImage": "../www/assets/images/locations/placeholder_poi_6.jpg",
     "hiddenObjects": [],
-    "actions": [{ "id": "action_return_map", "label": "Return to Map", "targetView": "map" }],
-    "npcIds": ["npc_davy_jones_locker_entrance"]
+    "actions": [
+      {
+        "id": "action_return_map",
+        "label": "Return to Map",
+        "targetView": "map"
+      }
+    ],
+    "npcIds": [
+      "npc_davy_jones_locker_entrance"
+    ]
   },
   {
     "id": "cannibal_island",
     "name": "Cannibal Island",
-    "description": "An unsettling island marked by crude skull totems. Best to steer clear.",
+    "description": "A dense, steamy jungle island, marked by crude, leering skull totems staked into the blood-red earth at the beach. The air is heavy with the scent of unknown blossoms and something more sinister. Drums echo from deep within the oppressive foliage, and the unsettling feeling of being watched is palpable. Broken human bones are scattered amongst the undergrowth. Best to steer clear, lest ye become part of the grisly decorations.",
     "icon": "skull",
-    "x": 200, "y": 450,
+    "x": 200,
+    "y": 450,
     "gameViewImage": "../www/assets/images/locations/placeholder_poi_7.jpg",
     "hiddenObjects": [],
-    "actions": [{ "id": "action_return_map", "label": "Return to Map", "targetView": "map" }],
-    "npcIds": ["npc_cannibal_island"]
+    "actions": [
+      {
+        "id": "action_return_map",
+        "label": "Return to Map",
+        "targetView": "map"
+      }
+    ],
+    "npcIds": [
+      "npc_cannibal_island"
+    ]
   },
   {
     "id": "smugglers_secret_strait",
     "name": "Smuggler's Secret Strait",
-    "description": "A narrow passage hidden by cliffs, used by smugglers to evade naval patrols.",
+    "description": "A narrow, treacherous sea passage, masterfully hidden between towering, moss-covered cliffs that almost touch overhead. The water within is deceptively calm and startlingly clear, reflecting the sliver of sky above. This secret strait is used by cunning smugglers to silently glide past unsuspecting naval patrols, their illicit cargo of rum and contraband safely hidden. Echoes of hushed conversations and clinking bottles seem to hang in the air.",
     "icon": "directions_boat",
-    "x": 600, "y": 120,
+    "x": 600,
+    "y": 120,
     "gameViewImage": "../www/assets/images/locations/placeholder_poi_8.jpg",
     "hiddenObjects": [],
-    "actions": [{ "id": "action_return_map", "label": "Return to Map", "targetView": "map" }],
-    "npcIds": ["npc_smugglers_secret_strait"]
+    "actions": [
+      {
+        "id": "action_return_map",
+        "label": "Return to Map",
+        "targetView": "map"
+      }
+    ],
+    "npcIds": [
+      "npc_smugglers_secret_strait"
+    ]
   },
   {
     "id": "treasure_fleet_wreckage_site",
     "name": "Treasure Fleet Wreckage Site",
-    "description": "The scattered remains of a Spanish treasure fleet, lost to a hurricane centuries ago.",
+    "description": "The scattered, barnacle-encrusted remains of a once-mighty Spanish treasure fleet lie strewn across a shallow, sandy seabed, shimmering in the dappled sunlight. Gold coins and silver goblets occasionally glint amidst the coral-covered cannons and splintered hulls. Colorful fish swim through the skeletal ribs of the galleons, lost to a furious hurricane centuries ago. The silence is broken only by the gentle sway of seaweed and the ghosts of frantic cries.",
     "icon": "broken_image",
-    "x": 50, "y": 400,
+    "x": 50,
+    "y": 400,
     "gameViewImage": "../www/assets/images/locations/placeholder_poi_9.jpg",
     "hiddenObjects": [],
-    "actions": [{ "id": "action_return_map", "label": "Return to Map", "targetView": "map" }],
-    "npcIds": ["npc_treasure_fleet_wreckage_site"]
+    "actions": [
+      {
+        "id": "action_return_map",
+        "label": "Return to Map",
+        "targetView": "map"
+      }
+    ],
+    "npcIds": [
+      "npc_treasure_fleet_wreckage_site"
+    ]
   },
   {
     "id": "fort_caroline_ruins",
     "name": "Fort Caroline Ruins",
-    "description": "The crumbling stone walls of an old colonial fort, now reclaimed by jungle.",
+    "description": "The crumbling, vine-choked stone walls of an old colonial fort stand defiant against the encroaching jungle. Parrots screech from the canopy above, and the air is humid and thick with the scent of decay and damp stone. Cannon emplacements are now home to twisted trees, and the courtyard is a riot of tropical foliage. One can almost hear the clash of swords and the roar of cannons from a bygone era of colonial ambition and pirate raids.",
     "icon": "fort",
-    "x": 650, "y": 400,
+    "x": 650,
+    "y": 400,
     "gameViewImage": "../www/assets/images/locations/placeholder_poi_10.jpg",
     "hiddenObjects": [],
-    "actions": [{ "id": "action_return_map", "label": "Return to Map", "targetView": "map" }],
-    "npcIds": ["npc_fort_caroline_ruins"]
+    "actions": [
+      {
+        "id": "action_return_map",
+        "label": "Return to Map",
+        "targetView": "map"
+      }
+    ],
+    "npcIds": [
+      "npc_fort_caroline_ruins"
+    ]
   },
   {
     "id": "ship_trap_island",
     "name": "Ship-Trap Island",
-    "description": "An island infamous for its treacherous currents and magnetic rocks that pull ships to their doom.",
+    "description": "A forbidding island ringed by dark, jagged rocks that possess a strange magnetic pull, yanking unsuspecting ships towards their doom upon the razor-sharp reefs. Treacherous currents swirl like hungry beasts around its shores. The skeletons of wrecked vessels, from humble fishing boats to proud warships, litter the coastline, their masts like grasping claws. The air hums with an unnatural energy.",
     "icon": "magnet",
-    "x": 250, "y": 250,
+    "x": 250,
+    "y": 250,
     "gameViewImage": "../www/assets/images/locations/placeholder_poi_11.jpg",
     "hiddenObjects": [],
-    "actions": [{ "id": "action_return_map", "label": "Return to Map", "targetView": "map" }],
-    "npcIds": ["npc_ship_trap_island"]
+    "actions": [
+      {
+        "id": "action_return_map",
+        "label": "Return to Map",
+        "targetView": "map"
+      }
+    ],
+    "npcIds": [
+      "npc_ship_trap_island"
+    ]
   },
   {
     "id": "marooners_rock",
     "name": "Marooner's Rock",
-    "description": "A desolate rock where mutineers and troublemakers were left to their fate.",
+    "description": "A desolate, sun-scorched rock jutting from the vast, empty ocean, offering no shelter or sustenance. Bleached driftwood and the bones of seabirds are its only adornments. Here, mutineers and pirate code-breakers were left with a bottle of rum and a pistol with a single shot to face their grim fate under a merciless sun. The silence is profound, broken only by the cries of gulls and the lapping of waves against its unforgiving shores.",
     "icon": "person_off",
-    "x": 700, "y": 250,
+    "x": 700,
+    "y": 250,
     "gameViewImage": "../www/assets/images/locations/placeholder_poi_12.jpg",
     "hiddenObjects": [],
-    "actions": [{ "id": "action_return_map", "label": "Return to Map", "targetView": "map" }],
-    "npcIds": ["npc_marooners_rock"]
+    "actions": [
+      {
+        "id": "action_return_map",
+        "label": "Return to Map",
+        "targetView": "map"
+      }
+    ],
+    "npcIds": [
+      "npc_marooners_rock"
+    ]
   },
   {
     "id": "the_leviathans_ribcage",
     "name": "The Leviathan's Ribcage",
-    "description": "Massive, bleached bones forming a natural archway, said to be the remains of a colossal sea beast.",
+    "description": "Colossal, bleached-white bones, encrusted with barnacles, arch dramatically from the turquoise water, forming a breathtaking natural gateway. These are said to be the ancient ribs of a long-dead Leviathan, a sea beast of unimaginable size. Sunlight filters through the gaps, illuminating the clear water below, where smaller creatures of the deep now make their home. The scale is humbling, a testament to the ocean's primordial power and its monstrous denizens.",
     "icon": "skull",
-    "x": 120, "y": 120,
+    "x": 120,
+    "y": 120,
     "gameViewImage": "../www/assets/images/locations/placeholder_poi_13.jpg",
-    "hiddenObjects": [{"itemId": "leviathan_tooth", "position": {"x": "50%", "y": "50%"}, "foundMessage": "You found a massive Leviathan Tooth!"}],
-    "actions": [{ "id": "action_return_map", "label": "Return to Map", "targetView": "map" }],
-    "npcIds": ["npc_the_leviathans_ribcage"]
+    "hiddenObjects": [
+      {
+        "itemId": "leviathan_tooth",
+        "position": {
+          "x": "50%",
+          "y": "50%"
+        },
+        "foundMessage": "You found a massive Leviathan Tooth!"
+      }
+    ],
+    "actions": [
+      {
+        "id": "action_return_map",
+        "label": "Return to Map",
+        "targetView": "map"
+      }
+    ],
+    "npcIds": [
+      "npc_the_leviathans_ribcage"
+    ]
   },
   {
     "id": "coral_reef_labyrinth",
     "name": "Coral Reef Labyrinth",
-    "description": "A sprawling, maze-like coral reef, beautiful but easy to get lost in.",
+    "description": "A sprawling, vibrant labyrinth of technicolor coral formations, teeming with exotic fish and bizarre sea life. Sunlight creates dancing patterns on the white sand below. While breathtakingly beautiful, its intricate passages and hidden grottoes are notoriously easy to get lost in, a beautiful trap for unwary divers. Beware the territorial moray eels and the well-camouflaged stonefish that guard its secrets.",
     "icon": "hub",
-    "x": 550, "y": 500,
+    "x": 550,
+    "y": 500,
     "gameViewImage": "../www/assets/images/locations/placeholder_poi_14.jpg",
     "hiddenObjects": [],
-    "actions": [{ "id": "action_return_map", "label": "Return to Map", "targetView": "map" }],
-    "npcIds": ["npc_coral_reef_labyrinth"]
+    "actions": [
+      {
+        "id": "action_return_map",
+        "label": "Return to Map",
+        "targetView": "map"
+      }
+    ],
+    "npcIds": [
+      "npc_coral_reef_labyrinth"
+    ]
   },
   {
     "id": "skeleton_key_islet",
     "name": "Skeleton Key Islet",
-    "description": "A small island shaped like a skull, rumored to hold a key to a great treasure.",
+    "description": "A small, eerie islet, its rocky outcrops naturally eroded into the unmistakable shape of a grinning human skull, complete with dark, hollow eye sockets that seem to watch approaching ships. Local legends and pirate shanties claim this island holds a skeleton key \u2013 not of bone, but of ornate silver \u2013 said to unlock a treasure of unimaginable wealth hidden elsewhere in the archipelago. The air is thick with the cries of circling gulls and the scent of salt and mystery.",
     "icon": "key",
-    "x": 450, "y": 180,
+    "x": 450,
+    "y": 180,
     "gameViewImage": "../www/assets/images/locations/placeholder_poi_15.jpg",
     "hiddenObjects": [],
-    "actions": [{ "id": "action_return_map", "label": "Return to Map", "targetView": "map" }],
-    "npcIds": ["npc_skeleton_key_islet"]
+    "actions": [
+      {
+        "id": "action_return_map",
+        "label": "Return to Map",
+        "targetView": "map"
+      }
+    ],
+    "npcIds": [
+      "npc_skeleton_key_islet"
+    ]
   },
   {
     "id": "the_barnacle_bank",
     "name": "The Barnacle Bank",
-    "description": "A shallow sandbar covered in ancient, oversized barnacles, some rumored to hide pearls.",
+    "description": "A vast, shallow sandbar that emerges from the turquoise sea at low tide, its surface entirely encrusted with ancient, oversized barnacles, some as large as cannonballs. Their gnarled shells are stained with age and sea salt. Rumor has it that within these colossal shells, lustrous pearls of immense value can be found by those patient and brave enough to pry them open. The squawks of seabirds fighting over exposed shellfish fill the air.",
     "icon": "beach_access",
-    "x": 300, "y": 30,
+    "x": 300,
+    "y": 30,
     "gameViewImage": "../www/assets/images/locations/placeholder_poi_16.jpg",
     "hiddenObjects": [],
-    "actions": [{ "id": "action_return_map", "label": "Return to Map", "targetView": "map" }],
-    "npcIds": ["npc_the_barnacle_bank"]
+    "actions": [
+      {
+        "id": "action_return_map",
+        "label": "Return to Map",
+        "targetView": "map"
+      }
+    ],
+    "npcIds": [
+      "npc_the_barnacle_bank"
+    ]
   },
   {
     "id": "ghost_ship_anchorage",
     "name": "Ghost Ship Anchorage",
-    "description": "A misty bay where the spectral 'Flying Dutchman' is sometimes sighted.",
+    "description": "A perpetually misty, secluded bay, its waters unnaturally calm and dark. Tangled mangrove roots line the shores, and an eerie silence pervades. This is the legendary anchorage where the spectral galleon, the 'Flying Dutchman,' is sometimes sighted, its ghostly crew trimming phantom sails before it vanishes back into the swirling fog. A chilling cold hangs in the air, and the scent of brine is mixed with something ancient and sorrowful.",
     "icon": "sailing",
-    "x": 180, "y": 550,
+    "x": 180,
+    "y": 550,
     "gameViewImage": "../www/assets/images/locations/placeholder_poi_17.jpg",
     "hiddenObjects": [],
-    "actions": [{ "id": "action_return_map", "label": "Return to Map", "targetView": "map" }],
-    "npcIds": ["npc_ghost_ship_anchorage"]
+    "actions": [
+      {
+        "id": "action_return_map",
+        "label": "Return to Map",
+        "targetView": "map"
+      }
+    ],
+    "npcIds": [
+      "npc_ghost_ship_anchorage"
+    ]
   },
   {
     "id": "sea_serpents_pass",
     "name": "Sea Serpent's Pass",
-    "description": "A winding channel where giant sea serpents are often spotted navigating the currents.",
+    "description": "A narrow, winding channel cutting through towering, seaweed-strewn cliffs. The currents here are strong and unpredictable. Local fishermen whisper tales of giant, scaled sea serpents with eyes like burning coals, their immense bodies gliding effortlessly through these waters, their passage marked by disturbed waves and the cries of frightened seabirds. The air is heavy with the smell of salt and the unknown depths.",
     "icon": "snake",
-    "x": 600, "y": 580,
+    "x": 600,
+    "y": 580,
     "gameViewImage": "../www/assets/images/locations/placeholder_poi_18.jpg",
     "hiddenObjects": [],
-    "actions": [{ "id": "action_return_map", "label": "Return to Map", "targetView": "map" }],
-    "npcIds": ["npc_sea_serpents_pass"]
+    "actions": [
+      {
+        "id": "action_return_map",
+        "label": "Return to Map",
+        "targetView": "map"
+      }
+    ],
+    "npcIds": [
+      "npc_sea_serpents_pass"
+    ]
   },
   {
     "id": "dead_mans_chest_island",
     "name": "Dead Man's Chest Island",
-    "description": "Yo ho ho, an island famed in pirate shanties, said to hide a cursed treasure chest.",
+    "description": "Yo ho ho, and a bottle of rum! This sun-drenched island, with its single, skeletal palm tree, is famed in countless pirate shanties. It's said to be the hiding place of a cursed treasure chest, one that brings misfortune to any who dare claim its blood-soaked contents. A weathered, half-buried skeleton points a bony finger towards the supposed location of the ill-gotten loot. The sand is hot, and the only sound is the mocking laughter of the wind.",
     "icon": "inventory_2",
-    "x": 720, "y": 480,
+    "x": 720,
+    "y": 480,
     "gameViewImage": "../www/assets/images/locations/placeholder_poi_19.jpg",
     "hiddenObjects": [],
-    "actions": [{ "id": "action_return_map", "label": "Return to Map", "targetView": "map" }],
-    "npcIds": ["npc_dead_mans_chest_island"]
+    "actions": [
+      {
+        "id": "action_return_map",
+        "label": "Return to Map",
+        "targetView": "map"
+      }
+    ],
+    "npcIds": [
+      "npc_dead_mans_chest_island"
+    ]
   },
   {
     "id": "rum_runners_rendezvous",
     "name": "Rum Runner's Rendezvous",
-    "description": "A secluded beach where illegal rum shipments are secretly landed.",
+    "description": "A secluded, crescent-shaped beach, hidden from prying eyes by dense jungle and treacherous reefs. At night, under the cover of darkness, flickering lanterns mark the spot where clandestine boats, laden with barrels of illegal, potent rum, make their secret landings. The sand is littered with discarded bottles and the remnants of smugglers' campfires. The air is thick with the sweet, heady aroma of spilled spirits and nervous whispers.",
     "icon": "sports_bar",
-    "x": 20, "y": 200,
+    "x": 20,
+    "y": 200,
     "gameViewImage": "../www/assets/images/locations/placeholder_poi_20.jpg",
     "hiddenObjects": [],
-    "actions": [{ "id": "action_return_map", "label": "Return to Map", "targetView": "map" }],
-    "npcIds": ["npc_rum_runners_rendezvous"]
+    "actions": [
+      {
+        "id": "action_return_map",
+        "label": "Return to Map",
+        "targetView": "map"
+      }
+    ],
+    "npcIds": [
+      "npc_rum_runners_rendezvous"
+    ]
   },
   {
     "id": "spyglass_hill",
     "name": "Spyglass Hill",
-    "description": "The tallest point on the islands, offering a panoramic view of the surrounding seas.",
+    "description": "The wind-whipped summit of Spyglass Hill, the highest point in the archipelago, offering a breathtaking, panoramic vista of the surrounding turquoise seas, dotted with verdant islands and treacherous reefs. A weathered stone lookout, built by pirates of old, still stands guard. From here, one can spot approaching ships, friend or foe, from leagues away. The cries of eagles echo, and the scent of salt and freedom is intoxicating.",
     "icon": "binoculars",
-    "x": 480, "y": 380,
+    "x": 480,
+    "y": 380,
     "gameViewImage": "../www/assets/images/locations/placeholder_poi_21.jpg",
     "hiddenObjects": [],
-    "actions": [{ "id": "action_return_map", "label": "Return to Map", "targetView": "map" }],
-    "npcIds": ["npc_spyglass_hill"]
+    "actions": [
+      {
+        "id": "action_return_map",
+        "label": "Return to Map",
+        "targetView": "map"
+      }
+    ],
+    "npcIds": [
+      "npc_spyglass_hill"
+    ]
   },
   {
     "id": "mutineers_gallows",
     "name": "Mutineer's Gallows",
-    "description": "A grim site where pirates who broke the code met their end.",
+    "description": "A grim, barren bluff overlooking the turbulent sea, where a weathered, creaking gallows stands silhouetted against the stormy sky. Rusty chains swing in the salty wind, a chilling reminder of the fate that befell pirates who dared to break the strict code of the brotherhood. The ground is uneven, and the air feels heavy with the echoes of last words and final judgements. Vultures circle lazily overhead.",
     "icon": "skull",
-    "x": 330, "y": 420,
+    "x": 330,
+    "y": 420,
     "gameViewImage": "../www/assets/images/locations/placeholder_poi_22.jpg",
     "hiddenObjects": [],
-    "actions": [{ "id": "action_return_map", "label": "Return to Map", "targetView": "map" }],
-    "npcIds": ["npc_mutineers_gallows"]
+    "actions": [
+      {
+        "id": "action_return_map",
+        "label": "Return to Map",
+        "targetView": "map"
+      }
+    ],
+    "npcIds": [
+      "npc_mutineers_gallows"
+    ]
   },
   {
     "id": "buried_doubloon_beach",
     "name": "Buried Doubloon Beach",
-    "description": "A stretch of sand where pirates are known to bury their ill-gotten gains.",
+    "description": "A wide, sun-drenched stretch of golden sand, fringed by palm trees and marked with numerous crude, half-forgotten pirate signs. This beach is legendary among treasure hunters, as generations of buccaneers have chosen this spot to bury their ill-gotten hoards of Spanish doubloons and pieces of eight. The sand is warm underfoot, and the gentle lapping of waves seems to whisper secrets of hidden riches. Broken shovels and discarded chests hint at past searches.",
     "icon": "paid",
-    "x": 500, "y": 20,
+    "x": 500,
+    "y": 20,
     "gameViewImage": "../www/assets/images/locations/placeholder_poi_23.jpg",
-    "hiddenObjects": [{"itemId": "bag_of_doubloons", "position": {"x": "60%", "y": "70%"}, "foundMessage": "You dug up a small bag of Doubloons!"}],
-    "actions": [{ "id": "action_return_map", "label": "Return to Map", "targetView": "map" }],
-    "npcIds": ["npc_buried_doubloon_beach"]
+    "hiddenObjects": [
+      {
+        "itemId": "bag_of_doubloons",
+        "position": {
+          "x": "60%",
+          "y": "70%"
+        },
+        "foundMessage": "You dug up a small bag of Doubloons!"
+      }
+    ],
+    "actions": [
+      {
+        "id": "action_return_map",
+        "label": "Return to Map",
+        "targetView": "map"
+      }
+    ],
+    "npcIds": [
+      "npc_buried_doubloon_beach"
+    ]
   },
   {
     "id": "captains_quarrel_cove",
     "name": "Captain's Quarrel Cove",
-    "description": "A notorious dueling spot where pirate captains settled their disputes...permanently.",
+    "description": "A small, secluded cove, its white sand stained crimson in places, enclosed by sheer black cliffs that muffle the sound of the crashing waves. This is the infamous dueling ground where hot-headed pirate captains, fueled by rum and rivalry, settled their disputes with pistol and cutlass... often permanently. Crossed swords are carved into the largest cliff face as a solemn warning. The air is tense, still echoing with the ghosts of shouted accusations and the ring of steel.",
     "icon": "swords",
-    "x": 680, "y": 320,
+    "x": 680,
+    "y": 320,
     "gameViewImage": "../www/assets/images/locations/placeholder_poi_24.jpg",
     "hiddenObjects": [],
-    "actions": [{ "id": "action_return_map", "label": "Return to Map", "targetView": "map" }],
-    "npcIds": ["npc_captains_quarrel_cove"]
+    "actions": [
+      {
+        "id": "action_return_map",
+        "label": "Return to Map",
+        "targetView": "map"
+      }
+    ],
+    "npcIds": [
+      "npc_captains_quarrel_cove"
+    ]
   }
 ]
