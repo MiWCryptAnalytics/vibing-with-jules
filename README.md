@@ -59,7 +59,7 @@ The primary goal of `generate_portraits.py` is to automatically create high-qual
     *   Ensure you have Python installed.
     *   Install necessary libraries:
         ```bash
-        pip install google-generativeai Pillow
+        pip install google-genai Pillow
         ```
 2.  **API Key/Authentication**:
     *   The script requires authentication with Google Cloud. You can either:
