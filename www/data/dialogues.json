@@ -23,6 +23,11 @@
           "text": "Tell me a funny story, pirate.",
           "nextNodeId": "jack_funny_story_start",
           "action": null
+        },
+        {
+          "text": "That's quite an eyepatch. Story behind it?",
+          "nextNodeId": "jack_eyepatch_story",
+          "action": null
         }
       ]
     },
@@ -60,6 +65,11 @@
         {
           "text": "Solid advice, thank you.",
           "nextNodeId": "END",
+          "action": null
+        },
+        {
+          "text": "Heard of any legendary treasures still out there?",
+          "nextNodeId": "jack_legendary_treasure",
           "action": null
         }
       ]
@@ -139,6 +149,28 @@
           "action": null
         }
       ]
+    },
+    "jack_eyepatch_story": {
+      "id": "jack_eyepatch_story",
+      "npcText": "This old thing? Lost it to a kraken's caress off the Serpent's Spine. Took me eye, but I took its treasure! Every scar tells a tale, eh?",
+      "playerChoices": [
+        {
+          "text": "A kraken! Sounds thrilling.",
+          "nextNodeId": "END",
+          "action": null
+        }
+      ]
+    },
+    "jack_legendary_treasure": {
+      "id": "jack_legendary_treasure",
+      "npcText": "Aye, whispers of Captain Blackheart's hoard on Phantom Isle. They say it's guarded by his ghostly crew, and the island itself only appears under a blood moon. Many have sought it, none have returned... with the loot, anyway.",
+      "playerChoices": [
+        {
+          "text": "Fascinating. Maybe I'll look into it.",
+          "nextNodeId": "END",
+          "action": null
+        }
+      ]
     }
   },
   "npc_mysterious_woman": {
@@ -155,6 +187,11 @@
           "text": "Just admiring the tranquility of this place.",
           "nextNodeId": "mysterious_admire",
           "action": null
+        },
+        {
+          "text": "What kind of secrets does this lagoon hold?",
+          "nextNodeId": "mysterious_lagoon_secrets",
+          "action": null
         }
       ]
     },
@@ -166,6 +203,11 @@
           "text": "I understand. I mean no harm.",
           "nextNodeId": "END",
           "action": null
+        },
+        {
+          "text": "What does it mean to 'keep its balance'?",
+          "nextNodeId": "mysterious_balance_explained",
+          "action": null
         }
       ]
     },
@@ -175,6 +217,28 @@
       "playerChoices": [
         {
           "text": "I'll keep that in mind.",
+          "nextNodeId": "END",
+          "action": null
+        }
+      ]
+    },
+    "mysterious_lagoon_secrets": {
+      "id": "mysterious_lagoon_secrets",
+      "npcText": "The lagoon remembers the songs of the ancient mariners, the whispers of forgotten gods, and the dreams of sleeping leviathans. Its waters can heal, or they can deceive. Approach with respect.",
+      "playerChoices": [
+        {
+          "text": "I will be respectful.",
+          "nextNodeId": "END",
+          "action": null
+        }
+      ]
+    },
+    "mysterious_balance_explained": {
+      "id": "mysterious_balance_explained",
+      "npcText": "Life and decay, light and shadow, the seen and the unseen... all must flow in harmony here. I am merely a conduit, ensuring the tides of power do not overwhelm this sanctuary.",
+      "playerChoices": [
+        {
+          "text": "A vital role, it seems.",
           "nextNodeId": "END",
           "action": null
         }
@@ -195,6 +259,11 @@
           "text": "No thanks, I'm just browsing.",
           "nextNodeId": "shady_browsing",
           "action": null
+        },
+        {
+          "text": "You look like you've seen a few things. Ever have a deal go sour?",
+          "nextNodeId": "shady_deal_gone_sour",
+          "action": null
         }
       ]
     },
@@ -210,6 +279,11 @@
         {
           "text": "(Lie) I'm not afraid of a high price for true value.",
           "nextNodeId": "shady_lie_price",
+          "action": null
+        },
+        {
+          "text": "I'm looking for something... powerful. Perhaps even cursed?",
+          "nextNodeId": "shady_cursed_relics",
           "action": null
         }
       ]
@@ -231,6 +305,28 @@
       "playerChoices": [
         {
           "text": "Intriguing. I might just do that.",
+          "nextNodeId": "END",
+          "action": null
+        }
+      ]
+    },
+    "shady_cursed_relics": {
+      "id": "shady_cursed_relics",
+      "npcText": "Hah! A taste for the forbidden, eh? Cursed items... they offer great power, but always at a steep price, often more than just coin. I might know a fellow who dabbles... for the right introduction fee, of course.",
+      "playerChoices": [
+        {
+          "text": "Interesting. I'll consider it.",
+          "nextNodeId": "END",
+          "action": null
+        }
+      ]
+    },
+    "shady_deal_gone_sour": {
+      "id": "shady_deal_gone_sour",
+      "npcText": "Sour? Heh, more like rotten to the core! Once tried to sell a 'genuine' mermaid's tear to a rather dim-witted pirate captain. Turned out his first mate was a marine biologist in a past life. Nearly ended up as fish food. Discretion, my friend, is the better part of profit.",
+      "playerChoices": [
+        {
+          "text": "A valuable lesson, indeed.",
           "nextNodeId": "END",
           "action": null
         }

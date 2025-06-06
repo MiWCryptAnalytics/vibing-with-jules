@@ -1,5 +1,7 @@
 import json
 import os
+import random
+import time # Added for retry backoff
 # subprocess was not used
 # base64 is not needed for Gemini raw image bytes
 # from google.cloud import aiplatform # Replaced with google.generativeai
@@ -140,7 +142,17 @@ def generate_portraits_for_npcs(npcs_data_list, all_dialogues_dict, project_root
   portraits_dir = os.path.join(project_root_path, "www", "assets", "images", "portraits")
   os.makedirs(portraits_dir, exist_ok=True)
 
+  # Define lists for prompt generation
+  art_styles = ["photorealistic", "hyperrealistic", "impressionistic", "concept art", "oil painting", "watercolor", "charcoal sketch", "fantasy art"]
+  adjectives = ["gritty", "serene", "mysterious", "epic", "cinematic", "dreamlike", "haunting", "vibrant", "muted", "dark", "bright"]
+  lighting_conditions = ["low-key lighting", "high-key lighting", "dramatic lighting", "soft lighting", "rim lighting", "moonlight", "sunlight", "candlelight", "volumetric fog", "god rays"]
+  camera_angles = ["close-up shot", "medium shot", "full shot", "dutch angle", "low angle", "high angle", "profile shot"]
+
   try:
+    # Configure the Gemini client (ensure GOOGLE_API_KEY is set in your environment)
+    # api_key = os.getenv("GOOGLE_API_KEY")
+    # if not api_key:
+    #     raise ValueError("GOOGLE_API_KEY environment variable not set.")
     client = genai.Client()
     # Model name for Gemini Flash image generation, as per the example
     #model_name = "gemini-2.0-flash-preview-image-generation"
@@ -155,8 +167,8 @@ def generate_portraits_for_npcs(npcs_data_list, all_dialogues_dict, project_root
     # Return original list if core library is missing
     return [npc.copy() for npc in npcs_data_list]
   except Exception as e:
-    print(f"ERROR: Failed to initialize Gemini Client: {e}")
-    print("Ensure GOOGLE_CLOUD_PROJECT is correctly set (if using ADC) and you have authenticated for Google Cloud/Gemini "
+    print(f"ERROR: Failed to initialize Gemini Client or missing API Key: {e}")
+    print("Ensure GOOGLE_API_KEY environment variable is set. If using ADC, ensure GOOGLE_CLOUD_PROJECT is correctly set "
           "(e.g., 'gcloud auth application-default login' or by setting GOOGLE_API_KEY).")
     # Return original list if AI platform init fails
     return [npc.copy() for npc in npcs_data_list]
@@ -179,89 +191,124 @@ def generate_portraits_for_npcs(npcs_data_list, all_dialogues_dict, project_root
         npc_copy['portraitImage'] = relative_portrait_path
         # Assuming if image exists, prompt file also exists from previous run.
     else:
-        # Base prompt
-        #prompt_text = f"High Quality DSLR portrait of {npc_name}: {npc_description}."
-        prompt_text = f"Gritty, hyperrealistic portrait of {npc_name}, a notorious pirate: {npc_description}."
-
-        # Add style cue
-        prompt_text += "Low-key lighting, casting long shadows, highlighting rugged features and weathered attire. Volumetric fog or sea spray in the air. Close-up shot, focusing on a captivating, fierce gaze. Artstation trending, highly detailed, character design. Square, 1:1. --ar 1:1 --q 2 --no cartoon, painting, disfigured"
-
-        # Attempt to add dialogue to prompt
-        npc_dialogues = all_dialogues_dict.get(npc_id)
-        if npc_dialogues and isinstance(npc_dialogues, list) and len(npc_dialogues) > 0:
-            # Look for the first 'npcText' in the dialogue entries
-            dialogue_line_1 = None
-            for entry in npc_dialogues:
-                if 'npcText' in entry and entry['npcText']:
-                    dialogue_line_1 = entry['npcText']
-                    break
-            if dialogue_line_1:
-                prompt_text += f" They might say: '{dialogue_line_1}'"
-
-            # Attempt to get a second dialogue line if available
-            dialogue_line_2 = None
-            count = 0
-            for entry in npc_dialogues:
-                if 'npcText' in entry and entry['npcText']:
-                    count += 1
-                    if count == 2:
-                        dialogue_line_2 = entry['npcText']
-                        break
-            if dialogue_line_2:
-                prompt_text += f" Another thing they might say is: '{dialogue_line_2}'"
-
-        print(f"INFO: Generating image for {npc_id} ({npc_name}) with prompt: {prompt_text}")
-
         try:
-            response = client.models.generate_images(
-                model=model_name,
-                prompt=prompt_text,
-                config=types.GenerateImagesConfig(
-                  number_of_images=1,
-                  personGeneration="allow_all",
-                  include_rai_reason=True,
-                  output_mime_type='image/jpeg',
-              )
-            )
+            # Randomly select elements for the prompt
+            selected_adjective = random.choice(adjectives)
+            selected_art_style = random.choice(art_styles)
+            selected_lighting = random.choice(lighting_conditions)
+            selected_camera_angle = random.choice(camera_angles)
 
-            image_bytes_to_save = None
-            if response.generated_images and response.generated_images[0].image:
-                image_bytes_to_save = response.generated_images[0].image.image_bytes
-            
-            if image_bytes_to_save:
+            # Construct the prompt text
+            prompt_text = f"{selected_adjective} {selected_art_style} portrait of {npc_name} the {npc_description}. {selected_lighting}, {selected_camera_angle}."
+
+            # Add style cue (optional, consider if it conflicts with randomized elements)
+            # prompt_text += " Artstation trending, highly detailed, character design. Square, 1:1. --ar 1:1 --q 2 --no cartoon, painting, disfigured"
+
+            # Attempt to add dialogue to prompt
+            npc_dialogue_nodes = all_dialogues_dict.get(npc_id) # This gets the dict of dialogue nodes for the NPC
+            if npc_dialogue_nodes and isinstance(npc_dialogue_nodes, dict):
+                dialogue_lines_to_add = []
+                
+                # Collect all unique, non-empty npcText entries from the NPC's dialogue nodes
+                all_npc_texts = []
+                seen_texts = set()
+                for node_data in npc_dialogue_nodes.values():
+                    if 'npcText' in node_data and node_data['npcText']:
+                        text = node_data['npcText']
+                        if text not in seen_texts:
+                            all_npc_texts.append(text)
+                            seen_texts.add(text)
+                
+                if all_npc_texts:
+                    # Add the first unique NPC text
+                    dialogue_lines_to_add.append(all_npc_texts[0])
+                    # Add a second unique NPC text if available
+                    if len(all_npc_texts) > 1:
+                        dialogue_lines_to_add.append(all_npc_texts[1])
+
+                if len(dialogue_lines_to_add) > 0:
+                    # This phrase encourages the AI to use the dialogue for thematic inspiration
+                    prompt_text += f" The character's typical expressions and manner of speaking should inform their depicted personality and attitude."
+
+            # Append comprehensive negative prompts
+            prompt_text += " --no cartoon, painting, disfigured, blurry, low resolution, watermark, signature, text, ugly, deformed, out of frame, duplicate, extra limbs, missing limbs, bad anatomy"
+
+            print(f"INFO: Generating image for {npc_id} ({npc_name}) with prompt: {prompt_text}")
+
+            # Retry logic for API call
+            max_retries = 3
+            base_delay_seconds = 5 # Initial delay for backoff
+            response = None
+
+            for attempt in range(max_retries):
                 try:
-                    img = Image.open(BytesIO(image_bytes_to_save))
-                    # Resize the image to 512x512 pixels
-                    img = img.resize((512, 512))
-                    img.save(full_image_path) # PIL infers format from extension, or use format='PNG'
-                    
-                    with open(full_prompt_path, "w") as f:
-                        f.write(prompt_text)
+                    response = client.models.generate_images(
+                        model=model_name,
+                        prompt=prompt_text,
+                        config=types.GenerateImagesConfig(
+                          number_of_images=1,
+                          personGeneration="allow_all",
+                          include_rai_reason=True,
+                          output_mime_type='image/jpeg',
+                      )
+                    )
+                    # If successful, break out of the retry loop
+                    break 
+                except GoogleAPIError as e:
+                    # Check if the error is a 429 (Resource Exhausted)
+                    is_rate_limit_error = ("429" in str(e) and "RESOURCE_EXHAUSTED" in str(e)) or \
+                                          (hasattr(e, 'code') and e.code == 429)
 
-                    print(f"SUCCESS: Generated and saved portrait and prompt for {npc_id} ({npc_name}) to {full_image_path} and {full_prompt_path}")
-                    npc_copy['portraitImage'] = relative_portrait_path
-                    print(f"DEBUG: NPC {npc_id} portraitImage updated to: {relative_portrait_path}")
+                    if is_rate_limit_error and attempt < max_retries - 1:
+                        delay = base_delay_seconds * (2 ** attempt) # Exponential backoff
+                        jitter = random.uniform(0, 0.1 * delay) # Add some jitter
+                        actual_delay = delay + jitter
+                        print(f"WARNING: Rate limit hit for {npc_id} ({npc_name}). Retrying in {actual_delay:.2f} seconds (attempt {attempt + 1}/{max_retries}). Error: {e}")
+                        time.sleep(actual_delay)
+                    else:
+                        print(f"ERROR: Failed to generate image for {npc_id} ({npc_name}) due to Google API Error (attempt {attempt + 1}/{max_retries}). Error: {e}")
+                        response = None # Ensure response is None if all retries fail or it's a non-retryable API error
+                        break # Break on non-retryable API error or last attempt
+                except Exception as e: # Catch other unexpected errors during the API call
+                    print(f"ERROR: An unexpected error occurred during API call for {npc_id} ({npc_name}) (attempt {attempt + 1}/{max_retries}). Error: {e}")
+                    response = None # Ensure response is None
+                    break # Break on other unexpected errors
 
-                except ImportError: # Should be caught at top level, but as a safeguard here for PIL/BytesIO
-                    print("ERROR: Pillow or io library might be missing. Please ensure 'Pillow' is installed ('pip install Pillow'). Cannot save image.")
-                    # npc_copy remains without portraitImage, will be appended later
-                except Exception as e:
-                    print(f"ERROR: Failed to save image for {npc_id} ({npc_name}). Error: {e}")
-                    # npc_copy remains without portraitImage, will be appended later
-            elif response and response.candidates and not (response.candidates[0].content and response.candidates[0].content.parts):
-                 print(f"ERROR: Gemini API call succeeded for {npc_id} ({npc_name}) but returned no content parts. Candidate: {response.candidates[0]}")
-            else:
-                print(f"ERROR: Gemini API call for {npc_id} ({npc_name}) returned no image or an unexpected response: {response}")
+            # Process the response (if any) after retries
+            if response:
+                image_bytes_to_save = None
+                if response.generated_images and response.generated_images[0].image:
+                    image_bytes_to_save = response.generated_images[0].image.image_bytes
+                
+                if image_bytes_to_save:
+                    try:
+                        img = Image.open(BytesIO(image_bytes_to_save))
+                        img = img.resize((512, 512))
+                        img.save(full_image_path)
+                        
+                        with open(full_prompt_path, "w") as f:
+                            f.write(prompt_text)
 
-        except GoogleAPIError as e:
-            print(f"ERROR: Failed to generate image for {npc_id} ({npc_name}) due to Google API Error. Error: {e}")
-        except ImportError:
+                        print(f"SUCCESS: Generated and saved portrait and prompt for {npc_id} ({npc_name}) to {full_image_path} and {full_prompt_path}")
+                        npc_copy['portraitImage'] = relative_portrait_path
+                        print(f"DEBUG: NPC {npc_id} portraitImage updated to: {relative_portrait_path}")
+
+                    except ImportError: 
+                        print("ERROR: Pillow or io library might be missing. Please ensure 'Pillow' is installed ('pip install Pillow'). Cannot save image.")
+                    except Exception as e:
+                        print(f"ERROR: Failed to save image for {npc_id} ({npc_name}). Error: {e}")
+                elif response.candidates and not (response.candidates[0].content and response.candidates[0].content.parts):
+                     print(f"ERROR: Gemini API call succeeded for {npc_id} ({npc_name}) but returned no content parts. Candidate: {response.candidates[0]}")
+                else:
+                    print(f"ERROR: Gemini API call for {npc_id} ({npc_name}) returned no image or an unexpected response after retries: {response}")
+            # No else needed here, as errors during API call or if response is None are already logged.
+
+        except ImportError as e:
             # This specific ImportError for google-cloud-aiplatform is now less relevant.
             # ImportError for google-generativeai is handled at the function start.
             # If other ImportErrors occur here (e.g. a sub-dependency of genai not caught above),
             # it's an unexpected state.
-            print(f"ERROR: An unexpected ImportError occurred: {e}") # Note: 'e' might be undefined here if this specific except block is hit due to genai not being imported.
-                                                                # However, the genai import is checked at the start of the function.
+            print(f"ERROR: An unexpected ImportError occurred during portrait generation for {npc_id} ({npc_name}). Error: {e}")
         except Exception as e:
             print(f"ERROR: An unexpected error occurred while generating image for {npc_id} ({npc_name}). Error: {e}")
 

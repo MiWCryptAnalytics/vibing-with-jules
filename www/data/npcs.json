@@ -5,7 +5,7 @@
     "description": "A weathered pirate with a story for every scar. He's seen more storms than a royal navy admiral.",
     "icon": "person",
     "defaultLocationId": "tortuga_town",
-    "portraitImage": "../www/assets/images/portraits/one_eyed_jack_portrait.png",
+    "portraitImage": "assets/images/portraits/npc_one_eyed_jack_portrait.jpg",
     "alignment": "neutral",
     "position": {
       "x": "20%",
@@ -18,7 +18,7 @@
     "description": "She watches the world with knowing eyes, her secrets as deep as the ocean.",
     "icon": "face_3",
     "defaultLocationId": "hidden_lagoon",
-    "portraitImage": "../www/assets/images/portraits/mysterious_woman_portrait.png",
+    "portraitImage": "assets/images/portraits/npc_mysterious_woman_portrait.jpg",
     "alignment": "neutral",
     "position": {
       "x": "75%",
@@ -31,7 +31,7 @@
     "description": "He deals in rare and unusual items... for the right price. Always has a glint in his eye.",
     "icon": "store",
     "defaultLocationId": "port_royal_market",
-    "portraitImage": "../www/assets/images/portraits/shady_merchant_portrait.png",
+    "portraitImage": "assets/images/portraits/npc_shady_merchant_portrait.jpg",
     "alignment": "neutral",
     "position": {
       "x": "50%",
@@ -44,7 +44,7 @@
     "description": "A wild-eyed hermit who claims to commune with the great Kraken.",
     "icon": "person_pin",
     "defaultLocationId": "kraken_abyss",
-    "portraitImage": "../www/assets/images/portraits/placeholder_npc_1.png",
+    "portraitImage": "assets/images/portraits/npc_kraken_abyss_portrait.jpg",
     "alignment": "neutral",
     "position": {
       "x": "60%",
@@ -187,7 +187,7 @@
     "description": "A mysterious figure watching over Marooner's Rock.",
     "icon": "person_pin",
     "defaultLocationId": "marooners_rock",
-    "portraitImage": "../www/assets/images/portraits/placeholder_npc_12.png",
+    "portraitImage": "assets/images/portraits/npc_marooners_rock_portrait.jpg",
     "alignment": "neutral",
     "position": {
       "x": "20%",
@@ -252,7 +252,7 @@
     "description": "A mysterious figure watching over Ghost Ship Anchorage.",
     "icon": "person_pin",
     "defaultLocationId": "ghost_ship_anchorage",
-    "portraitImage": "../www/assets/images/portraits/placeholder_npc_17.png",
+    "portraitImage": "assets/images/portraits/npc_ghost_ship_anchorage_portrait.jpg",
     "alignment": "neutral",
     "position": {
       "x": "70%",
@@ -278,7 +278,7 @@
     "description": "A mysterious figure watching over Dead Man's Chest Island.",
     "icon": "person_pin",
     "defaultLocationId": "dead_mans_chest_island",
-    "portraitImage": "../www/assets/images/portraits/placeholder_npc_19.png",
+    "portraitImage": "assets/images/portraits/npc_dead_mans_chest_island_portrait.jpg",
     "alignment": "neutral",
     "position": {
       "x": "55%",
@@ -317,7 +317,7 @@
     "description": "A mysterious figure watching over Mutineer's Gallows.",
     "icon": "person_pin",
     "defaultLocationId": "mutineers_gallows",
-    "portraitImage": "../www/assets/images/portraits/placeholder_npc_22.png",
+    "portraitImage": "assets/images/portraits/npc_mutineers_gallows_portrait.jpg",
     "alignment": "neutral",
     "position": {
       "x": "30%",
