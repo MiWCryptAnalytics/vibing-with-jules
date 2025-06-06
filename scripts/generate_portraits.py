@@ -1,13 +1,14 @@
 import json
 import os
+import random
 # subprocess was not used
 # base64 is not needed for Gemini raw image bytes
 # from google.cloud import aiplatform # Replaced with google.generativeai
 from google.api_core.exceptions import GoogleAPIError
 
 # New imports for Gemini API
-from google import genai
-from google.genai import types
+import google.generativeai as genai # Changed import statement
+from google.generativeai import types # Changed import statement
 from PIL import Image
 from io import BytesIO
 
@@ -140,6 +141,12 @@ def generate_portraits_for_npcs(npcs_data_list, all_dialogues_dict, project_root
   portraits_dir = os.path.join(project_root_path, "www", "assets", "images", "portraits")
   os.makedirs(portraits_dir, exist_ok=True)
 
+  # Define lists for prompt generation
+  art_styles = ["photorealistic", "hyperrealistic", "impressionistic", "concept art", "oil painting", "watercolor", "charcoal sketch", "fantasy art"]
+  adjectives = ["gritty", "serene", "mysterious", "epic", "cinematic", "dreamlike", "haunting", "vibrant", "muted", "dark", "bright"]
+  lighting_conditions = ["low-key lighting", "high-key lighting", "dramatic lighting", "soft lighting", "rim lighting", "moonlight", "sunlight", "candlelight", "volumetric fog", "god rays"]
+  camera_angles = ["close-up shot", "medium shot", "full shot", "dutch angle", "low angle", "high angle", "profile shot"]
+
   try:
     client = genai.Client()
     # Model name for Gemini Flash image generation, as per the example
@@ -179,12 +186,17 @@ def generate_portraits_for_npcs(npcs_data_list, all_dialogues_dict, project_root
         npc_copy['portraitImage'] = relative_portrait_path
         # Assuming if image exists, prompt file also exists from previous run.
     else:
-        # Base prompt
-        #prompt_text = f"High Quality DSLR portrait of {npc_name}: {npc_description}."
-        prompt_text = f"Gritty, hyperrealistic portrait of {npc_name}, a notorious pirate: {npc_description}."
+        # Randomly select elements for the prompt
+        selected_adjective = random.choice(adjectives)
+        selected_art_style = random.choice(art_styles)
+        selected_lighting = random.choice(lighting_conditions)
+        selected_camera_angle = random.choice(camera_angles)
 
-        # Add style cue
-        prompt_text += "Low-key lighting, casting long shadows, highlighting rugged features and weathered attire. Volumetric fog or sea spray in the air. Close-up shot, focusing on a captivating, fierce gaze. Artstation trending, highly detailed, character design. Square, 1:1. --ar 1:1 --q 2 --no cartoon, painting, disfigured"
+        # Construct the prompt text
+        prompt_text = f"{selected_adjective} {selected_art_style} portrait of {npc_name} the {npc_description}. {selected_lighting}, {selected_camera_angle}."
+
+        # Add style cue (optional, consider if it conflicts with randomized elements)
+        # prompt_text += " Artstation trending, highly detailed, character design. Square, 1:1. --ar 1:1 --q 2 --no cartoon, painting, disfigured"
 
         # Attempt to add dialogue to prompt
         npc_dialogues = all_dialogues_dict.get(npc_id)
@@ -209,6 +221,9 @@ def generate_portraits_for_npcs(npcs_data_list, all_dialogues_dict, project_root
                         break
             if dialogue_line_2:
                 prompt_text += f" Another thing they might say is: '{dialogue_line_2}'"
+
+        # Append comprehensive negative prompts
+        prompt_text += " --no cartoon, painting, disfigured, blurry, low resolution, watermark, signature, text, ugly, deformed, out of frame, duplicate, extra limbs, missing limbs, bad anatomy"
 
         print(f"INFO: Generating image for {npc_id} ({npc_name}) with prompt: {prompt_text}")
 
