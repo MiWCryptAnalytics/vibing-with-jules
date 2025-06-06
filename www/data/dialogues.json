@@ -173,6 +173,553 @@
       ]
     }
   },
+  "npc_captain_isabella_moreau": {
+    "moreau_start": {
+      "id": "moreau_start",
+      "npcText": "Well, well, what have we here? Another stray lamb looking for a wolf in sheep's clothing, or do you actually have business with Captain Moreau?",
+      "playerChoices": [
+        {
+          "text": "Just looking for passage, Captain.",
+          "nextNodeId": "moreau_passage",
+          "action": null
+        },
+        {
+          "text": "I've heard you're a captain who gets things done.",
+          "nextNodeId": "moreau_reputation",
+          "action": null
+        },
+        {
+          "text": "Heard any whispers about 'The Crimson Marauders'?",
+          "nextNodeId": "moreau_crimson_marauders_intro",
+          "action": null
+        }
+      ]
+    },
+    "moreau_passage": {
+      "id": "moreau_passage",
+      "npcText": "Passage, eh? My ship, 'The Sea Serpent,' isn't a charity. What makes you worth the space and rations?",
+      "playerChoices": [
+        {
+          "text": "I'm resourceful and can pull my weight.",
+          "nextNodeId": "END",
+          "action": null
+        },
+        {
+          "text": "Perhaps some information would be worth my passage?",
+          "nextNodeId": "moreau_info_for_passage",
+          "action": null
+        }
+      ]
+    },
+    "moreau_reputation": {
+      "id": "moreau_reputation",
+      "npcText": "That I am. I don't waste time, and I don't suffer fools. So, what is it you need 'done'?",
+      "playerChoices": [
+        {
+          "text": "I'm seeking information about a legendary treasure.",
+          "nextNodeId": "moreau_legendary_treasure_query",
+          "action": null
+        },
+        {
+          "text": "Actually, I was hoping to join your crew.",
+          "nextNodeId": "END",
+          "action": null
+        }
+      ]
+    },
+    "moreau_crimson_marauders_intro": {
+      "id": "moreau_crimson_marauders_intro",
+      "npcText": "The Crimson Marauders... *her eyes narrow slightly* ...a name I know well. Vicious cutthroats, the lot of them. Why do you ask?",
+      "playerChoices": [
+        {
+          "text": "I'm hunting for a treasure they supposedly hid.",
+          "nextNodeId": "moreau_crimson_treasure_hunt",
+          "action": null
+        },
+        {
+          "text": "I have a personal score to settle with them.",
+          "nextNodeId": "moreau_personal_vendetta_shared",
+          "action": null
+        },
+        {
+          "text": "Just curious. They sound dangerous.",
+          "nextNodeId": "END",
+          "action": null
+        }
+      ]
+    },
+    "moreau_info_for_passage": {
+      "id": "moreau_info_for_passage",
+      "npcText": "Information? It better be good. My ears are open, but my patience is thin.",
+      "playerChoices": [
+        {
+          "text": "I know things about 'The Crimson Marauders' that might interest you.",
+          "nextNodeId": "moreau_crimson_marauders_intro",
+          "action": null
+        }
+      ]
+    },
+    "moreau_legendary_treasure_query": {
+      "id": "moreau_legendary_treasure_query",
+      "npcText": "Legendary treasures are usually just that - legends. But some legends have teeth. Which one are you chasing?",
+      "playerChoices": [
+        {
+          "text": "The one stolen and hidden by The Crimson Marauders.",
+          "nextNodeId": "moreau_crimson_treasure_hunt",
+          "action": null
+        }
+      ]
+    },
+    "moreau_crimson_treasure_hunt": {
+      "id": "moreau_crimson_treasure_hunt",
+      "npcText": "Hmph. So, you're another fool chasing Captain Varkos's lost plunder. They say it's enough to make kings weep. The Marauders scattered clues, they say, to taunt anyone brave or stupid enough to follow. What makes you think YOU can find it?",
+      "playerChoices": [
+        {
+          "text": "I'm more resourceful than I look.",
+          "nextNodeId": "MOREAU_CRIMSON_PLOT_1",
+          "action": null
+        },
+        {
+          "text": "Perhaps you could offer some... guidance? For a share, of course.",
+          "nextNodeId": "MOREAU_CRIMSON_PLOT_2",
+          "action": null
+        }
+      ]
+    },
+    "moreau_personal_vendetta_shared": {
+      "id": "moreau_personal_vendetta_shared",
+      "npcText": "A personal score, you say? *A flicker of interest in her eyes* We might have something in common then. Tell me more. Perhaps we can help each other.",
+      "playerChoices": [
+        {
+          "text": "They wronged my family. I seek justice.",
+          "nextNodeId": "MOREAU_VENDETTA_PLOT_1",
+          "action": null
+        },
+        {
+          "text": "It's a long story. Let's just say they owe me.",
+          "nextNodeId": "END",
+          "action": null
+        }
+      ]
+    },
+    "MOREAU_CRIMSON_PLOT_1": {
+      "id": "MOREAU_CRIMSON_PLOT_1",
+      "npcText": "Resourcefulness is good. But the Marauders are cunning and ruthless. Their clues are likely traps. One such clue speaks of 'the serpent's eye that weeps under the blood moon', found on Isla Perdida. Many have gone, none returned. Be careful if you seek it.",
+      "playerChoices": [
+        {
+          "text": "Thank you for the warning, Captain.",
+          "nextNodeId": "END",
+          "action": null
+        },
+        {
+          "text": "Perhaps I could try to decipher one of these 'clues'?",
+          "nextNodeId": "moreau_cipher_challenge_prompt",
+          "action": null
+        }
+      ]
+    },
+    "moreau_cipher_challenge_prompt": {
+      "id": "moreau_cipher_challenge_prompt",
+      "npcText": "Hah, bold! Very well. I intercepted this coded message from a Marauder courier. If you can make sense of it, perhaps you're not just another fool. But be warned, failure might attract unwanted attention.",
+      "playerChoices": [
+        {
+          "text": "Let me see the coded message.",
+          "nextNodeId": null,
+          "effects": [{ "type": "TRIGGER_PUZZLE", "puzzleId": "CRIMSON_MAP_CIPHER" }]
+        },
+        {
+          "text": "On second thought, perhaps not now.",
+          "nextNodeId": "MOREAU_CRIMSON_PLOT_1"
+        }
+      ]
+    },
+    "moreau_cipher_challenge_success": {
+      "id": "moreau_cipher_challenge_success",
+      "npcText": "Impressive. You've actually deciphered it. There may be hope for you yet. This information could be valuable.",
+      "playerChoices": [
+        { "text": "Glad I could prove my worth.", "nextNodeId": "END" }
+      ]
+    },
+    "moreau_cipher_challenge_failure": {
+      "id": "moreau_cipher_challenge_failure",
+      "npcText": "Tch. As I expected, nonsense. These Marauder codes are not for amateurs. Stick to swabbing decks.",
+      "playerChoices": [
+        { "text": "I'll try harder next time.", "nextNodeId": "END" }
+      ]
+    },
+    "moreau_cipher_challenge_skip": {
+      "id": "moreau_cipher_challenge_skip",
+      "npcText": "Wise choice. Overconfidence is a quick path to a shallow grave in these waters.",
+      "playerChoices": [
+        { "text": "Understood, Captain.", "nextNodeId": "END" }
+      ]
+    },
+    "MOREAU_CRIMSON_PLOT_2": {
+      "id": "MOREAU_CRIMSON_PLOT_2",
+      "npcText": "A share? I like your thinking. The Crimson Marauders operate from a hidden fortress somewhere in the Serpent's Teeth archipelago. They say old Varkos left a map, broken into pieces, each held by one of his lieutenants. Find a piece, and maybe we can talk terms.",
+      "playerChoices": [
+        {
+          "text": "A map piece it is. I'll be back.",
+          "nextNodeId": "END",
+          "action": null
+        }
+      ]
+    },
+    "MOREAU_VENDETTA_PLOT_1": {
+      "id": "MOREAU_VENDETTA_PLOT_1",
+      "npcText": "Justice... or revenge. The line is thin on these waters. The Marauders have many enemies. Their leader, Captain Vorlag, is said to frequent a particular tavern in Tortuga when he's not at sea. 'The Bloody Anchor.' You might find a lead there... or a knife in your back.",
+      "playerChoices": [
+        {
+          "text": "I'll take my chances. Thank you.",
+          "nextNodeId": "END",
+          "action": null
+        }
+      ]
+    }
+  },
+  "npc_silas_blackwood": {
+    "silas_start": {
+      "id": "silas_start",
+      "npcText": "Welcome, welcome! Silas Blackwood, at your service. You look like someone with discerning taste. Perhaps in the market for something... unique? Or maybe just some valuable information?",
+      "playerChoices": [
+        {
+          "text": "What kind of 'unique' items do you deal in?",
+          "nextNodeId": "silas_unique_items",
+          "action": null
+        },
+        {
+          "text": "Information is what I seek. About 'The Crimson Marauders'.",
+          "nextNodeId": "silas_crimson_marauders_info",
+          "action": null
+        },
+        {
+          "text": "I'm just browsing, Mr. Blackwood.",
+          "nextNodeId": "END",
+          "action": null
+        }
+      ]
+    },
+    "silas_unique_items": {
+      "id": "silas_unique_items",
+      "npcText": "Ah, a person of refinement! I procure artifacts of... questionable origin, charts to places not on any map, and secrets that kings would pay fortunes for. All for a reasonable price, of course. Or perhaps a favor?",
+      "playerChoices": [
+        {
+          "text": "What kind of favors?",
+          "nextNodeId": "silas_favors",
+          "action": null
+        },
+        {
+          "text": "Let's talk about those secrets. Specifically, about a certain treasure.",
+          "nextNodeId": "silas_treasure_secrets",
+          "action": null
+        },
+        {
+          "text": "Show me one of these 'questionable' artifacts.",
+          "nextNodeId": "silas_artifact_assembly_prompt",
+          "action": null
+        }
+      ]
+    },
+    "silas_artifact_assembly_prompt": {
+      "id": "silas_artifact_assembly_prompt",
+      "npcText": "Eager, are we? Very well. I recently acquired... or rather, *liberated*... these fragments. They are said to form the Amulet of the Sunken Star. See if you can piece it together. Its value would increase significantly if complete.",
+      "playerChoices": [
+        {
+          "text": "Let me try my hand at assembling it.",
+          "nextNodeId": null,
+          "effects": [{ "type": "TRIGGER_PUZZLE", "puzzleId": "ANCIENT_ARTIFACT_ASSEMBLY" }]
+        },
+        {
+          "text": "Interesting, but I'm not a craftsman.",
+          "nextNodeId": "silas_unique_items"
+        }
+      ]
+    },
+    "silas_artifact_assembly_success": {
+      "id": "silas_artifact_assembly_success",
+      "npcText": "Remarkable! You have a keen eye and steady hands. The Amulet of the Sunken Star, whole once more! This changes things... for both of us.",
+      "playerChoices": [
+        { "text": "What do you propose, Silas?", "nextNodeId": "END" }
+      ]
+    },
+    "silas_artifact_assembly_failure": {
+      "id": "silas_artifact_assembly_failure",
+      "npcText": "A pity. It seems the amulet is more complex than it appears, or perhaps some pieces are still missing or damaged beyond repair. It's just a collection of pretty rocks now.",
+      "playerChoices": [
+        { "text": "Unfortunate.", "nextNodeId": "END" }
+      ]
+    },
+    "silas_artifact_assembly_skip": {
+      "id": "silas_artifact_assembly_skip",
+      "npcText": "Suit yourself. Not everyone appreciates the delicate art of artifact restoration. Perhaps you'd be interested in something more... straightforward?",
+      "playerChoices": [
+        { "text": "Perhaps. What else do you have?", "nextNodeId": "silas_unique_items" }
+      ]
+    },
+    "silas_crimson_marauders_info": {
+      "id": "silas_crimson_marauders_info",
+      "npcText": "The Crimson Marauders... a dangerous topic. Information about them is costly, and not just in gold. They don't take kindly to prying eyes. What specifically do you wish to know, and what makes it worth my while to tell you?",
+      "playerChoices": [
+        {
+          "text": "I'm after a treasure they hid. I can offer a share.",
+          "nextNodeId": "silas_marauder_treasure_share",
+          "action": null
+        },
+        {
+          "text": "I need to know their weaknesses, their routines.",
+          "nextNodeId": "SILAS_MARAUDER_INTEL_1",
+          "action": null
+        }
+      ]
+    },
+    "silas_favors": {
+      "id": "silas_favors",
+      "npcText": "Oh, simple things. Retrieve a misplaced item here, deliver a sensitive message there... Nothing too strenuous for a person of your capabilities, I'm sure. And the rewards can be quite... illuminating.",
+      "playerChoices": [
+        {
+          "text": "I'll keep that in mind.",
+          "nextNodeId": "END",
+          "action": null
+        }
+      ]
+    },
+    "silas_treasure_secrets": {
+      "id": "silas_treasure_secrets",
+      "npcText": "Treasures, eh? The Caribbean is littered with them. Are we talking about Blackheart's folly, or perhaps something more... recent? Like the legendary hoard of The Crimson Marauders?",
+      "playerChoices": [
+        {
+          "text": "Precisely! The Crimson Marauders' treasure.",
+          "nextNodeId": "silas_marauder_treasure_share",
+          "action": null
+        }
+      ]
+    },
+    "silas_marauder_treasure_share": {
+      "id": "silas_marauder_treasure_share",
+      "npcText": "A share, you say? Intriguing. That treasure is the stuff of legends, hidden by Captain Varkos himself. They say he left a journal, detailing its location and the traps that guard it. The journal was torn into three parts, each entrusted to a different pirate. One part is rumored to be in the hands of a collector in Port Royal, a man named Elias Thorne. He loves riddles and games of chance.",
+      "playerChoices": [
+        {
+          "text": "Elias Thorne in Port Royal. That's a valuable lead.",
+          "nextNodeId": "SILAS_DEEPER_INFO_1",
+          "action": null
+        },
+        {
+          "text": "How do you know so much about this?",
+          "nextNodeId": "SILAS_DEEPER_INFO_2",
+          "action": null
+        }
+      ]
+    },
+    "SILAS_MARAUDER_INTEL_1": {
+      "id": "SILAS_MARAUDER_INTEL_1",
+      "npcText": "Their weakness? Greed, like any pirate. Their routine? They resupply at a smugglers' cove on Isla Escondida, usually during the new moon. But getting close is suicide without an inside man... or a very clever plan. Information like this isn't free, you know. Perhaps you have something I might want?",
+      "playerChoices": [
+        {
+          "text": "What are you looking for?",
+          "nextNodeId": "END",
+          "action": null
+        }
+      ]
+    },
+    "SILAS_DEEPER_INFO_1": {
+      "id": "SILAS_DEEPER_INFO_1",
+      "npcText": "Indeed. Thorne is paranoid but has a weakness for flattery and rare spirits. Should you acquire that piece of the journal, I would be very interested in its contents. Perhaps we could come to a mutually beneficial arrangement for the other pieces?",
+      "playerChoices": [
+        {
+          "text": "We'll see. Thanks for the information, Silas.",
+          "nextNodeId": "END",
+          "action": null
+        }
+      ]
+    },
+    "SILAS_DEEPER_INFO_2": {
+      "id": "SILAS_DEEPER_INFO_2",
+      "npcText": "My dear friend, it's my business to know things. Information is the true currency in these waters. And I always have an ear to the ground... or a spy in the right tavern. Let's just say the Crimson Marauders have made many enemies, and some of them talk to me.",
+      "playerChoices": [
+        {
+          "text": "I see. Your discretion is appreciated.",
+          "nextNodeId": "END",
+          "action": null
+        }
+      ]
+    }
+  },
+  "npc_esmeralda_valdez": {
+    "esmeralda_start": {
+      "id": "esmeralda_start",
+      "npcText": "The tides have brought you to my shore, seeker. Your aura is... turbulent. What visions do you chase, or what shadows flee from?",
+      "playerChoices": [
+        {
+          "text": "Who are you? How do you know I'm a 'seeker'?",
+          "nextNodeId": "esmeralda_who_are_you",
+          "action": null
+        },
+        {
+          "text": "I seek answers about a hidden treasure.",
+          "nextNodeId": "esmeralda_treasure_query",
+          "action": null
+        },
+        {
+          "text": "I'm just exploring. This is an interesting cove.",
+          "nextNodeId": "END",
+          "action": null
+        }
+      ]
+    },
+    "esmeralda_who_are_you": {
+      "id": "esmeralda_who_are_you",
+      "npcText": "I am Esmeralda. The currents whisper secrets to me, and the stars map out the paths of fate. I see the hunger in your spirit. It is an old hunger, one that has led many to glory, and many more to ruin.",
+      "playerChoices": [
+        {
+          "text": "Can you see my fate?",
+          "nextNodeId": "esmeralda_see_fate",
+          "action": null
+        },
+        {
+          "text": "I make my own fate.",
+          "nextNodeId": "END",
+          "action": null
+        },
+        {
+          "text": "Offer me a riddle, Seer.",
+          "nextNodeId": "esmeralda_moon_riddle_prompt"
+        }
+      ]
+    },
+    "esmeralda_moon_riddle_prompt": {
+      "id": "esmeralda_moon_riddle_prompt",
+      "npcText": "Ah, a mind eager for mysteries! Very well. Listen closely... (Esmeralda poses her riddle about the moon)",
+      "playerChoices": [
+        {
+          "text": "I am ready to answer.",
+          "nextNodeId": null,
+          "effects": [{"type": "TRIGGER_PUZZLE", "puzzleId": "ESMERALDA_MOON_RIDDLE"}]
+        },
+        {
+          "text": "My mind is clouded today, another time perhaps.",
+          "nextNodeId": "esmeralda_who_are_you"
+        }
+      ]
+    },
+    "esmeralda_moon_riddle_success": {
+      "id": "esmeralda_moon_riddle_success",
+      "npcText": "Impressive, child. Your spirit is keen, like the sliver of a new moon. The path you seek begins to clear. The tides of fortune favor the wise.",
+      "playerChoices": [
+        {"text": "Thank you, Esmeralda. What now?", "nextNodeId": "ESMERALDA_RIDDLE_1"}
+      ]
+    },
+    "esmeralda_moon_riddle_failure": {
+      "id": "esmeralda_moon_riddle_failure",
+      "npcText": "The answer eludes you, like a ship vanishing into fog. Do not despair. The sea has many mysteries, and not all are revealed at once. Ponder it, and perhaps the answer will surface.",
+      "playerChoices": [
+        {"text": "I will think on it.", "nextNodeId": "END"}
+      ]
+    },
+    "esmeralda_moon_riddle_skip": {
+      "id": "esmeralda_moon_riddle_skip",
+      "npcText": "The currents of the mind must flow freely. If the way is blocked, seek another channel. We shall speak of other things.",
+      "playerChoices": [
+        {"text": "Very well.", "nextNodeId": "esmeralda_who_are_you"}
+      ]
+    },
+    "esmeralda_treasure_query": {
+      "id": "esmeralda_treasure_query",
+      "npcText": "A treasure, you say? Many treasures lie beneath these waves, stained with blood and regret. Are you speaking of the gold that glitters, or the truth that lies buried even deeper? The Crimson Marauders' legacy, perhaps?",
+      "playerChoices": [
+        {
+          "text": "Yes! The treasure hidden by The Crimson Marauders.",
+          "nextNodeId": "esmeralda_crimson_treasure",
+          "action": null
+        },
+        {
+          "text": "What do you mean by 'truth that lies buried deeper'?",
+          "nextNodeId": "ESMERALDA_TRUTH_1",
+          "action": null
+        }
+      ]
+    },
+    "esmeralda_see_fate": {
+      "id": "esmeralda_see_fate",
+      "npcText": "The threads of fate are tangled, ever-shifting. I can show you glimpses, possibilities... but the final weave is yours to choose. For a price, of course. The spirits demand their due.",
+      "playerChoices": [
+        {
+          "text": "What kind of price?",
+          "nextNodeId": "ESMERALDA_PRICE_1",
+          "action": null
+        },
+        {
+          "text": "I'd rather not know.",
+          "nextNodeId": "END",
+          "action": null
+        }
+      ]
+    },
+    "esmeralda_crimson_treasure": {
+      "id": "esmeralda_crimson_treasure",
+      "npcText": "The Marauders' hoard... a scar on the heart of the sea. It was stolen by treachery, hidden in pride, and cursed by despair. To find it, you must understand the heart of its first captain, Varkos – a man torn between shadow and light. One of his most trusted men, a navigator named Finnigan, was betrayed. His spirit lingers near 'The Sunken Star,' where he met his end. He holds a key, not of metal, but of memory.",
+      "playerChoices": [
+        {
+          "text": "'The Sunken Star'? What is that?",
+          "nextNodeId": "ESMERALDA_RIDDLE_1",
+          "action": null
+        },
+        {
+          "text": "How can a spirit hold a key?",
+          "nextNodeId": "ESMERALDA_RIDDLE_2",
+          "action": null
+        }
+      ]
+    },
+    "ESMERALDA_TRUTH_1": {
+      "id": "ESMERALDA_TRUTH_1",
+      "npcText": "All that glitters is not gold, seeker. Some treasures are knowledge, some are vengeance, some are peace. The Crimson Marauders stole more than just jewels and coin. They stole lives, futures... these too leave ghosts.",
+      "playerChoices": [
+        {
+          "text": "You speak in riddles, Esmeralda.",
+          "nextNodeId": "esmeralda_crimson_treasure",
+          "action": null
+        }
+      ]
+    },
+    "ESMERALDA_PRICE_1": {
+      "id": "ESMERALDA_PRICE_1",
+      "npcText": "The spirits favor offerings of rarity. A trinket lost to time, a memory willingly given, a promise of a future deed... What can you offer that speaks to the unseen world?",
+      "playerChoices": [
+        {
+          "text": "I have a strange coin I found...",
+          "nextNodeId": "END",
+          "action": null
+        },
+        {
+          "text": "I need to think about this.",
+          "nextNodeId": "END",
+          "action": null
+        }
+      ]
+    },
+    "ESMERALDA_RIDDLE_1": {
+      "id": "ESMERALDA_RIDDLE_1",
+      "npcText": "'The Sunken Star' is not a celestial body, but a tavern in a place of bones, where ships go to die. Finnigan's whispers can be heard there if one knows how to listen... or has something of his to offer his restless shade.",
+      "playerChoices": [
+        {
+          "text": "A tavern in a shipwreck graveyard? Thank you, Seer.",
+          "nextNodeId": "END",
+          "action": null
+        }
+      ]
+    },
+    "ESMERALDA_RIDDLE_2": {
+      "id": "ESMERALDA_RIDDLE_2",
+      "npcText": "Memories are keys that unlock forgotten paths. Finnigan's memory of betrayal, his knowledge of Varkos's secrets... these are the 'key.' Appease his spirit, learn what he knew. Only then will the path to the treasure become clearer.",
+      "playerChoices": [
+        {
+          "text": "I understand. I must find his spirit.",
+          "nextNodeId": "END",
+          "action": null
+        }
+      ]
+    }
+  },
   "npc_mysterious_woman": {
     "mysterious_start": {
       "id": "mysterious_start",

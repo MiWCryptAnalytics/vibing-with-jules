@@ -153,6 +153,98 @@ class GameInterfaceView extends LitElement {
     this._activeDialogueNpcId = null;
     this._currentDialogueNodeId = null;
     this._currentDialogueNode = null;
+    this._boundHandlePuzzleResolved = this._handlePuzzleResolved.bind(this);
+  }
+
+  connectedCallback() {
+    super.connectedCallback();
+    // Assuming app-shell or a parent dispatches 'puzzle-resolved'
+    // If game-interface-view is a direct child of app-shell, this might be window or this.shadowRoot.host
+    // For simplicity, let's assume it bubbles up to window or a common ancestor.
+    window.addEventListener('puzzle-resolved', this._boundHandlePuzzleResolved);
+  }
+
+  disconnectedCallback() {
+    window.removeEventListener('puzzle-resolved', this._boundHandlePuzzleResolved);
+    super.disconnectedCallback();
+  }
+
+  _handlePuzzleResolved(event) {
+    const { puzzle, outcome } = event.detail;
+    console.log(`GameInterfaceView: Received puzzle-resolved event for puzzle ${puzzle.id} with outcome: ${outcome}`);
+
+    let nextNodeId = null;
+    let effectsToApply = null;
+
+    switch (outcome) {
+      case 'success':
+        nextNodeId = puzzle.successDialogNodeId;
+        effectsToApply = puzzle.successEffects;
+        break;
+      case 'failure':
+        nextNodeId = puzzle.failureDialogNodeId;
+        effectsToApply = puzzle.failureEffects;
+        break;
+      case 'skipped':
+        nextNodeId = puzzle.skipDialogNodeId || puzzle.failureDialogNodeId; // Fallback to failure if no specific skip node
+        // Typically, skip might not have specific effects, or they could be defined in puzzles.json if needed
+        break;
+      default:
+        console.warn(`GameInterfaceView: Unknown puzzle outcome: ${outcome}`);
+        nextNodeId = puzzle.failureDialogNodeId; // Default to failure node
+    }
+
+    // Apply effects
+    if (effectsToApply && Array.isArray(effectsToApply)) {
+      effectsToApply.forEach(effect => {
+        switch (effect.type) {
+          case 'SET_GAME_STATE':
+            this.dispatchEvent(new CustomEvent('set-game-state', { // Assuming app-shell listens for this
+              detail: { variable: effect.variable, value: effect.value },
+              bubbles: true, composed: true
+            }));
+            break;
+          case 'UPDATE_PLAYER_STAT': // Or 'CHANGE_PLAYER_STAT'
+             this.dispatchEvent(new CustomEvent('update-resources', { // app-shell listens to 'update-resources'
+              detail: { [effect.stat]: effect.change || effect.value }, // Convert to {statName: value}
+              bubbles: true, composed: true
+            }));
+            break;
+          case 'ADD_ITEM':
+            this.dispatchEvent(new CustomEvent('add-to-inventory', {
+              detail: { item: { id: effect.itemId } }, // Simplistic, app-shell might need full item details
+              bubbles: true, composed: true
+            }));
+            break;
+          case 'REMOVE_ITEM':
+             this.dispatchEvent(new CustomEvent('remove-from-inventory', {
+              detail: { itemId: effect.itemId },
+              bubbles: true, composed: true
+            }));
+            break;
+          // Add more effect types as needed
+          default:
+            console.warn(`GameInterfaceView: Unknown effect type in puzzle: ${effect.type}`);
+        }
+      });
+    }
+
+    if (nextNodeId) {
+      // Ensure the dialogue system is active or re-activated correctly.
+      // If a puzzle was triggered mid-dialogue, _activeDialogueNpcId should still be set.
+      // If not, this call to _handlePlayerChoice might not work as expected without an active NPC.
+      // This assumes puzzles are typically triggered when a dialogue is already active with an NPC.
+      if (this._activeDialogueNpcId) {
+        this._handlePlayerChoice({ nextNodeId: nextNodeId });
+      } else {
+        console.warn(`GameInterfaceView: Puzzle resolved, but no active NPC dialogue to navigate to node ${nextNodeId}.`);
+        // Potentially, a puzzle could resolve and NOT lead to a dialogue node but some other game state change.
+        // Or, if it MUST lead to a dialogue, an NPC context might need to be re-established.
+      }
+    } else {
+      // If no nextNodeId (e.g. puzzle ends interaction), ensure dialogue is closed.
+      this._endDialogue();
+    }
   }
 
   _handlePlayerChoiceEvent(event) {

@@ -9,6 +9,7 @@ import './map-view.js'; // Import the map view
 import './game-interface-view.js';
 import './inventory-view.js';
 import './research-view.js';
+import './placeholder-puzzle-overlay.js'; // Import the puzzle overlay
 
 class AppShell extends LitElement {
   static styles = css`
@@ -103,7 +104,10 @@ class AppShell extends LitElement {
     allPois: { type: Array, state: true }, // To store all POIs for navigation
     allItems: { type: Object, state: true }, // To store all item definitions
     allNpcs: { type: Object, state: true }, // To store all NPC definitions
-    allDialogues: { type: Object, state: true } // To store all dialogues
+    allDialogues: { type: Object, state: true }, // To store all dialogues
+    allPuzzles: { type: Object, state: true }, // To store all puzzle definitions
+    activePuzzleId: { type: String },
+    isPuzzleOverlayOpen: { type: Boolean }
   };
 
   constructor() {
@@ -125,6 +129,9 @@ class AppShell extends LitElement {
     this.allItems = new Map(); // Initialize allItems as a Map
     this.allNpcs = new Map(); // Initialize allNpcs as a Map
     this.allDialogues = {}; // Initialize allDialogues as an Object
+    this.allPuzzles = new Map(); // Initialize allPuzzles as a Map
+    this.activePuzzleId = null;
+    this.isPuzzleOverlayOpen = false;
     this.playerAlignment = "neutral"; // Initialize player alignment
     this._isResetting = false; // Flag to indicate if a reset operation is in progress
 
@@ -142,7 +149,8 @@ class AppShell extends LitElement {
       this._loadAllPois(),
       this._loadAllItems(),
       this._loadAllNpcs(),
-      this._loadAllDialogues()
+      this._loadAllDialogues(),
+      this._loadAllPuzzles() // Add puzzle loading
     ];
     
     // Attempt to load game state while data files are being fetched.
@@ -312,6 +320,60 @@ class AppShell extends LitElement {
     return this.allDialogues[npcId];
   }
 
+  async _loadAllPuzzles() {
+    try {
+      const response = await fetch('data/puzzles.json');
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const puzzlesArray = await response.json();
+      puzzlesArray.forEach(puzzle => this.allPuzzles.set(puzzle.id, puzzle));
+      console.log('AppShell: All Puzzles loaded:', this.allPuzzles);
+    } catch (error) {
+      console.error("AppShell: Could not load Puzzles:", error);
+      this.allPuzzles = new Map();
+    }
+  }
+
+  showPuzzle(puzzleId) {
+    if (this.allPuzzles.has(puzzleId)) {
+      this.activePuzzleId = puzzleId;
+      this.isPuzzleOverlayOpen = true;
+      console.log(`AppShell: Showing puzzle ${puzzleId}`);
+    } else {
+      console.error(`AppShell: Puzzle with ID "${puzzleId}" not found.`);
+    }
+  }
+
+  _handlePuzzleAttempted(event) {
+    this.isPuzzleOverlayOpen = false;
+    const { outcome, puzzleId } = event.detail;
+    const puzzleData = this.allPuzzles.get(puzzleId);
+
+    if (puzzleData) {
+      this.dispatchEvent(
+        new CustomEvent('puzzle-resolved', {
+          detail: { puzzle: puzzleData, outcome: outcome },
+          bubbles: true,
+          composed: true,
+        })
+      );
+      console.log(`AppShell: Puzzle ${puzzleId} attempted with outcome: ${outcome}. 'puzzle-resolved' event dispatched.`);
+    } else {
+      console.error(`AppShell: Puzzle data not found for ID ${puzzleId} after attempt.`);
+    }
+    this.activePuzzleId = null; // Clear active puzzle
+  }
+
+  _handleTriggerPuzzle(event) {
+    const puzzleId = event.detail.puzzleId;
+    if (puzzleId) {
+      this.showPuzzle(puzzleId);
+    } else {
+      console.warn('AppShell: trigger-puzzle event received without puzzleId in detail.');
+    }
+  }
+
   _clearSavedGameState() {
     localStorage.removeItem(this._localStorageKey);
     localStorage.removeItem(this._localStorageKey + '_checksum');
@@ -427,11 +489,13 @@ class AppShell extends LitElement {
     super.connectedCallback();
     window.addEventListener('hashchange', this._boundHandleHashChange);
     window.addEventListener('beforeunload', this._boundSaveGameState);
+    this.addEventListener('trigger-puzzle', this._handleTriggerPuzzle); // Listen for puzzle triggers
   }
 
   disconnectedCallback() {
     window.removeEventListener('hashchange', this._boundHandleHashChange);
     window.removeEventListener('beforeunload', this._boundSaveGameState);
+    this.removeEventListener('trigger-puzzle', this._handleTriggerPuzzle); // Clean up listener
     super.disconnectedCallback();
   }
 
@@ -655,6 +719,13 @@ class AppShell extends LitElement {
       <footer class="app-footer">
         <p>${msg('(c) 2023 My Game Inc.', {id: 'footer-copyright'})}</p>
       </footer>
+
+      <placeholder-puzzle-overlay
+        .puzzleId=${this.activePuzzleId}
+        .description=${this.activePuzzleId && this.allPuzzles.has(this.activePuzzleId) ? this.allPuzzles.get(this.activePuzzleId).description : 'Loading puzzle...'}
+        ?open=${this.isPuzzleOverlayOpen}
+        @puzzle-attempted=${this._handlePuzzleAttempted}
+      ></placeholder-puzzle-overlay>
     `;
   }
 
