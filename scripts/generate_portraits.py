@@ -142,12 +142,58 @@ def generate_portraits_for_npcs(npcs_data_list, all_dialogues_dict, project_root
   portraits_dir = os.path.join(project_root_path, "www", "assets", "images", "portraits")
   os.makedirs(portraits_dir, exist_ok=True)
 
-  # Define lists for prompt generation
-  art_styles = ["photorealistic", "hyperrealistic", "impressionistic", "concept art", "oil painting", "watercolor", "charcoal sketch", "fantasy art"]
-  adjectives = ["gritty", "serene", "mysterious", "epic", "cinematic", "dreamlike", "haunting", "vibrant", "muted", "dark", "bright"]
-  lighting_conditions = ["low-key lighting", "high-key lighting", "dramatic lighting", "soft lighting", "rim lighting", "moonlight", "sunlight", "candlelight", "volumetric fog", "god rays"]
-  camera_angles = ["close-up shot", "medium shot", "full shot", "dutch angle", "low angle", "high angle", "profile shot"]
+  # --- Pirates of the Caribbean Themed Prompts ---
+  setting_prompts = [
+      "On the weathered deck of a haunted pirate ship, The Flying Dutchman, amidst a raging tropical storm with colossal waves crashing.",
+      "Inside a dimly lit, treasure-laden pirate cove on Tortuga, with flickering torchlight and piles of gold doubloons.",
+      "A foggy, moonlit Caribbean beach with a ghostly shipwreck half-submerged in the shallows, eerie bioluminescent algae glowing.",
+      "The opulent, candle-lit captain's quarters of the Black Pearl, maps, astrolabes, and ancient artifacts strewn across a grand table.",
+      "A bustling, rowdy pirate port town like Port Royal or Nassau, during a chaotic pirate festival with cannons firing in celebration.",
+      "Deep within a cursed Aztec temple hidden in a dense jungle, booby traps and ancient glyphs visible.",
+      "At the helm of a majestic galleon sailing through a mystical maelstrom towards Isla de Muerta.",
+      "A tense standoff on a narrow cliffside path overlooking a churning, shark-infested sea, with crumbling ruins nearby.",
+      "Inside the eerie, barnacle-encrusted brig of Davy Jones' ship, with spectral, mutated crew members and the distant sound of an organ playing.",
+      "A secret meeting in a smoky, crowded tavern in a notorious pirate haven like Shipwreck Cove, hushed whispers, shifty eyes, and wanted posters on the wall.",
+      "Atop the crow's nest of a pirate ship, scanning the horizon for treasure islands or enemy vessels, under a starry Caribbean night.",
+      "Navigating a treacherous mangrove swamp by longboat, with hidden dangers lurking beneath the murky waters and in the dense foliage.",
+      "A grand, decaying colonial governor's mansion, recently plundered by pirates, with broken furniture and scattered finery.",
+      "In the heart of a voodoo ritual on a remote island, with tribal masks, bonfires, and mysterious chanting.",
+      "Aboard a sinking ship during a fierce naval battle, cannons roaring, splinters flying, and the smell of gunpowder in the air.",
+      "Exploring a forgotten sea cave filled with smugglers' loot and ancient, cryptic carvings, lit by a single lantern."
+      
+  ]
 
+  subject_detail_prompts = [ # These will frame the NPC's name and description
+      "A striking portrait of {npc_name} the {npc_description}, captured in a moment of intense decision.",
+      "An evocative character concept of {npc_name} the {npc_description}, revealing their cunning nature.",
+      "A detailed depiction of {npc_name} the {npc_description}, as they survey their domain with a steely gaze.",
+      "{npc_name} the {npc_description}, brandishing their signature weapon (e.g., a flintlock, a cutlass, a mystical compass) with a defiant smirk.",
+      "The legendary {npc_name} the {npc_description}, caught in a candid moment of reflection amidst chaos, perhaps looking at a locket or a piece of eight.",
+      "A close-up of {npc_name} the {npc_description}, their eyes telling a story of countless voyages, betrayals, and battles, a scar prominently featured.",
+      "{npc_name} the {npc_description}, issuing a bold command to their loyal (or mutinous) crew, pointing towards an unseen objective.",
+      "The enigmatic {npc_name} the {npc_description}, examining a mysterious cursed artifact, its faint glow illuminating their face.",
+      "A dynamic portrayal of {npc_name} the {npc_description}, mid-action during a daring escape, perhaps swinging on a rope or leaping across rooftops.",
+      "{npc_name} the {npc_description}, with a knowing look and a raised eyebrow, as if privy to a dangerous secret or a hidden treasure map.",
+      "A regal yet weathered {npc_name} the {npc_description}, adorned with pilfered finery and pirate trinkets, exuding an air of authority.",
+      "{npc_name} the {npc_description}, sharing a conspiratorial whisper with an unseen accomplice, their face partially in shadow.",
+      "The battle-hardened {npc_name} the {npc_description}, showing signs of a recent skirmish, with torn clothes and a determined expression.",
+      "{npc_name} the {npc_description}, raising a tankard of grog in a hearty toast, a mischievous glint in their eye.",
+      "A haunted depiction of {npc_name} the {npc_description}, perhaps touched by a curse or a ghostly encounter, with an ethereal quality."
+      
+  ]
+
+  style_prompts = [
+      "in the dramatic, gritty, and slightly fantastical art style of Pirates of the Caribbean concept art, with rich textures and cinematic lighting.",
+      "rendered with hyperrealistic detail, focusing on weathered materials, sea-spray, and the glint of gold, reminiscent of a high-budget film still.",
+      "as an epic, dark fantasy oil painting, capturing the golden age of piracy with a touch of the supernatural, moody and atmospheric.",
+       "with a cinematic, adventurous, and mysterious feel, emphasizing dynamic poses, dramatic chiaroscuro shadows, and a sense of grand scale, like a scene from a blockbuster adventure film.",
+      "in a highly detailed, character-focused illustration, highlighting intricate costume details (tricorn hats, bandanas, tattered coats), expressive faces, and a tangible sense of personality, like a character sheet for a AAA game.",
+      "with the look of a meticulously crafted digital painting, focusing on realism but with an adventurous, swashbuckling flair, dramatic lighting, and a slightly desaturated color palette with pops of vibrant color.",
+      "inspired by classic pirate book illustrations but with a modern, realistic twist, featuring strong line work and rich, textured coloring.",
+      "as a photorealistic portrait with a shallow depth of field, making the character pop, with a slightly fantastical edge to the lighting and atmosphere.",
+      "in a style that blends historical accuracy with the fantastical elements of the Pirates of the Caribbean universe, focusing on authentic period clothing and weaponry alongside subtle supernatural hints.",
+      "with a painterly, almost impressionistic style, focusing on capturing the mood and essence of the character and setting rather than minute details, yet still clearly identifiable as PotC-themed."
+  ]
   try:
     # Configure the Gemini client (ensure GOOGLE_API_KEY is set in your environment)
     # api_key = os.getenv("GOOGLE_API_KEY")
@@ -191,15 +237,15 @@ def generate_portraits_for_npcs(npcs_data_list, all_dialogues_dict, project_root
         npc_copy['portraitImage'] = relative_portrait_path
         # Assuming if image exists, prompt file also exists from previous run.
     else:
-        try:
-            # Randomly select elements for the prompt
-            selected_adjective = random.choice(adjectives)
-            selected_art_style = random.choice(art_styles)
-            selected_lighting = random.choice(lighting_conditions)
-            selected_camera_angle = random.choice(camera_angles)
+        try: # Randomly select elements for the new prompt structure
+            selected_setting = random.choice(setting_prompts)
+            selected_subject_template = random.choice(subject_detail_prompts)
+            selected_style = random.choice(style_prompts)
 
-            # Construct the prompt text
-            prompt_text = f"{selected_adjective} {selected_art_style} portrait of {npc_name} the {npc_description}. {selected_lighting}, {selected_camera_angle}."
+            # Construct the prompt text using the new structure
+            subject_text = selected_subject_template.format(npc_name=npc_name, npc_description=npc_description)
+            #prompt_text = f"{selected_setting}. {subject_text}. {selected_style}."
+            prompt_text = f"{subject_text}. {selected_style}."
 
             # Add style cue (optional, consider if it conflicts with randomized elements)
             # prompt_text += " Artstation trending, highly detailed, character design. Square, 1:1. --ar 1:1 --q 2 --no cartoon, painting, disfigured"
@@ -231,7 +277,7 @@ def generate_portraits_for_npcs(npcs_data_list, all_dialogues_dict, project_root
                     prompt_text += f" The character's typical expressions and manner of speaking should inform their depicted personality and attitude."
 
             # Append comprehensive negative prompts
-            prompt_text += " --no cartoon, painting, disfigured, blurry, low resolution, watermark, signature, text, ugly, deformed, out of frame, duplicate, extra limbs, missing limbs, bad anatomy"
+            prompt_text += "No text."
 
             print(f"INFO: Generating image for {npc_id} ({npc_name}) with prompt: {prompt_text}")
 

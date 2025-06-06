@@ -62,8 +62,8 @@ class GameInterfaceView extends LitElement {
     }
     .in-scene-npc {
       position: absolute;
-      width: 55px;
-      height: 55px;
+      width: 256px;
+      height: 256px;
       cursor: pointer;
       display: flex;
       align-items: center;
