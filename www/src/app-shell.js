@@ -13,6 +13,7 @@ import './placeholder-puzzle-overlay.js'; // Import the puzzle overlay
 
 class AppShell extends LitElement {
   static styles = css`
+
     @keyframes fadeInView {
       from { opacity: 0; transform: translateY(10px); }
       to { opacity: 1; transform: translateY(0); }
@@ -20,20 +21,14 @@ class AppShell extends LitElement {
     .view-container-fade-in {
       animation: fadeInView 0.35s ease-out forwards;
     }
-    @keyframes fadeOutView {
-      from { opacity: 1; transform: translateY(0); }
-      to { opacity: 0; transform: translateY(10px); }
-    }
-    .view-container-fade-out {
-      animation: fadeOutView 0.35s ease-out forwards;
-    }
+    /* Add a class for fade-out to be used later if full transition is implemented */
 
-    :host {
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-    }
-
+  :host {
+    display: flex; /* Changed from block */
+    flex-direction: column;
+    min-height: 100vh; /* Ensure app-shell takes at least full viewport height */
+    /* font-family is now inherited from body global style */
+   }
     .top-nav {
       background-color: #3C2F2F;
       background-image: url('assets/images/theme/wood_texture.png');

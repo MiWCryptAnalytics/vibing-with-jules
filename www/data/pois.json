@@ -6,7 +6,7 @@
     "icon": "forest",
     "x": 150,
     "y": 200,
-    "gameViewImage": "../www/assets/images/locations/forest_entrance.jpg",
+    "gameViewImage": "../www/assets/images/locations/forest_entrance_generated.jpg",
     "hiddenObjects": [
       {
         "itemId": "item_rusty_key",
@@ -58,7 +58,7 @@
     "icon": "minor_crash",
     "x": 500,
     "y": 450,
-    "gameViewImage": "../www/assets/images/locations/mine_entrance.jpg",
+    "gameViewImage": "../www/assets/images/locations/abandoned_mine_generated.jpg",
     "hiddenObjects": [
       {
         "itemId": "item_glowing_gem",
@@ -92,7 +92,7 @@
     "icon": "anchor",
     "x": 300,
     "y": 100,
-    "gameViewImage": "../www/assets/images/locations/smugglers_cove.png",
+    "gameViewImage": "../www/assets/images/locations/location_smugglers_cove_generated.jpg",
     "requiredItems": [
       "item_ancient_scroll"
     ],
@@ -129,7 +129,7 @@
     "icon": "scuba_diving",
     "x": 600,
     "y": 300,
-    "gameViewImage": "../www/assets/images/locations/sunken_shipwreck.png",
+    "gameViewImage": "../www/assets/images/locations/location_sunken_shipwreck_generated.jpg",
     "hiddenObjects": [
       {
         "itemId": "item_sextant",
@@ -170,7 +170,7 @@
     "icon": "fort",
     "x": 100,
     "y": 500,
-    "gameViewImage": "../www/assets/images/locations/pirate_outpost.png",
+    "gameViewImage": "../www/assets/images/locations/location_pirate_outpost_generated.jpg",
     "hiddenObjects": [
       {
         "itemId": "item_pirate_flag",
@@ -196,7 +196,7 @@
     "icon": "storefront",
     "x": 250,
     "y": 350,
-    "gameViewImage": "../www/assets/images/locations/port_royal_market.jpg",
+    "gameViewImage": "../www/assets/images/locations/port_royal_market_generated.jpg",
     "isMarket": true,
     "npcIds": [
       "npc_shady_merchant"
@@ -245,7 +245,7 @@
     "icon": "whatshot",
     "x": 700,
     "y": 150,
-    "gameViewImage": "../www/assets/images/locations/volcano_island.jpg",
+    "gameViewImage": "../www/assets/images/locations/volcano_island_generated.jpg",
     "hiddenObjects": [
       {
         "itemId": "item_obsidian_shard",
@@ -279,7 +279,7 @@
     "icon": "anchor",
     "x": 50,
     "y": 250,
-    "gameViewImage": "../www/assets/images/locations/hidden_lagoon.jpg",
+    "gameViewImage": "../www/assets/images/locations/hidden_lagoon_generated.jpg",
     "npcIds": [
       "npc_mysterious_woman"
     ],
@@ -324,7 +324,7 @@
     "icon": "fort",
     "x": 400,
     "y": 50,
-    "gameViewImage": "../www/assets/images/locations/tortuga_town.jpg",
+    "gameViewImage": "../www/assets/images/locations/tortuga_town_generated.jpg",
     "isMarket": true,
     "npcIds": [
       "npc_one_eyed_jack"
@@ -382,7 +382,7 @@
     "icon": "waves",
     "x": 750,
     "y": 550,
-    "gameViewImage": "../www/assets/images/locations/placeholder_poi_1.jpg",
+    "gameViewImage": "../www/assets/images/locations/kraken_abyss_generated.jpg",
     "hiddenObjects": [],
     "actions": [
       {
@@ -402,7 +402,7 @@
     "icon": "sailing",
     "x": 100,
     "y": 300,
-    "gameViewImage": "../www/assets/images/locations/placeholder_poi_2.jpg",
+    "gameViewImage": "../www/assets/images/locations/cursed_galleon_graveyard_generated.jpg",
     "hiddenObjects": [],
     "actions": [
       {
@@ -422,7 +422,7 @@
     "icon": "girl",
     "x": 350,
     "y": 580,
-    "gameViewImage": "../www/assets/images/locations/placeholder_poi_3.jpg",
+    "gameViewImage": "../www/assets/images/locations/mermaid_rock_generated.jpg",
     "hiddenObjects": [],
     "actions": [
       {
@@ -442,7 +442,7 @@
     "icon": "diamond",
     "x": 50,
     "y": 50,
-    "gameViewImage": "../www/assets/images/locations/placeholder_poi_4.jpg",
+    "gameViewImage": "../www/assets/images/locations/blackbeards_hidden_cache_generated.jpg",
     "hiddenObjects": [],
     "actions": [
       {
@@ -462,7 +462,7 @@
     "icon": "thunderstorm",
     "x": 780,
     "y": 50,
-    "gameViewImage": "../www/assets/images/locations/placeholder_poi_5.jpg",
+    "gameViewImage": "../www/assets/images/locations/stormy_cape_of_no_return_generated.jpg",
     "hiddenObjects": [],
     "actions": [
       {
@@ -482,7 +482,7 @@
     "icon": "water",
     "x": 400,
     "y": 300,
-    "gameViewImage": "../www/assets/images/locations/placeholder_poi_6.jpg",
+    "gameViewImage": "../www/assets/images/locations/davy_jones_locker_entrance_generated.jpg",
     "hiddenObjects": [],
     "actions": [
       {
@@ -502,7 +502,7 @@
     "icon": "skull",
     "x": 200,
     "y": 450,
-    "gameViewImage": "../www/assets/images/locations/placeholder_poi_7.jpg",
+    "gameViewImage": "../www/assets/images/locations/cannibal_island_generated.jpg",
     "hiddenObjects": [],
     "actions": [
       {
@@ -522,7 +522,7 @@
     "icon": "directions_boat",
     "x": 600,
     "y": 120,
-    "gameViewImage": "../www/assets/images/locations/placeholder_poi_8.jpg",
+    "gameViewImage": "../www/assets/images/locations/smugglers_secret_strait_generated.jpg",
     "hiddenObjects": [],
     "actions": [
       {
@@ -542,7 +542,7 @@
     "icon": "broken_image",
     "x": 50,
     "y": 400,
-    "gameViewImage": "../www/assets/images/locations/placeholder_poi_9.jpg",
+    "gameViewImage": "../www/assets/images/locations/treasure_fleet_wreckage_site_generated.jpg",
     "hiddenObjects": [],
     "actions": [
       {
@@ -562,7 +562,7 @@
     "icon": "fort",
     "x": 650,
     "y": 400,
-    "gameViewImage": "../www/assets/images/locations/placeholder_poi_10.jpg",
+    "gameViewImage": "../www/assets/images/locations/fort_caroline_ruins_generated.jpg",
     "hiddenObjects": [],
     "actions": [
       {
@@ -582,7 +582,7 @@
     "icon": "magnet",
     "x": 250,
     "y": 250,
-    "gameViewImage": "../www/assets/images/locations/placeholder_poi_11.jpg",
+    "gameViewImage": "../www/assets/images/locations/ship_trap_island_generated.jpg",
     "hiddenObjects": [],
     "actions": [
       {
@@ -602,7 +602,7 @@
     "icon": "person_off",
     "x": 700,
     "y": 250,
-    "gameViewImage": "../www/assets/images/locations/placeholder_poi_12.jpg",
+    "gameViewImage": "../www/assets/images/locations/marooners_rock_generated.jpg",
     "hiddenObjects": [],
     "actions": [
       {
@@ -622,7 +622,7 @@
     "icon": "skull",
     "x": 120,
     "y": 120,
-    "gameViewImage": "../www/assets/images/locations/placeholder_poi_13.jpg",
+    "gameViewImage": "../www/assets/images/locations/the_leviathans_ribcage_generated.jpg",
     "hiddenObjects": [
       {
         "itemId": "leviathan_tooth",
@@ -651,7 +651,7 @@
     "icon": "hub",
     "x": 550,
     "y": 500,
-    "gameViewImage": "../www/assets/images/locations/placeholder_poi_14.jpg",
+    "gameViewImage": "../www/assets/images/locations/coral_reef_labyrinth_generated.jpg",
     "hiddenObjects": [],
     "actions": [
       {
@@ -671,7 +671,7 @@
     "icon": "key",
     "x": 450,
     "y": 180,
-    "gameViewImage": "../www/assets/images/locations/placeholder_poi_15.jpg",
+    "gameViewImage": "../www/assets/images/locations/skeleton_key_islet_generated.jpg",
     "hiddenObjects": [],
     "actions": [
       {
@@ -691,7 +691,7 @@
     "icon": "beach_access",
     "x": 300,
     "y": 30,
-    "gameViewImage": "../www/assets/images/locations/placeholder_poi_16.jpg",
+    "gameViewImage": "../www/assets/images/locations/the_barnacle_bank_generated.jpg",
     "hiddenObjects": [],
     "actions": [
       {
@@ -711,7 +711,7 @@
     "icon": "sailing",
     "x": 180,
     "y": 550,
-    "gameViewImage": "../www/assets/images/locations/placeholder_poi_17.jpg",
+    "gameViewImage": "../www/assets/images/locations/ghost_ship_anchorage_generated.jpg",
     "hiddenObjects": [],
     "actions": [
       {
@@ -731,7 +731,7 @@
     "icon": "snake",
     "x": 600,
     "y": 580,
-    "gameViewImage": "../www/assets/images/locations/placeholder_poi_18.jpg",
+    "gameViewImage": "../www/assets/images/locations/sea_serpents_pass_generated.jpg",
     "hiddenObjects": [],
     "actions": [
       {
@@ -751,7 +751,7 @@
     "icon": "inventory_2",
     "x": 720,
     "y": 480,
-    "gameViewImage": "../www/assets/images/locations/placeholder_poi_19.jpg",
+    "gameViewImage": "../www/assets/images/locations/dead_mans_chest_island_generated.jpg",
     "hiddenObjects": [],
     "actions": [
       {
@@ -771,7 +771,7 @@
     "icon": "sports_bar",
     "x": 20,
     "y": 200,
-    "gameViewImage": "../www/assets/images/locations/placeholder_poi_20.jpg",
+    "gameViewImage": "../www/assets/images/locations/rum_runners_rendezvous_generated.jpg",
     "hiddenObjects": [],
     "actions": [
       {
@@ -791,7 +791,7 @@
     "icon": "binoculars",
     "x": 480,
     "y": 380,
-    "gameViewImage": "../www/assets/images/locations/placeholder_poi_21.jpg",
+    "gameViewImage": "../www/assets/images/locations/spyglass_hill_generated.jpg",
     "hiddenObjects": [],
     "actions": [
       {
@@ -811,7 +811,7 @@
     "icon": "skull",
     "x": 330,
     "y": 420,
-    "gameViewImage": "../www/assets/images/locations/placeholder_poi_22.jpg",
+    "gameViewImage": "../www/assets/images/locations/mutineers_gallows_generated.jpg",
     "hiddenObjects": [],
     "actions": [
       {
@@ -831,7 +831,7 @@
     "icon": "paid",
     "x": 500,
     "y": 20,
-    "gameViewImage": "../www/assets/images/locations/placeholder_poi_23.jpg",
+    "gameViewImage": "../www/assets/images/locations/buried_doubloon_beach_generated.jpg",
     "hiddenObjects": [
       {
         "itemId": "bag_of_doubloons",
@@ -860,7 +860,7 @@
     "icon": "swords",
     "x": 680,
     "y": 320,
-    "gameViewImage": "../www/assets/images/locations/placeholder_poi_24.jpg",
+    "gameViewImage": "../www/assets/images/locations/captains_quarrel_cove_generated.jpg",
     "hiddenObjects": [],
     "actions": [
       {
