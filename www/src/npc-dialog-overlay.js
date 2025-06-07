@@ -308,7 +308,7 @@ class NpcDialogOverlay extends LitElement {
         aria-describedby="dialog-content"
       >
         <div slot="headline" id="dialog-title">${this.npcDetails?.name || 'Mysterious Figure'}</div>
-        <form id="dialog-form" slot="content" method="dialog"> {/* form with method dialog allows buttons to close it */}
+        <form id="dialog-form" slot="content" method="dialog">
           <div id="dialog-content">
             ${this.npcDetails?.portraitImage
               ? html`<div class="portrait"><img src="${this.npcDetails.portraitImage}" alt="Portrait of ${this.npcDetails.name}"></div>`
