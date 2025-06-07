@@ -8,22 +8,24 @@ import './npc-dialog-overlay.js'; // Import the new component
 class GameInterfaceView extends LitElement {
   static styles = css`
     :host {
-      display: block;
-      padding: 0; /* Remove padding if viewport takes full space */
+      display: flex; /* Changed from block */
+      flex-direction: column; /* To allow viewport to grow */
+      flex-grow: 1; /* Allow this view to take available space in its parent */
+      padding: 0;
       width: 100%;
-      height: calc(100vh - 150px); /* Adjust based on header/footer/nav height */
+      /* height: calc(100vh - 150px); */ /* REMOVE this line */
       box-sizing: border-box;
       position: relative; /* For absolute positioning of UI elements */
     }
     .viewport {
+      flex-grow: 1; /* Allow viewport to take available space within the host */
       width: 100%;
-      height: 100%;
+      /* height: 100%; */ /* No longer needed if flex-grow is used */
       background-size: cover;
       background-position: center;
       position: relative; /* For positioning hidden objects */
       overflow: hidden;
       border: 3px solid #3C2F2F; /* dark brown */
-      /* Vignette effect from map-view, if desired here too */
       box-shadow: inset 0 0 30px rgba(0,0,0,0.5); /* Inner shadow for depth - Keep */
     }
     .location-title {
