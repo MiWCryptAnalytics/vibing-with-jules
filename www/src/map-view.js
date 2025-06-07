@@ -92,17 +92,18 @@ class MapView extends LitElement {
     .poi-marker {
       display: flex;
       align-items: center;
-      padding: 5px 8px; /* Adjusted */
+      padding: 2px 4px; /* Adjusted */
       background-color: #FDF5E6; /* cream/parchment placeholder */
       /* Conceptual: background-image: url('assets/images/theme/poi_marker_bg.png'); */
       border: 1px solid #3C2F2F; /* dark brown */
-      border-radius: 3px; /* slight rounding */
+      border-radius: 2px; /* slight rounding */
       cursor: pointer;
       font-family: 'MainTextFont', serif; /* Placeholder */
-      font-size: 12px; /* Keep */
+      font-size: 10px; /* Keep */
+       font-weight: bold; /* Keep */
       box-shadow: 0 1px 3px rgba(0,0,0,0.3); /* Keep */
       transform-origin: center;
-      animation: pulseAnimation 2.5s infinite ease-in-out; /* Keep */
+      animation: pulseAnimation 5.0s infinite ease-in-out; /* Keep */
       transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out, transform 0.2s ease-out;
     }
 
