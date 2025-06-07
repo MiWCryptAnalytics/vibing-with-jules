@@ -9,8 +9,8 @@ import argparse # Added for command-line arguments
 from google.api_core.exceptions import GoogleAPIError
 
 # New imports for Gemini API
-import google.generativeai as genai
-from google.generativeai import types
+from google import genai
+from google.genai import types
 from PIL import Image
 from io import BytesIO
 
@@ -79,7 +79,10 @@ def main():
 
   # Check for GOOGLE_API_KEY before proceeding
   api_key_to_use = os.getenv("GOOGLE_API_KEY")
-  if not api_key_to_use:
+  genai_use_vertex = os.getenv("GOOGLE_GENAI_USE_VERTEXAI")
+  print(f"Using Vertex AI: {genai_use_vertex}")
+
+  if not api_key_to_use and not genai_use_vertex:
       print("ERROR: GOOGLE_API_KEY not found as environment variable or via --api_key argument. Exiting.")
       return
 
@@ -146,11 +149,11 @@ def generate_images_for_locations(locations_data_list, project_root_path):
   ]
 
   subject_detail_prompts = [ # More specific, using location name and description
-      "A breathtaking panoramic view of {location_name}, which is known as: \"{location_description}\".",
-      "The iconic {location_name}, a place described as: \"{location_description}\". Capture its unique atmosphere.",
-      "An evocative scene depicting {location_name}. The essence of this place is: \"{location_description}\".",
-      "Venture into {location_name}, a location whispered about as: \"{location_description}\". Show its hidden depths.",
-      "Discover the secrets of {location_name}, a place that legend says: \"{location_description}\". Highlight its most striking features."
+      "A breathtaking panoramic view of {location_name}, which is known as {location_description}.",
+      "{location_name}, {location_description}. Capture its unique atmosphere.",
+      "An evocative scene depicting {location_name}. The essence of this place is {location_description}.",
+      "{location_name} {location_description}. Show its hidden depths.",
+      "Discover the secrets of {location_name}, a place that legend {location_description}. Highlight its most striking features."
   ]
 
   style_prompts = [
@@ -168,25 +171,17 @@ def generate_images_for_locations(locations_data_list, project_root_path):
   try:
     # Configure the Gemini client using API Key
     api_key = os.getenv("GOOGLE_API_KEY")
-    if not api_key:
+    if not api_key and not os.getenv("GOOGLE_GENAI_USE_VERTEXAI"):
         print("ERROR: GOOGLE_API_KEY environment variable not set. Image generation will be skipped.")
         return [loc.copy() for loc in locations_data_list]
-    genai.configure(api_key=api_key)
-
+    client = genai.Client()
+    
     # model_name should be the specific model identifier for image generation
     # For example, 'gemini-pro-vision' can take image and text, but for pure image generation,
     # an Imagen model is typically used. The script had "imagen-4.0-generate-preview-05-20".
     # Let's assume this is a valid model for genai.GenerativeModel
-    image_model_name = "imagen-4.0-generate-preview-05-20"
-    # It's better to instantiate the model here if it's going to be reused.
-    # However, the original script called client.models.generate_images which suggests a more direct call.
-    # Given the error 'module 'google.generativeai' has no attribute 'generate_images'',
-    # we need to use a GenerativeModel instance.
-    try:
-        model = genai.GenerativeModel(model_name=image_model_name)
-    except Exception as e:
-        print(f"ERROR: Failed to initialize GenerativeModel with name {image_model_name}. Error: {e}")
-        return [loc.copy() for loc in locations_data_list]
+    #model_name = "imagen-4.0-generate-preview-05-20"
+    model_name = "imagen-3.0-fast-generate-001"
 
 
   except ImportError:
@@ -206,7 +201,7 @@ def generate_images_for_locations(locations_data_list, project_root_path):
     game_view_image = location_copy.get('gameViewImage', '')
 
     # Only process if gameViewImage contains 'placeholder_poi_'
-    if 'placeholder_poi_' not in game_view_image:
+    if '' not in game_view_image:
         print(f"INFO: Location {location_id} ({location_name}) does not use a placeholder image ('{game_view_image}'). Skipping generation.")
         updated_locations_data_list.append(location_copy)
         continue
@@ -261,7 +256,16 @@ def generate_images_for_locations(locations_data_list, project_root_path):
                     # Or, if it's a specialized image generation function on the model, it might differ.
                     # Let's try with generate_content and then inspect the response.
                     # It's also possible that the model expects a list of Parts, not just a string prompt.
-                    response = model.generate_content(prompt_text)
+                    response = client.models.generate_images(
+                        model=model_name,
+                        prompt=prompt_text,
+                        config=types.GenerateImagesConfig(
+                          number_of_images=1,
+                          personGeneration="allow_all",
+                          include_rai_reason=True,
+                          output_mime_type='image/jpeg',
+                      )
+                    )
 
                     # IMPORTANT: The response structure from model.generate_content for an Imagen model
                     # might not be `response.generated_images`. It's more likely to be in `response.parts`.
@@ -288,42 +292,18 @@ def generate_images_for_locations(locations_data_list, project_root_path):
 
             if response:
                 image_bytes_to_save = None
-                # Adapting to typical genai.GenerativeModel response for images (often in parts)
-                # This is speculative and needs to be confirmed with actual API response structure for Imagen models via GenerativeModel
-                try:
-                    if response.parts:
-                        # Assuming the first part contains the image data if it's an image model
-                        # The mime_type of the part should be checked.
-                        # For raw image bytes, it's often response.parts[0].inline_data.data
-                        # This is a common pattern for Gemini models returning images.
-                        if response.parts[0].inline_data and response.parts[0].inline_data.data:
-                             image_bytes_to_save = response.parts[0].inline_data.data
-                        else:
-                            # Fallback or alternative check if the structure is different
-                            # This could be where the old `generated_images` structure was relevant if using a different client/method
-                            # For now, this is a placeholder for other possible structures.
-                            # If `response.generated_images` was from a different client method, this won't work here.
-                            # We are now using `genai.GenerativeModel`.
-                            pass # Add other extraction logic if needed
-
-                    if not image_bytes_to_save and hasattr(response, '_raw_response') and \
-                       response._raw_response.candidates and response._raw_response.candidates[0].content.parts[0].inline_data:
-                         # This is trying to dig into a more raw response structure, might be needed if the direct .parts access isn't right
-                         image_bytes_to_save = response._raw_response.candidates[0].content.parts[0].inline_data.data
-
-
-                except AttributeError:
-                    print(f"ERROR: Response object for {location_id} ({location_name}) does not have expected image data structure (e.g., .parts or _raw_response.candidates). Response: {response}")
-                    image_bytes_to_save = None # Ensure it's None
-                except Exception as e:
-                    print(f"ERROR: Error accessing image data from response for {location_id} ({location_name}). Error: {e}. Response: {response}")
-                    image_bytes_to_save = None
-
+                # Standard way to get image bytes, as seen in generate_portraits.py
+                # Ensure generated_images list exists, is not empty,
+                # the first image object exists, and it contains image data.
+                if (response.generated_images and
+                    len(response.generated_images) > 0 and
+                    response.generated_images[0].image):
+                    image_bytes_to_save = response.generated_images[0].image.image_bytes
 
                 if image_bytes_to_save:
                     try:
                         img = Image.open(BytesIO(image_bytes_to_save))
-                        img = img.resize((512, 512)) # Resize to 512x512
+                        img = img.resize((1024, 1024)) # Resize to 1024x1024
                         img.save(full_image_path, "JPEG") # Save as JPEG
 
                         with open(full_prompt_path, "w") as f:
@@ -341,13 +321,14 @@ def generate_images_for_locations(locations_data_list, project_root_path):
                         print("ERROR: Pillow or io library might be missing. Please ensure 'Pillow' is installed ('pip install Pillow'). Cannot save image.")
                     except Exception as e:
                         print(f"ERROR: Failed to save image for {location_id} ({location_name}). Error: {e}")
-                # elif response.candidates and not (response.candidates[0].content and response.candidates[0].content.parts):
-                # This check might be redundant if using model.generate_content and its response structure
-                # else:
-                #    print(f"ERROR: Gemini API call for {location_id} ({location_name}) returned no image or an unexpected response after retries: {response}")
-                # Simplified error logging if no bytes found:
-                elif not image_bytes_to_save:
-                     print(f"ERROR: Gemini API call for {location_id} ({location_name}) succeeded but no image data found in the response. Response: {response}")
+                # Mimic error handling from generate_portraits.py for consistency
+                # Note: GenerateImagesResponse doesn't typically have 'candidates'. This 'elif' might be based on a different response type.
+                # Adding hasattr for safety, though generate_portraits.py doesn't have it.
+                elif hasattr(response, 'candidates') and response.candidates and \
+                     not (response.candidates[0].content and response.candidates[0].content.parts):
+                     print(f"ERROR: Gemini API call succeeded for {location_id} ({location_name}) but returned no content parts. Candidate: {response.candidates[0]}")
+                else:
+                    print(f"ERROR: Gemini API call for {location_id} ({location_name}) returned no image or an unexpected response after retries: {response}")
 
 
         except Exception as e:
