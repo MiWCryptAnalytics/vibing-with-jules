@@ -5,8 +5,10 @@ import '@material/web/icon/icon.js';
 class MapView extends LitElement {
   static styles = css`
     :host {
-      display: block;
-      text-align: center; /* Center the map container if it's narrower than host */
+      display: flex; /* Added */
+      flex-direction: column; /* Added */
+      flex-grow: 1; /* Added */
+      text-align: center;
     }
     h2 {
       /* Inherits global styles */
@@ -40,38 +42,45 @@ class MapView extends LitElement {
       font-family: 'MainTextFont', serif; /* Placeholder */
     }
     .map-container {
-      width: 90%; /* Or a fixed width like 500px */
-      max-width: 600px;
-      height: 400px;
-      border: 5px solid #3C2F2F; /* dark brown, thicker */
-      /* Conceptual: border-image-source: url('assets/images/theme/map_frame.png'); */
-      /* border-image-slice: 20; */
-      /* border-image-width: 20px; */
-      /* border-image-repeat: round; */
-      overflow: auto; /* Important for scrolling */
-      margin: 0 auto; /* Center the container */
-      overscroll-behavior: none; /* Prevent bounce/rubber-band scrolling */
-      background-color: #5C8D9C; /* muted sea blue for areas around map image */
-      position: relative; /* For potential future absolute positioning of map elements */
+      /* width: 90%; */ /* REMOVE */
+      /* max-width: 600px; */ /* REMOVE */
+      /* height: 400px; */ /* REMOVE */
+      /* margin: 0 auto; */ /* REMOVE */
+      width: 100%; /* ADDED */
+      flex-grow: 1; /* ADDED, to fill :host */
+      display: flex; /* ADDED, to help center map-content if it's smaller */
+      justify-content: center; /* ADDED, to center map-content horizontally */
+      align-items: center; /* ADDED, to center map-content vertically */
+      border: 5px solid #3C2F2F;
+      overflow: auto;
+      /* overscroll-behavior: none; */ /* This is fine */
+      background-color: #5C8D9C;
+      position: relative;
       cursor: grab;
-
-      /* Hide scrollbars */
+      box-shadow: inset 0 0 25px 15px rgba(0,0,0,0.35);
       scrollbar-width: none; /* For Firefox */
-
-      /* Vignette effect */
-      box-shadow: inset 0 0 25px 15px rgba(0,0,0,0.35); /* Keep */
     }
-
     .map-container::-webkit-scrollbar {
       display: none; /* Hide scrollbar */
     }
     .map-content {
-      width: 1280px; /* Keep original map size */
-      height: 896px; /* Keep original map size */
-      /* Conceptual: background-image: url('assets/images/theme/pirate_map_background.jpg'); */
-      background-image: url(../www/assets/images/mapv1.jpg); /* Current image */
+      /* width: 1280px; */ /* REMOVE */
+      /* height: 896px; */ /* REMOVE */
+
+      /* New approach to maintain aspect ratio of the map image (1280x896) */
+      /* while fitting within the container. The map image itself will be the background. */
+      width: 100%; /* Fill the width of map-container */
+      /* Calculate aspect ratio: (896 / 1280) * 100% = 70% */
+      /* This means height is 70% of the width. */
+      /* We achieve this by setting height to 0 and using padding-bottom. */
+      height: 0;
+      padding-bottom: 70%; /* This sets the height relative to the width */
+
+      background-image: url(../www/assets/images/mapv1.jpg);
       background-repeat: no-repeat;
-      position: relative;
+      background-size: 100% 100%; /* Stretch background image to fill the div */
+      position: relative; /* Keep for POI markers */
+      /* transform: scale() is applied via inline style by Lit, keep that */
     }
 
     @keyframes pulseAnimation {

@@ -13,88 +13,103 @@ import './placeholder-puzzle-overlay.js'; // Import the puzzle overlay
 
 class AppShell extends LitElement {
   static styles = css`
-  :host {
-    display: block;
-    /* font-family is now inherited from body global style */
-  }
+    @keyframes fadeInView {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .view-container-fade-in {
+      animation: fadeInView 0.35s ease-out forwards;
+    }
+    @keyframes fadeOutView {
+      from { opacity: 1; transform: translateY(0); }
+      to { opacity: 0; transform: translateY(10px); }
+    }
+    .view-container-fade-out {
+      animation: fadeOutView 0.35s ease-out forwards;
+    }
 
-  .top-nav {
-    background-color: #3C2F2F; /* dark brown fallback */
-    background-image: url('assets/images/theme/wood_texture.png'); /* Placeholder */
-    padding: 10px 0;
-    display: flex;
-    justify-content: center; /* Center links horizontally */
-    position: sticky; /* Make it sticky to the top */
-    top: 0;
-    z-index: 1000; /* Ensure it's above other content */
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* Keep shadow for depth */
-    border-bottom: 2px solid #2F1E1E; /* Darker brown plank edge */
-  }
+    :host {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
 
-  .top-nav a {
-    color: #FDF5E6; /* cream */
-    font-family: 'PirateFont', cursive; /* Thematic display font */
-    padding: 10px 20px; /* Adjusted padding */
-    text-decoration: none;
-    margin: 0; /* Remove margin if using borders as dividers */
-    border-right: 1px solid #2F1E1E; /* Darkest brown divider */
-    text-shadow: 1px 1px 1px rgba(0,0,0,0.7); /* Subtle depth */
-    transition: background-color 0.3s, text-shadow 0.3s;
-  }
+    .top-nav {
+      background-color: #3C2F2F;
+      background-image: url('assets/images/theme/wood_texture.png');
+      padding: 10px 0;
+      display: flex;
+      justify-content: center;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      border-bottom: 2px solid #2F1E1E;
+    }
 
-  .top-nav a:last-child {
-    border-right: none; /* Remove divider from last item */
-  }
+    .top-nav a {
+      color: #FDF5E6;
+      font-family: 'PirateFont', cursive;
+      padding: 10px 20px;
+      text-decoration: none;
+      margin: 0;
+      border-right: 1px solid #2F1E1E;
+      text-shadow: 1px 1px 1px rgba(0,0,0,0.7);
+      transition: background-color 0.3s, text-shadow 0.3s;
+    }
 
-  .top-nav a:hover,
-  .top-nav a.active {
-    background-color: #7A5C5C; /* medium brown */
-    color: #FDF5E6; /* Ensure text color remains cream for contrast */
-    text-shadow: 1px 1px 2px rgba(255,255,255,0.3); /* Pop text on hover/active */
-  }
+    .top-nav a:last-child {
+      border-right: none;
+    }
 
-  .app-header {
-    background-color: transparent; /* Let global body background show */
-    padding: 15px;
-    text-align: center;
-    /* border-bottom: 1px solid #ddd; */ /* Removed, can be thematic border later */
-  }
+    .top-nav a:hover,
+    .top-nav a.active {
+      background-color: #7A5C5C;
+      color: #FDF5E6;
+      text-shadow: 1px 1px 2px rgba(255,255,255,0.3);
+    }
 
-  .app-header h1 {
-    margin: 0;
-    font-size: 1.8em;
-    /* font-family and color will be inherited from global h1 styles */
-  }
+    .app-header {
+      background-color: transparent;
+      padding: 15px;
+      text-align: center;
+    }
 
-  .app-header p { /* For the 'Current View' debug message */
-    font-size: 0.8em; /* Keep or adjust as needed */
-    color: #7A5C5C; /* medium brown, less obtrusive */
-    margin: 5px 0 0;
-  }
+    .app-header h1 {
+      margin: 0;
+      font-size: 1.8em;
+    }
 
-  .main-content {
-    padding: 16px; /* Add padding around the view container */
-  }
+    .app-header p {
+      font-size: 0.8em;
+      color: #7A5C5C;
+      margin: 5px 0 0;
+    }
 
-  .view-container {
-    border: 2px solid #7A5C5C; /* medium brown, thicker */
-    /* border-image-source: url('assets/images/theme/ornate_frame.png'); */ /* Conceptual for future */
-    /* border-image-slice: 10; */
-    /* border-image-width: 10px; */
-    /* border-image-repeat: round; */
-    padding: 16px;
-    background-color: rgba(253, 245, 230, 0.8); /* semi-transparent cream */
-  }
+    .main-content {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 16px;
+    }
 
-  .app-footer {
-    text-align: center;
-    padding: 15px;
-    background-color: transparent; /* Let global body background show */
-    /* border-top: 1px solid #ddd; */ /* Removed */
-    font-size: 0.9em; /* Keep or adjust as needed */
-    color: #3C2F2F; /* dark brown */
-  }
-`;
+    .view-container {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      border: 2px solid #7A5C5C;
+      padding: 16px;
+      background-color: rgba(253, 245, 230, 0.8);
+    }
+
+    .app-footer {
+      text-align: center;
+      padding: 15px;
+      background-color: transparent;
+      font-size: 0.9em;
+      color: #3C2F2F;
+    }
+  `;
 
   static properties = {
     currentView: { type: String },
@@ -107,7 +122,8 @@ class AppShell extends LitElement {
     allDialogues: { type: Object, state: true }, // To store all dialogues
     allPuzzles: { type: Object, state: true }, // To store all puzzle definitions
     activePuzzleId: { type: String },
-    isPuzzleOverlayOpen: { type: Boolean }
+    isPuzzleOverlayOpen: { type: Boolean },
+    _isViewChanging: { type: Boolean, state: true }
   };
 
   constructor() {
@@ -134,6 +150,7 @@ class AppShell extends LitElement {
     this.isPuzzleOverlayOpen = false;
     this.playerAlignment = "neutral"; // Initialize player alignment
     this._isResetting = false; // Flag to indicate if a reset operation is in progress
+    this._isViewChanging = false;
 
     this._boundHandleHashChange = this._handleHashChange.bind(this);
     this._boundSaveGameState = this._saveGameState.bind(this); // For beforeunload
@@ -499,7 +516,7 @@ class AppShell extends LitElement {
     super.disconnectedCallback();
   }
 
-  _handleHashChange() {
+  async _handleHashChange() {
     const validViews = ['map', 'game', 'inventory', 'research', 'menu', 'splash'];
     const hash = window.location.hash;
     if (hash && hash.length > 1) {
@@ -510,101 +527,159 @@ class AppShell extends LitElement {
 
       if (validViews.includes(hashView)) {
         console.log(`AppShell: Hash changed externally to #${hashView}, updating view.`);
+
+        this._isViewChanging = true;
+        this.requestUpdate();
+        await this.updateComplete;
+
         this.currentView = hashView;
         if (hashView === 'game') {
           if (!this.currentLocationData && this.allPois.length > 0) {
             this.currentLocationData = this.allPois[0]; // Default to first POI
           } else if (!this.currentLocationData) { // No POIs loaded or empty
             console.warn("AppShell: Hash changed to 'game' but no location data. Reverting to map.");
-            this.currentView = 'map';
+            this.currentView = 'map'; // This will be the effective currentView
             window.location.hash = 'map'; // Correct the hash immediately
           }
         }
-        this._saveGameState(); // Save after view change from hash
+        this._isViewChanging = false;
+        // currentView change will trigger requestUpdate, no need to call _saveGameState or requestUpdate here
+        // However, if the hash was corrected (e.g. to 'map'), that needs to be reflected.
+        // And game state should be saved regardless.
+        if (window.location.hash.substring(1) !== this.currentView) {
+             window.location.hash = this.currentView; // Ensure hash matches final view decision
+        }
+        this._saveGameState();
       }
-    } else if (!hash && this.currentView !== 'splash') { // Hash is empty (e.g. user cleared it from URL)
-      if (this.currentView === '') return; // Already reflects empty hash effectively
+    } else if (!hash && this.currentView !== 'splash') { // Hash is empty
+      if (this.currentView === '') return;
       console.log(`AppShell: Hash cleared externally, navigating to splash.`);
+
+      this._isViewChanging = true;
+      this.requestUpdate();
+      await this.updateComplete;
+
       this.currentView = 'splash';
-      // Do not set window.location.hash here if user explicitly cleared it.
+      this._isViewChanging = false;
+      // window.location.hash is already empty or just '#'
       this._saveGameState();
     }
   }
 
-  _handleNavClick(event, viewName) {
+  async _handleNavClick(event, viewName) {
     event.preventDefault(); // Prevent default anchor tag behavior
-    let stateChanged = false;
 
-    if (viewName === 'game' && !this.currentLocationData && this.allPois.length > 0) {
-      this.currentLocationData = this.allPois[0];
-      stateChanged = true;
+    if (this.currentView === viewName && viewName !== 'game') { // Allow re-nav to 'game' if location might change
+      // If already on the view and it's not 'game', or if it is 'game' but no location change logic applies here, do nothing.
+      // This simplified check assumes that if it's 'game', and location might change, it's handled below.
+      // If we are on the same view and hash is out of sync, fix hash.
+      if (window.location.hash.substring(1) !== this.currentView) {
+          window.location.hash = this.currentView;
+      }
+      return;
     }
 
-    if (this.currentView !== viewName) {
-      this.currentView = viewName;
-      stateChanged = true;
+    let newLocationData = this.currentLocationData;
+    let intendedView = viewName;
+    let stateActuallyChanged = false; // Tracks if view or critical data for view (like location) changes
+
+    if (viewName === 'game') {
+      if (!this.currentLocationData && this.allPois.length > 0) {
+        newLocationData = this.allPois[0];
+        if (this.currentLocationData?.id !== newLocationData?.id) {
+            stateActuallyChanged = true;
+        }
+      } else if (!this.currentLocationData) {
+        // Cannot navigate to 'game' without a location, and no default available.
+        // This case should ideally not happen if nav guards are correct.
+        console.warn("AppShell: Nav to 'game' but no location and no default POI. Staying or going to map.");
+        // Optionally, redirect to 'map' if not already there
+        // intendedView = 'map';
+        return; // Or simply do nothing
+      }
     }
 
-    if (stateChanged) {
-      window.location.hash = this.currentView; // Update hash first
-      this._saveGameState(); // Then save
-      console.log(`AppShell: Top nav click to view: ${viewName}. State saved.`);
+    if (this.currentView !== intendedView || stateActuallyChanged) {
+        this._isViewChanging = true;
+        this.requestUpdate();
+        await this.updateComplete;
+
+        this.currentView = intendedView;
+        this.currentLocationData = newLocationData; // Update if it changed
+        this._isViewChanging = false;
+
+        window.location.hash = this.currentView; // Update hash first
+        this._saveGameState(); // Then save
+        console.log(`AppShell: Top nav click to view: ${viewName}. State saved.`);
     } else if (window.location.hash.substring(1) !== this.currentView) {
       // View didn't change, but hash might be out of sync
       window.location.hash = this.currentView;
     }
   }
 
-  _handleNavigate(event) {
+  async _handleNavigate(event) {
     const requestedView = event.detail.view;
-    const locationData = event.detail.locationData;
-    const targetLocationId = event.detail.targetLocationId;
-    let stateChanged = false;
+    const locationData = event.detail.locationData; // Full POI object from map
+    const targetLocationId = event.detail.targetLocationId; // ID string from game actions
 
-    console.log(`AppShell: Navigate event to view: ${requestedView}`, event.detail);
+    let newCurrentView = this.currentView;
+    let newLocationData = this.currentLocationData;
+    let changeOccurred = false;
 
     if (requestedView === 'game') {
-      let newLocation = null;
+      let prospectiveLocation = null;
       if (locationData) { // Navigating from map with full data
-        newLocation = locationData;
+        prospectiveLocation = locationData;
       } else if (targetLocationId && this.allPois.length > 0) { // Navigating from game action with ID
-        newLocation = this.allPois.find(poi => poi.id === targetLocationId);
-        if (!newLocation) {
-          console.error(`AppShell: Location ID "${targetLocationId}" not found.`);
-          this.currentView = 'map';
-          window.location.hash = 'map';
-          this._saveGameState();
-          return;
+        prospectiveLocation = this.allPois.find(poi => poi.id === targetLocationId);
+        if (!prospectiveLocation) {
+          console.error(`AppShell: Location ID "${targetLocationId}" not found. Navigating to map.`);
+          newCurrentView = 'map'; // Fallback to map
+          // newLocationData remains unchanged or could be cleared
         }
-      } else if (!this.currentLocationData && this.allPois.length > 0) {
-        newLocation = this.allPois[0]; // Default to first POI
+      } else if (!this.currentLocationData && this.allPois.length > 0) { // No current location, default to first POI
+        prospectiveLocation = this.allPois[0];
+      } else if (!this.currentLocationData) { // No current location and no POIs loaded/available
+         console.warn("AppShell: Cannot navigate to 'game' view without valid location. Going to map.");
+         newCurrentView = 'map'; // Fallback to map
       }
 
-      if (newLocation && (!this.currentLocationData || this.currentLocationData.id !== newLocation.id)) {
-        this.currentLocationData = newLocation;
-        stateChanged = true;
-      } else if (!newLocation && requestedView === 'game') {
-        console.warn("AppShell: Cannot navigate to 'game' view without valid location. Going to map.");
-        if (this.currentView !== 'map') {
-          this.currentView = 'map';
-          stateChanged = true;
-        }
-        window.location.hash = this.currentView;
-        if (stateChanged) this._saveGameState();
-        return;
+      if (prospectiveLocation && newLocationData?.id !== prospectiveLocation.id) {
+        newLocationData = prospectiveLocation;
+        changeOccurred = true;
+      }
+      // If, after all that, we still don't have location data for a 'game' view, redirect to 'map'
+      if (!newLocationData && requestedView === 'game') {
+        newCurrentView = 'map';
       }
     }
 
-    if (this.currentView !== requestedView) {
-      this.currentView = requestedView;
-      stateChanged = true;
+    if (newCurrentView !== requestedView && requestedView !== 'game') { // If not game, view change is simpler
+        newCurrentView = requestedView;
+        changeOccurred = true;
+    } else if (newCurrentView !== requestedView && requestedView === 'game' && newLocationData) {
+        // If it's a game view, and we have new location data, the view should be 'game'
+        newCurrentView = 'game';
+        changeOccurred = true;
     }
 
-    if (stateChanged) {
-      window.location.hash = this.currentView; // Update hash first
-      this._saveGameState(); // Then save
+
+    if (changeOccurred || this.currentView !== newCurrentView || this.currentLocationData?.id !== newLocationData?.id) {
+        this._isViewChanging = true;
+        this.requestUpdate();
+        await this.updateComplete;
+
+        this.currentView = newCurrentView;
+        this.currentLocationData = newLocationData;
+        this._isViewChanging = false;
+
+        if (window.location.hash.substring(1) !== this.currentView) {
+            window.location.hash = this.currentView;
+        }
+        this._saveGameState();
+        console.log(`AppShell: Navigate event to view: ${this.currentView}. Location: ${this.currentLocationData?.name || 'N/A'}`);
     } else if (window.location.hash.substring(1) !== this.currentView) {
-      // View didn't change, but hash might be out of sync
+      // Only hash is out of sync
       window.location.hash = this.currentView;
     }
   }
@@ -711,8 +786,8 @@ class AppShell extends LitElement {
       </header>
 
       <main class="main-content">
-        <div class="view-container">
-          ${this._renderCurrentView()}
+        <div class="view-container ${!this._isViewChanging ? 'view-container-fade-in' : ''}">
+          ${!this._isViewChanging ? this._renderCurrentView() : html``}
         </div>
       </main>
 
