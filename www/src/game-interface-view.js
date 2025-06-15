@@ -591,21 +591,6 @@ class GameInterfaceView extends LitElement {
 
     // Render NPCs if present
     if (this.locationData && this.locationData.npcIds && this.locationData.npcIds.length > 0 && this.allNpcs.size > 0) {
-      // This is the existing NPC list, potentially for a side panel or market view
-      npcListHtml = html`
-        <div class="npc-list">
-          <h4>${msg('People Here', {id: 'npc-list-header'})}:</h4>
-          ${this.locationData.npcIds.map(npcId => {
-            const npc = this.allNpcs.get(npcId);
-            return npc ? html`
-              <div class="npc-presence" @click=${() => this._handleNpcClick(npcId)}>
-                <md-icon>${npc.icon || 'person'}</md-icon>
-                <span>${npc.name}</span>
-              </div>
-            ` : '';
-          })}
-        </div>
-      `;
 
       // New logic for rendering NPCs directly in the scene
       if (!this.locationData.isMarket) { // Only render in-scene if not a market view
@@ -665,7 +650,7 @@ class GameInterfaceView extends LitElement {
       `;
     } else { // Not a market, render hidden objects and NPCs
       contentHtml = html`
-        ${npcListHtml} {/* This is the existing list, could be removed or kept depending on final UI */}
+        ${npcListHtml}
 
         ${this.locationData.hiddenObjects?.map(objInLocation => {
           let itemDetails = null;
@@ -716,7 +701,7 @@ class GameInterfaceView extends LitElement {
           }
           return ''; 
         })}
-        ${inSceneNpcsHtml} {/* Add new in-scene NPCs here, after hidden objects */}
+        ${inSceneNpcsHtml}
       `;
     }
 

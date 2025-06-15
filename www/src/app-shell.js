@@ -13,108 +13,98 @@ import './placeholder-puzzle-overlay.js'; // Import the puzzle overlay
 
 class AppShell extends LitElement {
   static styles = css`
-    /* Add these at the top level of the static styles array, or inside an existing css`` block */
+
     @keyframes fadeInView {
-      from { opacity: 0; transform: translateY(10px); } /* Slight upward movement */
+      from { opacity: 0; transform: translateY(10px); }
       to { opacity: 1; transform: translateY(0); }
     }
     .view-container-fade-in {
       animation: fadeInView 0.35s ease-out forwards;
     }
     /* Add a class for fade-out to be used later if full transition is implemented */
-    @keyframes fadeOutView {
-      from { opacity: 1; transform: translateY(0); }
-      to { opacity: 0; transform: translateY(10px); }
-    }
-    .view-container-fade-out {
-      animation: fadeOutView 0.35s ease-out forwards;
-    }
+
   :host {
     display: flex; /* Changed from block */
     flex-direction: column;
     min-height: 100vh; /* Ensure app-shell takes at least full viewport height */
     /* font-family is now inherited from body global style */
-  }
+   }
+    .top-nav {
+      background-color: #3C2F2F;
+      background-image: url('assets/images/theme/wood_texture.png');
+      padding: 10px 0;
+      display: flex;
+      justify-content: center;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      border-bottom: 2px solid #2F1E1E;
+    }
 
-  .top-nav {
-    background-color: #3C2F2F; /* dark brown fallback */
-    background-image: url('assets/images/theme/wood_texture.png'); /* Placeholder */
-    padding: 10px 0;
-    display: flex;
-    justify-content: center; /* Center links horizontally */
-    position: sticky; /* Make it sticky to the top */
-    top: 0;
-    z-index: 1000; /* Ensure it's above other content */
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* Keep shadow for depth */
-    border-bottom: 2px solid #2F1E1E; /* Darker brown plank edge */
-  }
+    .top-nav a {
+      color: #FDF5E6;
+      font-family: 'PirateFont', cursive;
+      padding: 10px 20px;
+      text-decoration: none;
+      margin: 0;
+      border-right: 1px solid #2F1E1E;
+      text-shadow: 1px 1px 1px rgba(0,0,0,0.7);
+      transition: background-color 0.3s, text-shadow 0.3s;
+    }
 
-  .top-nav a {
-    color: #FDF5E6; /* cream */
-    font-family: 'PirateFont', cursive; /* Thematic display font */
-    padding: 10px 20px; /* Adjusted padding */
-    text-decoration: none;
-    margin: 0; /* Remove margin if using borders as dividers */
-    border-right: 1px solid #2F1E1E; /* Darkest brown divider */
-    text-shadow: 1px 1px 1px rgba(0,0,0,0.7); /* Subtle depth */
-    transition: background-color 0.3s, text-shadow 0.3s;
-  }
+    .top-nav a:last-child {
+      border-right: none;
+    }
 
-  .top-nav a:last-child {
-    border-right: none; /* Remove divider from last item */
-  }
+    .top-nav a:hover,
+    .top-nav a.active {
+      background-color: #7A5C5C;
+      color: #FDF5E6;
+      text-shadow: 1px 1px 2px rgba(255,255,255,0.3);
+    }
 
-  .top-nav a:hover,
-  .top-nav a.active {
-    background-color: #7A5C5C; /* medium brown */
-    color: #FDF5E6; /* Ensure text color remains cream for contrast */
-    text-shadow: 1px 1px 2px rgba(255,255,255,0.3); /* Pop text on hover/active */
-  }
+    .app-header {
+      background-color: transparent;
+      padding: 15px;
+      text-align: center;
+    }
 
-  .app-header {
-    background-color: transparent; /* Let global body background show */
-    padding: 15px;
-    text-align: center;
-    /* border-bottom: 1px solid #ddd; */ /* Removed, can be thematic border later */
-  }
+    .app-header h1 {
+      margin: 0;
+      font-size: 1.8em;
+    }
 
-  .app-header h1 {
-    margin: 0;
-    font-size: 1.8em;
-    /* font-family and color will be inherited from global h1 styles */
-  }
+    .app-header p {
+      font-size: 0.8em;
+      color: #7A5C5C;
+      margin: 5px 0 0;
+    }
 
-  .app-header p { /* For the 'Current View' debug message */
-    font-size: 0.8em; /* Keep or adjust as needed */
-    color: #7A5C5C; /* medium brown, less obtrusive */
-    margin: 5px 0 0;
-  }
+    .main-content {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 16px;
+    }
 
-  .main-content {
-    flex-grow: 1; /* Allow main-content to take available vertical space */
-    display: flex; /* To allow view-container to also grow */
-    flex-direction: column; /* Stack children vertically */
-    padding: 16px; /* Keep padding */
-  }
+    .view-container {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      border: 2px solid #7A5C5C;
+      padding: 16px;
+      background-color: rgba(253, 245, 230, 0.8);
+    }
 
-  .view-container {
-    flex-grow: 1; /* Allow view-container to take available space within main-content */
-    display: flex; /* If views inside should also fill this, helpful */
-    flex-direction: column; /* Stack view content vertically */
-    border: 2px solid #7A5C5C; /* medium brown, thicker */
-    padding: 16px;
-    background-color: rgba(253, 245, 230, 0.8); /* semi-transparent cream */
-  }
-
-  .app-footer {
-    text-align: center;
-    padding: 15px;
-    background-color: transparent; /* Let global body background show */
-    /* border-top: 1px solid #ddd; */ /* Removed */
-    font-size: 0.9em; /* Keep or adjust as needed */
-    color: #3C2F2F; /* dark brown */
-  }
-`;
+    .app-footer {
+      text-align: center;
+      padding: 15px;
+      background-color: transparent;
+      font-size: 0.9em;
+      color: #3C2F2F;
+    }
+  `;
 
   static properties = {
     currentView: { type: String },
