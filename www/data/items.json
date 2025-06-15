@@ -61,13 +61,13 @@
     "description": "A small pouch of glittering gold coins. Looks valuable.",
     "icon": "monetization_on",
     "itemImage": "../www/assets/images/items/gold_coins_icon.png",
-    "type": "currency_item" 
+    "type": "currency_item"
   },
   {
     "id": "item_obsidian_shard",
     "name": "Obsidian Shard",
     "description": "A sharp piece of volcanic glass.",
-    "icon": "landscape", 
+    "icon": "landscape",
     "itemImage": "../www/assets/images/items/item_obsidian_shard_icon.png",
     "type": "collectible"
   },
@@ -75,7 +75,7 @@
     "id": "item_pearl_necklace",
     "name": "Pearl Necklace",
     "description": "A beautiful necklace of lustrous pearls.",
-    "icon": "watch", 
+    "icon": "watch",
     "itemImage": "../www/assets/images/items/item_pearl_necklace_icon.png",
     "type": "treasure"
   },
@@ -107,7 +107,7 @@
     "id": "item_cannonball",
     "name": "Cannonball",
     "description": "A heavy iron cannonball, standard make.",
-    "icon": "adjust", 
+    "icon": "adjust",
     "itemImage": "../www/assets/images/items/item_cannonball_icon.png",
     "type": "weapon_part"
   },
@@ -115,8 +115,43 @@
     "id": "item_empty_bottle",
     "name": "Empty Bottle",
     "description": "An empty glass bottle. Could be useful for messages, or storing... rum?",
-    "icon": "wine_bar", 
+    "icon": "wine_bar",
     "itemImage": "../www/assets/images/items/item_empty_bottle_icon.png",
     "type": "crafting_material"
+  },
+  {
+    "id": "item_rostova_spyglass",
+    "name": "Rostova's Spyglass",
+    "description": "A finely crafted brass spyglass, clearly well-used but also well-loved. It has the initials 'A.R.' engraved on it.",
+    "icon": "search",
+    "itemImage": "../www/assets/images/items/item_rostova_spyglass_icon.png",
+    "type": "quest"
+  },
+  {
+    "id": "item_gold_coins_medium",
+    "name": "Medium Pouch of Gold Coins",
+    "description": "A decently weighted pouch filled with gold coins. A good reward for a helpful pirate.",
+    "icon": "monetization_on",
+    "itemImage": "../www/assets/images/items/item_gold_coins_medium_icon.png",
+    "type": "currency_item",
+    "value": 50
+  },
+  {
+    "id": "item_shadow_gem",
+    "name": "Shadow Gem",
+    "description": "A dark, obsidian-like gemstone that seems to absorb light. It feels cold to the touch and emanates a faint, unsettling aura.",
+    "icon": "diamond",
+    "itemImage": "../www/assets/images/items/item_shadow_gem_icon.png",
+    "type": "quest"
+  },
+  {
+    "id": "item_cursed_doubloon_pouch",
+    "name": "Pouch of Cursed Doubloons",
+    "description": "A heavy pouch of ancient doubloons. They glitter enticingly, but carry an ominous feeling. Spending them might have unforeseen consequences.",
+    "icon": "paid",
+    "itemImage": "../www/assets/images/items/item_cursed_doubloon_pouch_icon.png",
+    "type": "currency_item",
+    "value": 100,
+    "cursed": true
   }
 ]

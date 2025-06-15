@@ -1,5 +1,6 @@
 import { LitElement, html, css } from 'lit';
 import { msg, updateWhenLocaleChanges } from '@lit/localize';
+import {keyed} from 'lit/directives/keyed.js';
 import '@material/web/iconbutton/icon-button.js';
 import '@material/web/icon/icon.js';
 import '@material/web/button/filled-button.js';
@@ -126,12 +127,46 @@ class GameInterfaceView extends LitElement {
       z-index: 20;
       box-shadow: 0 2px 10px rgba(0,0,0,0.3);
     }
+
+    .active-companion-display {
+      position: absolute;
+      top: 70px; /* Adjust based on location-title height + some padding */
+      right: 10px;
+      background-color: rgba(60, 47, 47, 0.85); /* dark brown, semi-transparent */
+      border: 2px solid #7A5C5C; /* medium brown */
+      border-radius: 5px;
+      padding: 8px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      z-index: 15;
+      color: #FDF5E6;
+      font-family: 'MainTextFont', serif;
+    }
+    .active-companion-display img.companion-portrait {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 1px solid #FDF5E6;
+      object-fit: cover;
+    }
+    .active-companion-display .companion-name {
+      font-size: 0.9em;
+      font-weight: bold;
+    }
+    .active-companion-display md-icon { /* Fallback icon for companion */
+      font-size: 30px;
+      color: #FDF5E6;
+    }
   `;
 
   static properties = {
     locationData: { type: Object },
     playerInventory: { type: Array },
-    playerResources: { type: Object }, 
+    playerResources: { type: Object },
+    playerQuests: { type: Object }, // From AppShell
+    activeCompanionId: { type: String }, // From AppShell
+    activeCompanionData: { type: Object }, // From AppShell
     allItems: { type: Object }, 
     allNpcs: { type: Object },      // Added for NPC data
     allDialogues: { type: Object }, // Added for dialogue data
@@ -147,6 +182,9 @@ class GameInterfaceView extends LitElement {
     this.locationData = null;
     this.playerInventory = [];
     this.playerResources = { gold: 0, silver: 0, rum: 0 };
+    this.playerQuests = {};
+    this.activeCompanionId = null;
+    this.activeCompanionData = null;
     this.allItems = new Map();
     this.allNpcs = new Map();      // Initialize allNpcs
     this.allDialogues = {};    // Initialize allDialogues
@@ -249,16 +287,33 @@ class GameInterfaceView extends LitElement {
     }
   }
 
-  _handlePlayerChoiceEvent(event) {
-    if (event.detail && event.detail.choice) {
-      this._handlePlayerChoice(event.detail.choice);
-    } else {
-      console.warn('GameInterfaceView: player-choice-selected event did not contain choice details.');
-      // If the dialog was dismissed (e.g. scrim click, escape), event.detail.choice might be undefined.
-      // The npc-dialog-overlay's own 'closed' handler already sets its 'open' to false.
-      // Here, we ensure the game state reflects that dialogue has ended.
+  _handleDialogChoice(nextNodeId) { // Renamed and logic updated
+      console.log(`GameInterfaceView (_handleDialogChoice): nextNodeId: ${nextNodeId}`);
+      if (typeof nextNodeId !== 'undefined') { // Check for nextNodeId existence
+          // const nextNodeId = event.detail.nextNodeId; // No longer from event.detail
+          if (nextNodeId === "END") {
+              this._endDialogue();
+          } else {
+              const dialogueTree = this.allDialogues[this._activeDialogueNpcId];
+              const nextNode = dialogueTree ? dialogueTree[nextNodeId] : null;
+              if (nextNode) {
+                  this._currentDialogueNodeId = nextNodeId;
+                  this._currentDialogueNode = nextNode;
+              } else {
+                  console.error(`Dialogue node "${nextNodeId}" not found for NPC "${this._activeDialogueNpcId}". Ending dialogue.`);
+                  this._endDialogue();
+              }
+          }
+          this.requestUpdate();
+      } else {
+          console.warn('GameInterfaceView (_handleDialogChoice): nextNodeId was undefined. Ending dialogue.');
+          this._endDialogue(); // Fallback
+      }
+  }
+
+  _handleDialogDismiss() { // Renamed
+      console.log('GameInterfaceView (_handleDialogDismiss): Dialog dismissed.');
       this._endDialogue();
-    }
   }
 
   // Helper to format price object (e.g., { gold: 10 }) into "10 Gold"
@@ -708,19 +763,62 @@ class GameInterfaceView extends LitElement {
     // Dialogue Panel UI (rendered as an overlay)
     // const oldDialoguePanelHtml = this._currentDialogueNode ? html` ... ` : ''; // Old logic removed
 
+    // Companion UI Groundwork
+    if (this.activeCompanionData) {
+      console.log("GameInterfaceView: Active companion:", this.activeCompanionData.name, this.activeCompanionData);
+      // UI for companion will go here in a later step
+    }
+
+    let dialogOverlayHtml = '';
+    if (this._currentDialogueNode && this._activeDialogueNpcId) {
+      console.log('GameInterfaceView rendering dialog, this.playerQuests:', this.playerQuests);
+      // The 'keyed' directive is used here to ensure that NpcDialogOverlay is
+      // completely re-instantiated (destroyed and recreated) whenever the
+      // _currentDialogueNodeId changes. This is crucial for resetting the state
+      // of the underlying <md-dialog> element, which had persistent state issues
+      // (e.g., not reopening correctly, re-emitting old events) when its properties
+      // were simply updated on the same instance.
+      dialogOverlayHtml = keyed(this._currentDialogueNodeId, html`
+        <npc-dialog-overlay
+          .npcDetails=${this.allNpcs.get(this._activeDialogueNpcId)}
+          .dialogueNode=${this._currentDialogueNode}
+          .open=${true}
+          .playerStats=${{ strength: this.playerResources?.strength || 0, agility: this.playerResources?.agility || 0, intelligence: this.playerResources?.intelligence || 0, charisma: this.playerResources?.charisma || 0 }}
+          .gameState=${{
+            playerQuests: this.playerQuests,
+            playerInventory: this.playerInventory,
+            playerResources: this.playerResources,
+            playerAlignment: this.playerAlignment,
+            activeCompanionId: this.activeCompanionId
+            // Other relevant gameState properties from GameInterfaceView can be added here
+            // For example, if there are global flags not part of playerQuests:
+            // worldFlags: this.worldFlags, (assuming this.worldFlags exists)
+          }}
+          .onChoiceMade=${(nextNodeId) => this._handleDialogChoice(nextNodeId)}
+          .onDialogDismissed=${() => this._handleDialogDismiss()}
+        ></npc-dialog-overlay>
+      `);
+    } else {
+      dialogOverlayHtml = html``; // Render an empty html template if no dialog
+    }
+
     return html`
       <div class="viewport" style="background-image: ${backgroundImage};">
         <div class="location-title">${this.locationData.name}</div>
         ${contentHtml}
 
-        ${this._currentDialogueNode && this._activeDialogueNpcId ? html`
-          <npc-dialog-overlay
-            .npcDetails=${this.allNpcs.get(this._activeDialogueNpcId)}
-            .dialogueNode=${this._currentDialogueNode}
-            .open=${true}
-            @player-choice-selected=${this._handlePlayerChoiceEvent}
-          ></npc-dialog-overlay>
+        ${this.activeCompanionData ? html`
+          <div class="active-companion-display" title="Your current companion: ${this.activeCompanionData.name} - ${this.activeCompanionData.abilityDescription || 'Ready to help!'}">
+            ${this.activeCompanionData.portraitImage ? html`
+              <img src="${this.activeCompanionData.portraitImage}" alt="Portrait of ${this.activeCompanionData.name}" class="companion-portrait">
+            ` : html`
+              <md-icon>${this.activeCompanionData.icon || 'sentiment_very_satisfied'}</md-icon> <!-- Fallback icon -->
+            `}
+            <span class="companion-name">${this.activeCompanionData.name}</span>
+          </div>
         ` : ''}
+
+        ${dialogOverlayHtml}
 
         ${this._lastFoundMessage ? html`<div class="found-message">${this._lastFoundMessage}</div>` : ''}
         ${this.locationData.actions && this.locationData.actions.length > 0 && !this._currentDialogueNode ? html`

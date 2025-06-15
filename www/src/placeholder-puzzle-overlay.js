@@ -5,6 +5,7 @@ class PlaceholderPuzzleOverlay extends LitElement {
     puzzleId: { type: String },
     description: { type: String },
     open: { type: Boolean, reflect: true },
+    companionHint: { type: String },
   };
 
   static styles = css`
@@ -34,6 +35,15 @@ class PlaceholderPuzzleOverlay extends LitElement {
       max-width: 500px;
       width: 90%;
       border: 3px dashed #ccc; /* Placeholder indication */
+    }
+
+    .companion-hint {
+      font-style: italic;
+      color: #555;
+      margin-bottom: 15px;
+      padding: 10px;
+      background-color: #f9f9f9;
+      border-left: 3px solid #007bff;
     }
 
     .description {
@@ -83,6 +93,7 @@ class PlaceholderPuzzleOverlay extends LitElement {
     this.puzzleId = '';
     this.description = 'No puzzle description loaded.';
     this.open = false;
+    this.companionHint = null;
   }
 
   _handleAttempt(outcome) {
@@ -108,6 +119,7 @@ class PlaceholderPuzzleOverlay extends LitElement {
     return html`
       <div class="overlay-content" role="dialog" aria-modal="true" aria-labelledby="puzzle-description">
         <p id="puzzle-description" class="description">${this.description}</p>
+        ${this.companionHint ? html`<p class="companion-hint">${this.companionHint}</p>` : ''}
         <div class="buttons">
           <button class="succeed" @click=${() => this._handleAttempt('success')}>
             Succeed (Simulated)
