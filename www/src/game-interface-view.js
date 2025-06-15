@@ -1,5 +1,6 @@
 import { LitElement, html, css } from 'lit';
 import { msg, updateWhenLocaleChanges } from '@lit/localize';
+import {keyed} from 'lit/directives/keyed.js';
 import '@material/web/iconbutton/icon-button.js';
 import '@material/web/icon/icon.js';
 import '@material/web/button/filled-button.js';
@@ -286,16 +287,33 @@ class GameInterfaceView extends LitElement {
     }
   }
 
-  _handlePlayerChoiceEvent(event) {
-    if (event.detail && event.detail.choice) {
-      this._handlePlayerChoice(event.detail.choice);
-    } else {
-      console.warn('GameInterfaceView: player-choice-selected event did not contain choice details.');
-      // If the dialog was dismissed (e.g. scrim click, escape), event.detail.choice might be undefined.
-      // The npc-dialog-overlay's own 'closed' handler already sets its 'open' to false.
-      // Here, we ensure the game state reflects that dialogue has ended.
+  _handleDialogChoice(nextNodeId) { // Renamed and logic updated
+      console.log(`GameInterfaceView (_handleDialogChoice): nextNodeId: ${nextNodeId}`);
+      if (typeof nextNodeId !== 'undefined') { // Check for nextNodeId existence
+          // const nextNodeId = event.detail.nextNodeId; // No longer from event.detail
+          if (nextNodeId === "END") {
+              this._endDialogue();
+          } else {
+              const dialogueTree = this.allDialogues[this._activeDialogueNpcId];
+              const nextNode = dialogueTree ? dialogueTree[nextNodeId] : null;
+              if (nextNode) {
+                  this._currentDialogueNodeId = nextNodeId;
+                  this._currentDialogueNode = nextNode;
+              } else {
+                  console.error(`Dialogue node "${nextNodeId}" not found for NPC "${this._activeDialogueNpcId}". Ending dialogue.`);
+                  this._endDialogue();
+              }
+          }
+          this.requestUpdate();
+      } else {
+          console.warn('GameInterfaceView (_handleDialogChoice): nextNodeId was undefined. Ending dialogue.');
+          this._endDialogue(); // Fallback
+      }
+  }
+
+  _handleDialogDismiss() { // Renamed
+      console.log('GameInterfaceView (_handleDialogDismiss): Dialog dismissed.');
       this._endDialogue();
-    }
   }
 
   // Helper to format price object (e.g., { gold: 10 }) into "10 Gold"
@@ -751,6 +769,39 @@ class GameInterfaceView extends LitElement {
       // UI for companion will go here in a later step
     }
 
+    let dialogOverlayHtml = '';
+    if (this._currentDialogueNode && this._activeDialogueNpcId) {
+      console.log('GameInterfaceView rendering dialog, this.playerQuests:', this.playerQuests);
+      // The 'keyed' directive is used here to ensure that NpcDialogOverlay is
+      // completely re-instantiated (destroyed and recreated) whenever the
+      // _currentDialogueNodeId changes. This is crucial for resetting the state
+      // of the underlying <md-dialog> element, which had persistent state issues
+      // (e.g., not reopening correctly, re-emitting old events) when its properties
+      // were simply updated on the same instance.
+      dialogOverlayHtml = keyed(this._currentDialogueNodeId, html`
+        <npc-dialog-overlay
+          .npcDetails=${this.allNpcs.get(this._activeDialogueNpcId)}
+          .dialogueNode=${this._currentDialogueNode}
+          .open=${true}
+          .playerStats=${{ strength: this.playerResources?.strength || 0, agility: this.playerResources?.agility || 0, intelligence: this.playerResources?.intelligence || 0, charisma: this.playerResources?.charisma || 0 }}
+          .gameState=${{
+            playerQuests: this.playerQuests,
+            playerInventory: this.playerInventory,
+            playerResources: this.playerResources,
+            playerAlignment: this.playerAlignment,
+            activeCompanionId: this.activeCompanionId
+            // Other relevant gameState properties from GameInterfaceView can be added here
+            // For example, if there are global flags not part of playerQuests:
+            // worldFlags: this.worldFlags, (assuming this.worldFlags exists)
+          }}
+          .onChoiceMade=${(nextNodeId) => this._handleDialogChoice(nextNodeId)}
+          .onDialogDismissed=${() => this._handleDialogDismiss()}
+        ></npc-dialog-overlay>
+      `);
+    } else {
+      dialogOverlayHtml = html``; // Render an empty html template if no dialog
+    }
+
     return html`
       <div class="viewport" style="background-image: ${backgroundImage};">
         <div class="location-title">${this.locationData.name}</div>
@@ -767,14 +818,7 @@ class GameInterfaceView extends LitElement {
           </div>
         ` : ''}
 
-        ${this._currentDialogueNode && this._activeDialogueNpcId ? html`
-          <npc-dialog-overlay
-            .npcDetails=${this.allNpcs.get(this._activeDialogueNpcId)}
-            .dialogueNode=${this._currentDialogueNode}
-            .open=${true}
-            @player-choice-selected=${this._handlePlayerChoiceEvent}
-          ></npc-dialog-overlay>
-        ` : ''}
+        ${dialogOverlayHtml}
 
         ${this._lastFoundMessage ? html`<div class="found-message">${this._lastFoundMessage}</div>` : ''}
         ${this.locationData.actions && this.locationData.actions.length > 0 && !this._currentDialogueNode ? html`

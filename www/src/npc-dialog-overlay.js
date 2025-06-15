@@ -7,9 +7,11 @@ class NpcDialogOverlay extends LitElement {
   static properties = {
     npcDetails: { type: Object },
     dialogueNode: { type: Object },
-    open: { type: Boolean, reflect: true }, // reflect: true to keep attribute in sync
-    playerStats: { type: Object }, // Added for conditional dialogs
-    gameState: { type: Object }, // Added for conditional dialogs & effects
+    open: { type: Boolean, reflect: true },
+    playerStats: { type: Object },
+    gameState: { type: Object },
+    onChoiceMade: { type: Function },      // New
+    onDialogDismissed: { type: Function },  // New
   };
 
   static styles = css`
@@ -23,183 +25,246 @@ class NpcDialogOverlay extends LitElement {
       --md-sys-color-outline: #7A5C5C; /* Medium brown for borders if used by dialog */
       --md-dialog-headline-font-weight: bold;
 
-      width: calc(100vw - 48px); /* Mobile first, full width with some margin */
-      max-width: 560px; /* Desktop max width */
-      max-height: 85vh; /* Max height for viewport */
-      border-radius: 12px; /* Softer, larger corners */
-      padding: 18px; /* Overall padding for the dialog container */
+      width: calc(100vw - 48px);
+      max-width: 560px;
+      max-height: 85vh;
+      border-radius: 12px;
+      padding: 18px;
     }
-
-    /* Headline area: custom wrapper for portrait and name if needed, or style slot directly */
-    /* For simplicity, we'll style elements within the slots directly */
     [slot="headline"] {
-        font-family: 'PirateFont', cursive; /* Assuming PirateFont is globally available */
-        font-size: 1.8em; /* Larger headline text */
+        font-family: 'PirateFont', cursive;
+        font-size: 1.8em;
         line-height: 1.2;
-        padding-bottom: 10px; /* Space below headline */
-        /* If portrait were to be inline with headline text:
-           display: flex; align-items: center; gap: 15px; */
+        padding-bottom: 10px;
     }
-
     .portrait {
       display: flex;
-      justify-content: center; /* Center image */
-      margin-bottom: 16px; /* Space below portrait */
+      justify-content: center;
+      margin-bottom: 16px;
     }
     .portrait img {
-      width: 100px; /* Fixed size for portrait */
+      width: 100px;
       height: 100px;
-      border-radius: 50%; /* Circular portrait */
-      object-fit: cover; /* Ensure image covers the area well */
-      border: 3px solid #7A5C5C; /* Medium brown border */
-      box-shadow: 0 3px 6px rgba(0,0,0,0.25); /* Slightly deeper shadow */
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid #7A5C5C;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.25);
     }
-
     .npc-text {
-      font-family: 'MainTextFont', serif; /* Assuming MainTextFont is globally available */
-      font-size: 1em; /* Standard text size */
+      font-family: 'MainTextFont', serif;
+      font-size: 1em;
       line-height: 1.6;
-      white-space: pre-wrap; /* Preserve line breaks */
-      margin-top: 8px; /* Space above text if portrait is present */
-      margin-bottom: 24px; /* Space below text before actions */
-      max-height: calc(85vh - 250px); /* Adjust based on other elements' heights */
-      overflow-y: auto; /* Scroll for long text */
-      padding-right: 6px; /* Space for scrollbar to not overlap text */
+      white-space: pre-wrap;
+      margin-top: 8px;
+      margin-bottom: 24px;
+      max-height: calc(85vh - 250px);
+      overflow-y: auto;
+      padding-right: 6px;
     }
-
-    /* Custom scrollbar for npc-text (optional, webkit only) */
-    .npc-text::-webkit-scrollbar {
-      width: 8px;
-    }
-    .npc-text::-webkit-scrollbar-track {
-      background: #E0D8C9; /* Lighter parchment for track */
-      border-radius: 4px;
-    }
-    .npc-text::-webkit-scrollbar-thumb {
-      background: #7A5C5C; /* Medium brown for thumb */
-      border-radius: 4px;
-    }
-    .npc-text::-webkit-scrollbar-thumb:hover {
-      background: #5C3D3D; /* Darker brown on hover */
-    }
-
+    .npc-text::-webkit-scrollbar { width: 8px; }
+    .npc-text::-webkit-scrollbar-track { background: #E0D8C9; border-radius: 4px; }
+    .npc-text::-webkit-scrollbar-thumb { background: #7A5C5C; border-radius: 4px; }
+    .npc-text::-webkit-scrollbar-thumb:hover { background: #5C3D3D; }
     [slot="actions"] {
       display: flex;
-      flex-direction: column; /* Mobile: stack buttons */
-      gap: 10px; /* Increased gap for touch targets */
-      padding-top: 10px;
-      width: 100%; /* Ensure actions area takes full width for button stacking */
+      /* !important is needed to override md-dialog's
+         potential default styles for its action slot,
+         ensuring choices stack vertically on narrow views
+         for proper layout and scrolling. */
+      flex-direction: column !important;
+      gap: 10px;
+      /* padding-top: 10px; // Replaced by padding: 10px; below */
+      width: 100%;
+      max-height: 160px;
+      overflow-y: auto;
+      padding-right: 6px; /* This will be overridden by padding: 10px if it comes after, so adjust or combine. */
+      /* New/Updated styles: */
+      padding: 10px; /* Overrides padding-top and padding-right if placed after them. */
+      border-top: 1px solid var(--md-sys-color-outline, #7A5C5C);
+      margin-top: 10px;
     }
-
-    /* Individual button styling */
+    [slot="actions"]::-webkit-scrollbar { width: 8px; }
+    [slot="actions"]::-webkit-scrollbar-track { background: #E0D8C9; border-radius: 4px; }
+    [slot="actions"]::-webkit-scrollbar-thumb { background: #7A5C5C; border-radius: 4px; }
+    [slot="actions"]::-webkit-scrollbar-thumb:hover { background: #5C3D3D; }
     [slot="actions"] md-text-button {
-      --md-text-button-label-text-color: #3C2F2F; /* Dark brown */
-      --md-text-button-hover-label-text-color: #7A5C5C; /* Medium brown */
-      --md-text-button-pressed-label-text-color: #2F1E1E; /* Darker brown */
+      --md-text-button-label-text-color: #3C2F2F;
+      --md-text-button-hover-label-text-color: #7A5C5C; /* This will be overridden by direct hover styles below */
+      --md-text-button-pressed-label-text-color: #2F1E1E;
       --md-text-button-label-text-font: 'MainTextFont', serif;
       --md-text-button-label-text-size: 1.05em;
-      width: 100%; /* Make buttons full width of their container */
-      border: 1px solid #7A5C5C; /* Add a border to buttons */
-      border-radius: 6px; /* Rounded corners for buttons */
-      padding: 10px 0; /* Vertical padding for buttons */
-      background-color: rgba(122, 92, 92, 0.1); /* Very subtle background for buttons */
+      width: 100%;
+      border: 1px solid #5C3D3D; /* Darker brown border */
+      border-radius: 6px;
+      padding: 12px 0; /* Adjusted padding */
+      background-color: #EFE5D8; /* Light parchment/off-white */
+      box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+      transition: background-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out, transform 0.1s ease-in-out;
     }
     [slot="actions"] md-text-button:hover {
-        background-color: rgba(122, 92, 92, 0.2); /* Slightly darker on hover */
+        background-color: #DCD0B8; /* Slightly darker parchment for hover */
+        box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+        transform: translateY(-1px);
+        /* --md-text-button-hover-label-text-color will still apply unless overridden here too */
     }
-
-
-    /* Desktop and larger screen adjustments */
     @media (min-width: 600px) {
-      md-dialog {
-        /* Max-width is already set, dialog should center by default */
-        padding: 24px; /* Slightly more padding on desktop */
-      }
-
-      .npc-text {
-        max-height: calc(80vh - 280px); /* Adjust max-height for desktop if needed */
-      }
-
+      md-dialog { padding: 24px; }
+      .npc-text { max-height: calc(80vh - 280px); }
       [slot="actions"] {
-        flex-direction: row; /* Desktop: buttons in a row */
-        justify-content: flex-end; /* Align buttons to the right */
-        gap: 12px; /* Gap between buttons in a row */
+        flex-direction: row; /* Attempt to override base */
+        justify-content: flex-end;
+        gap: 12px;
+        max-height: none;     /* Override base style for row layout */
+        overflow-y: visible;  /* Override base style for row layout */
+        /* padding: 10px; /* Retain padding for consistency or remove if not needed for row layout */
+        /* border-top: 1px solid var(--md-sys-color-outline, #7A5C5C); /* Retain or remove for row */
+        /* margin-top: 10px; /* Retain or remove for row */
       }
-
+      /* Ensure desktop buttons also have adjusted padding if base changed */
       [slot="actions"] md-text-button {
-        width: auto; /* Allow buttons to size based on content on desktop */
-        padding: 10px 16px; /* Adjust padding for row layout */
-        border: 1px solid #7A5C5C; /* Keep border */
-        background-color: transparent; /* Remove subtle background for desktop if preferred */
+        width: auto;
+        padding: 12px 16px; /* Adjusted padding */
+        background-color: transparent; /* Kept transparent for desktop as per previous logic */
+        /* Hover effect for desktop buttons might need its own definition if different from mobile */
       }
-       [slot="actions"] md-text-button:hover {
-        background-color: rgba(122, 92, 92, 0.1); /* Re-add subtle background on hover */
-    }
+      [slot="actions"] md-text-button:hover {
+        background-color: rgba(122, 92, 92, 0.1); /* Existing desktop hover, consider if it matches new style */
+        /* transform: translateY(-1px); /* Optionally add transform for desktop too */
+        /* box-shadow: 0 2px 4px rgba(0,0,0,0.15); /* Optionally add shadow for desktop too */
+      }
     }
   `;
+
+  _isReady = false;
 
   constructor() {
     super();
     this.npcDetails = null;
     this.dialogueNode = null;
     this.open = false;
-    this.playerStats = {}; // Initialize
-    this.gameState = {}; // Initialize
-    this._selectedChoiceValue = null; // To temporarily store the value for closed event
+    this.playerStats = {};
+    this.gameState = {};
+    this._selectedChoiceValue = null;
+    this._isReady = false;
   }
 
-  // Helper function to check if a choice should be available based on conditions
   _isChoiceAvailable(choice) {
-    if (!choice.condition) {
-      return true; // No condition, always available
+    if (!choice.condition || Object.keys(choice.condition).length === 0) {
+      return true;
     }
-
-    const { type, stat, variable, value, operator = '===' } = choice.condition;
-
-    let conditionMet = false;
-    switch (type) {
-      case 'playerStat':
-        if (this.playerStats && typeof this.playerStats[stat] !== 'undefined') {
-          const statValue = this.playerStats[stat];
-          switch (operator) {
-            case '===': conditionMet = statValue === value; break;
-            case '>=': conditionMet = statValue >= value; break;
-            case '<=': conditionMet = statValue <= value; break;
-            case '>': conditionMet = statValue > value; break;
-            case '<': conditionMet = statValue < value; break;
-            case '!==': conditionMet = statValue !== value; break;
-            default: console.warn(`Unsupported operator: ${operator}`);
-          }
+    for (const type in choice.condition) {
+      const conditionDetails = choice.condition[type];
+      let conditionMet = false;
+      switch (type) {
+        case 'playerStat': {
+          const { stat, value, operator = '===' } = conditionDetails;
+          if (this.playerStats && typeof this.playerStats[stat] !== 'undefined') {
+            const statValue = this.playerStats[stat];
+            switch (operator) {
+              case '===': conditionMet = statValue === value; break;
+              case '>=': conditionMet = statValue >= value; break;
+              case '<=': conditionMet = statValue <= value; break;
+              case '>': conditionMet = statValue > value; break;
+              case '<': conditionMet = statValue < value; break;
+              case '!==': conditionMet = statValue !== value; break;
+              default: console.warn(`Unsupported operator: ${operator} for playerStat`); conditionMet = false;
+            }
+          } else { console.warn(`Player stat ${stat} not found.`); conditionMet = false; }
+          break;
         }
-        break;
-      case 'gameState':
-        if (this.gameState && typeof this.gameState[variable] !== 'undefined') {
-          const stateValue = this.gameState[variable];
-           switch (operator) {
-            case '===': conditionMet = stateValue === value; break;
-            case '!==': conditionMet = stateValue !== value; break;
-            // Add other operators if needed for game state variables
-            default: console.warn(`Unsupported operator for gameState: ${operator}`);
-          }
+        case 'gameState': {
+          const { variable, value, operator = '===' } = conditionDetails;
+          if (this.gameState && typeof this.gameState[variable] !== 'undefined') {
+            const stateValue = this.gameState[variable];
+            switch (operator) {
+              case '===': conditionMet = stateValue === value; break;
+              case '!==': conditionMet = stateValue !== value; break;
+              default: console.warn(`Unsupported operator: ${operator} for gameState`); conditionMet = false;
+            }
+          } else { console.warn(`Game state variable ${variable} not found.`); conditionMet = false; }
+          break;
         }
-        break;
-      // TODO: Add 'npcAlignment' or other condition types if needed
-      default:
-        console.warn(`Unknown condition type: ${type}`);
-        return false;
+        case 'hasItem': {
+          if (this.gameState && this.gameState.playerInventory) {
+            conditionMet = this.gameState.playerInventory.includes(conditionDetails);
+          } else { console.warn('Player inventory not available in gameState.'); conditionMet = false; }
+          break;
+        }
+        case 'questStatus': {
+          const { questId, status } = conditionDetails;
+          if (this.gameState && this.gameState.playerQuests) {
+            conditionMet = this.gameState.playerQuests[questId]?.status === status;
+          } else { console.warn('Player quests not available in gameState.'); conditionMet = false; }
+          break;
+        }
+        default: console.warn(`Unknown condition type: ${type}`); return false;
+      }
+      if (!conditionMet) return false;
     }
-    return conditionMet;
+    return true;
+  }
+
+  firstUpdated() { // Note: This is not async as per provided final code.
+    // firstUpdated runs once after the first render. It checks the initial
+    // state of the md-dialog (which diagnostics showed should be closed),
+    // sets the _isReady flag to true, and if 'this.open' is already true
+    // (set by parent before this method completed), it requests an update
+    // to ensure updated() correctly processes the show() logic now that _isReady is true.
+    const dialog = this.shadowRoot.querySelector('md-dialog');
+    if (dialog) {
+      console.log(`NpcDialogOverlay (firstUpdated): Initial native dialog.open state: ${dialog.open}`);
+    } else {
+      console.error('NpcDialogOverlay (firstUpdated): md-dialog NOT FOUND.');
+    }
+    this._isReady = true;
+    console.log('NpcDialogOverlay (firstUpdated): _isReady set to true.');
+    if (this.open) {
+      console.log('NpcDialogOverlay (firstUpdated): this.open is true, requesting update for "open" property to trigger show via updated().');
+      this.requestUpdate('open');
+    }
   }
 
   updated(changedProperties) {
+    // When 'open' property changes:
+    // If this.open is true, we only attempt to show the dialog if _isReady is true
+    // (signalling firstUpdated has completed its setup).
+    // Using requestAnimationFrame for dialog.show() defers the call slightly,
+    // which can help with stability and allow the browser to complete
+    // any pending rendering or state updates for the md-dialog component,
+    // especially after its properties or content might have just changed or if firstUpdated
+    // just triggered this update.
     if (changedProperties.has('open')) {
       const dialog = this.shadowRoot.querySelector('md-dialog');
-      if (dialog) {
-        if (this.open && !dialog.open) {
-          dialog.show();
-        } else if (!this.open && dialog.open) {
-          // This case should be handled by the dialog's own close mechanism
-          // or if we need to force close it: dialog.close('manual-close');
+      if (!dialog) {
+        console.error('NpcDialogOverlay (updated): md-dialog element not found.');
+        return;
+      }
+
+      console.log(`NpcDialogOverlay (updated): 'open' prop changed to ${this.open}. _isReady: ${this._isReady}. md-dialog.open state (before action): ${dialog.open}`);
+
+      if (this.open) {
+        if (this._isReady) {
+          console.log('NpcDialogOverlay (updated): Ready to show. Scheduling dialog.show() via requestAnimationFrame.');
+          requestAnimationFrame(() => {
+            if (this.open && this.shadowRoot.contains(dialog)) {
+              console.log(`NpcDialogOverlay (rAF): Calling dialog.show(). md-dialog.open state before show: ${dialog.open}`);
+              console.log(`NpcDialogOverlay (rAF): Clearing dialog.returnValue. Was: ${dialog.returnValue}`);
+              dialog.returnValue = undefined;
+              dialog.show();
+              console.log(`NpcDialogOverlay (rAF): Called dialog.show(). md-dialog.open state after show: ${dialog.open}`);
+            } else {
+               console.log('NpcDialogOverlay (rAF): Conditions not met for show() inside rAF (this.open false or dialog not in DOM).');
+            }
+          });
+        } else {
+          console.log('NpcDialogOverlay (updated): this.open is true, but component is not ready yet (waiting for firstUpdated). Show will be triggered by firstUpdated via requestUpdate.');
+        }
+      } else { // this.open is false
+        if (dialog.open) {
+          console.log(`NpcDialogOverlay (updated): Component closing. Calling dialog.close(). md-dialog.open: ${dialog.open}`);
+          dialog.close('host-controlled-close');
+        } else {
+          console.log('NpcDialogOverlay (updated): Component closing, md-dialog already reported closed.');
         }
       }
     }
@@ -207,19 +272,16 @@ class NpcDialogOverlay extends LitElement {
 
   _handleChoiceClick(choice) {
     const dialog = this.shadowRoot.querySelector('md-dialog');
-
     if (choice.effects) {
-      for (const effect of choice.effects) { // Changed to for...of for early exit
+      for (const effect of choice.effects) {
         if (effect.type === 'TRIGGER_PUZZLE' && effect.puzzleId) {
           this.dispatchEvent(new CustomEvent('trigger-puzzle', {
             detail: { puzzleId: effect.puzzleId },
             bubbles: true, composed: true
           }));
-          this._selectedChoiceValue = 'puzzle_triggered'; // Special value
-          if (dialog) {
-            dialog.close(this._selectedChoiceValue);
-          }
-          return; // Exit after triggering puzzle
+          this._selectedChoiceValue = 'puzzle_triggered';
+          if (dialog) dialog.close(this._selectedChoiceValue);
+          return;
         } else if (effect.type === 'updatePlayerStat') {
           this.dispatchEvent(new CustomEvent('update-player-stat', {
             detail: { stat: effect.stat, change: effect.change, value: effect.value },
@@ -240,69 +302,68 @@ class NpcDialogOverlay extends LitElement {
         }
       }
     }
-
-    // If no TRIGGER_PUZZLE effect caused an early exit, proceed as normal
     this._selectedChoiceValue = choice.nextNodeId || 'END';
-    if (dialog) {
-      dialog.close(this._selectedChoiceValue);
-    }
+    if (dialog) dialog.close(this._selectedChoiceValue);
   }
 
   _handleDialogClosed(event) {
-    // The dialog is now closed. Reset open state.
-    // The event.target.returnValue should be what we passed to dialog.close()
     const returnValue = event.target.returnValue;
-    let foundChoice = null;
+    this._selectedChoiceValue = null;
 
-    if (this.dialogueNode && this.dialogueNode.playerChoices) {
-      foundChoice = this.dialogueNode.playerChoices.find(
-        (c) => (c.nextNodeId || 'END') === returnValue
-      );
+    console.log(`NpcDialogOverlay (_handleDialogClosed): Processing closed event with returnValue: ${returnValue}`);
+
+    if (returnValue === 'scrim' || returnValue === 'escape') {
+      console.log('NpcDialogOverlay (_handleDialogClosed): Dialog dismissed by user via scrim/escape. Calling onDialogDismissed.');
+      if (this.onDialogDismissed) {
+        this.onDialogDismissed();
+      }
+      return;
     }
-
-    // If returnValue is 'scrim' or 'escape', it means dialog was dismissed by user action
-    // not by clicking a choice button. In that case, foundChoice will be null.
-    // We should still signal that the dialog is closed, but maybe without a choice.
-    // For now, we only dispatch if a valid choice was found.
-    // Or, we could dispatch an event indicating dismissal if foundChoice is null and returnValue is not one of our choice values
 
     if (returnValue === 'puzzle_triggered') {
-      // Puzzle was triggered, specific handling already done by app-shell via 'trigger-puzzle' event.
-      // GameInterfaceView will await 'puzzle-resolved'.
-      // Just ensure overlay is closed.
-      console.log('NpcDialogOverlay: Closed because a puzzle was triggered.');
-    } else if (foundChoice) {
-      this.dispatchEvent(
-        new CustomEvent('player-choice-selected', {
-          detail: { choice: foundChoice },
-          bubbles: true,
-          composed: true,
-        })
-      );
-    } else if (returnValue && returnValue !== 'scrim' && returnValue !== 'escape') {
-        // This case might happen if close() was called with something not matching a choice
-        // and it wasn't 'puzzle_triggered'
-        console.warn('NpcDialogOverlay: Dialog closed with unexpected returnValue:', returnValue);
+      console.log('NpcDialogOverlay (_handleDialogClosed): Closed because a puzzle was triggered.');
+      // Puzzle events are handled separately, parent doesn't need a specific callback for dialog closing here.
+      // Or, if parent needs to know it closed for this reason:
+      // if (this.onDialogDismissed) { this.onDialogDismissed(); }
+      return;
     }
 
-    // Ensure 'open' property is false, which might trigger another update if not already set.
-    // This is important if the dialog was closed by user interaction (scrim/escape)
-    // or by 'puzzle_triggered' without explicitly setting this.open = false in _handleChoiceClick.
-    if (this.open) {
-        this.open = false;
+    const internalCloseReasons = [
+      'host-controlled-close',
+      'component-driven-close', // Added from an earlier version
+      'initial-async-forced-close',
+      'async-reset-before-show',
+      'initial-forced-close' // Added from an earlier version
+    ];
+
+    if (returnValue && !internalCloseReasons.includes(returnValue)) {
+      // Assumed to be a valid nextNodeId or 'END' from a player choice
+      console.log(`NpcDialogOverlay (_handleDialogClosed): Calling onChoiceMade with nextNodeId: ${returnValue}`);
+      if (this.onChoiceMade) {
+        this.onChoiceMade(returnValue);
+      }
+    } else if (returnValue && internalCloseReasons.includes(returnValue)) {
+      console.log(`NpcDialogOverlay (_handleDialogClosed): Dialog closed with internal reason '${returnValue}'. Calling onDialogDismissed.`);
+      if (this.onDialogDismissed) {
+        this.onDialogDismissed();
+      }
+    } else {
+      // returnValue is null, undefined, empty string, and not scrim/escape/puzzle
+      console.warn('NpcDialogOverlay (_handleDialogClosed): Dialog closed with unexpected/empty returnValue. Calling onDialogDismissed.');
+      if (this.onDialogDismissed) {
+        this.onDialogDismissed();
+      }
     }
-    this._selectedChoiceValue = null; // Clear temporary value
   }
 
   render() {
-    if (!this.dialogueNode) { // Don't render if there's no dialogue node
+    if (!this.dialogueNode) {
       return html``;
     }
-
+    // Note: Removed ?open=${this.open} from md-dialog tag
     return html`
       <md-dialog
         id="npc-dialog"
-        ?open=${this.open}
         @closed=${this._handleDialogClosed}
         aria-labelledby="dialog-title"
         aria-describedby="dialog-content"
@@ -310,16 +371,12 @@ class NpcDialogOverlay extends LitElement {
         <div slot="headline" id="dialog-title">${this.npcDetails?.name || 'Mysterious Figure'}</div>
         <form id="dialog-form" slot="content" method="dialog">
           <div id="dialog-content">
-            ${this.npcDetails?.portraitImage
-              ? html`<div class="portrait"><img src="${this.npcDetails.portraitImage}" alt="Portrait of ${this.npcDetails.name}"></div>`
-              : ''}
+            ${this.npcDetails?.portraitImage ? html`<div class="portrait"><img src="${this.npcDetails.portraitImage}" alt="Portrait of ${this.npcDetails.name}"></div>` : ''}
             <div class="npc-text">${this.dialogueNode.npcText}</div>
           </div>
         </form>
         <div slot="actions">
-          ${this.dialogueNode.playerChoices
-            ?.filter(choice => this._isChoiceAvailable(choice))
-            .map(
+          ${this.dialogueNode.playerChoices?.filter(choice => this._isChoiceAvailable(choice)).map(
             (choice) => html`
               <md-text-button
                 form="dialog-form"
@@ -327,8 +384,7 @@ class NpcDialogOverlay extends LitElement {
                 @click=${() => this._handleChoiceClick(choice)}
               >
                 ${choice.text}
-              </md-text-button>
-            `
+              </md-text-button>`
           )}
         </div>
       </md-dialog>
