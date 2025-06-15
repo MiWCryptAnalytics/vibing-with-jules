@@ -111,7 +111,6 @@ class NpcDialogOverlay extends LitElement {
       md-dialog { padding: 24px; }
       .npc-text { max-height: calc(80vh - 280px); }
       [slot="actions"] {
-        flex-direction: row; /* Attempt to override base */
         justify-content: flex-end;
         gap: 12px;
         max-height: none;     /* Override base style for row layout */
