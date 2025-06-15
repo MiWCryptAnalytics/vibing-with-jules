@@ -126,12 +126,46 @@ class GameInterfaceView extends LitElement {
       z-index: 20;
       box-shadow: 0 2px 10px rgba(0,0,0,0.3);
     }
+
+    .active-companion-display {
+      position: absolute;
+      top: 70px; /* Adjust based on location-title height + some padding */
+      right: 10px;
+      background-color: rgba(60, 47, 47, 0.85); /* dark brown, semi-transparent */
+      border: 2px solid #7A5C5C; /* medium brown */
+      border-radius: 5px;
+      padding: 8px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      z-index: 15;
+      color: #FDF5E6;
+      font-family: 'MainTextFont', serif;
+    }
+    .active-companion-display img.companion-portrait {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 1px solid #FDF5E6;
+      object-fit: cover;
+    }
+    .active-companion-display .companion-name {
+      font-size: 0.9em;
+      font-weight: bold;
+    }
+    .active-companion-display md-icon { /* Fallback icon for companion */
+      font-size: 30px;
+      color: #FDF5E6;
+    }
   `;
 
   static properties = {
     locationData: { type: Object },
     playerInventory: { type: Array },
-    playerResources: { type: Object }, 
+    playerResources: { type: Object },
+    playerQuests: { type: Object }, // From AppShell
+    activeCompanionId: { type: String }, // From AppShell
+    activeCompanionData: { type: Object }, // From AppShell
     allItems: { type: Object }, 
     allNpcs: { type: Object },      // Added for NPC data
     allDialogues: { type: Object }, // Added for dialogue data
@@ -147,6 +181,9 @@ class GameInterfaceView extends LitElement {
     this.locationData = null;
     this.playerInventory = [];
     this.playerResources = { gold: 0, silver: 0, rum: 0 };
+    this.playerQuests = {};
+    this.activeCompanionId = null;
+    this.activeCompanionData = null;
     this.allItems = new Map();
     this.allNpcs = new Map();      // Initialize allNpcs
     this.allDialogues = {};    // Initialize allDialogues
@@ -708,10 +745,27 @@ class GameInterfaceView extends LitElement {
     // Dialogue Panel UI (rendered as an overlay)
     // const oldDialoguePanelHtml = this._currentDialogueNode ? html` ... ` : ''; // Old logic removed
 
+    // Companion UI Groundwork
+    if (this.activeCompanionData) {
+      console.log("GameInterfaceView: Active companion:", this.activeCompanionData.name, this.activeCompanionData);
+      // UI for companion will go here in a later step
+    }
+
     return html`
       <div class="viewport" style="background-image: ${backgroundImage};">
         <div class="location-title">${this.locationData.name}</div>
         ${contentHtml}
+
+        ${this.activeCompanionData ? html`
+          <div class="active-companion-display" title="Your current companion: ${this.activeCompanionData.name} - ${this.activeCompanionData.abilityDescription || 'Ready to help!'}">
+            ${this.activeCompanionData.portraitImage ? html`
+              <img src="${this.activeCompanionData.portraitImage}" alt="Portrait of ${this.activeCompanionData.name}" class="companion-portrait">
+            ` : html`
+              <md-icon>${this.activeCompanionData.icon || 'sentiment_very_satisfied'}</md-icon> <!-- Fallback icon -->
+            `}
+            <span class="companion-name">${this.activeCompanionData.name}</span>
+          </div>
+        ` : ''}
 
         ${this._currentDialogueNode && this._activeDialogueNpcId ? html`
           <npc-dialog-overlay

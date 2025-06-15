@@ -117,7 +117,10 @@ class AppShell extends LitElement {
     allDialogues: { type: Object, state: true }, // To store all dialogues
     allPuzzles: { type: Object, state: true }, // To store all puzzle definitions
     activePuzzleId: { type: String },
+    activePuzzleHint: { type: String, state: true }, // For companion hints
     isPuzzleOverlayOpen: { type: Boolean },
+    playerQuests: { type: Object }, // To store player's quest states
+    activeCompanionId: { type: String, state: true }, // To store active companion ID
     _isViewChanging: { type: Boolean, state: true }
   };
 
@@ -142,7 +145,10 @@ class AppShell extends LitElement {
     this.allDialogues = {}; // Initialize allDialogues as an Object
     this.allPuzzles = new Map(); // Initialize allPuzzles as a Map
     this.activePuzzleId = null;
+    this.activePuzzleHint = null; // Initialize hint
     this.isPuzzleOverlayOpen = false;
+    this.playerQuests = {}; // Initialize playerQuests
+    this.activeCompanionId = null; // Initialize activeCompanionId
     this.playerAlignment = "neutral"; // Initialize player alignment
     this._isResetting = false; // Flag to indicate if a reset operation is in progress
     this._isViewChanging = false;
@@ -176,12 +182,16 @@ class AppShell extends LitElement {
       this.playerInventory = []; // Ensure inventory is empty
       // Grant initial resources for a new game
       this.playerResources = { gold: 100, silver: 50, rum: 5 };
+      this.playerQuests = {}; // Ensure quests are empty for a new game
+      this.activeCompanionId = null; // Ensure no active companion for a new game
       this.currentLocationData = null; // No specific location initially
       this.playerAlignment = "neutral"; // Default alignment
 
       console.log('AppShell: New game started. Initial state set:', {
         inventory: this.playerInventory,
         resources: this.playerResources,
+        quests: this.playerQuests,
+        activeCompanionId: this.activeCompanionId,
         location: this.currentLocationData,
         alignment: this.playerAlignment
       });
@@ -295,6 +305,76 @@ class AppShell extends LitElement {
     return this.allItems.get(itemId);
   }
 
+  // --- Quest Management ---
+  _initializeQuest(questId, questData) {
+    if (!this.playerQuests[questId]) {
+      this.playerQuests[questId] = {
+        id: questId,
+        name: questData.displayName || "Unnamed Quest", // Get name from npc.json quest definition
+        status: questData.status || "not_started", // Initial status from npc.json
+        description: questData.description || "No description.", // Get description
+        // progress: 0, // Optional: initialize progress if your quests use it
+        // objectives: questData.objectives || [], // Optional: if quests have structured objectives
+      };
+      console.log(`AppShell: Quest '${questId}' initialized with status '${this.playerQuests[questId].status}'.`);
+      this._saveGameState(); // Save state after initializing a quest
+    }
+  }
+
+  _updateQuestStatus(questId, newStatus, progressValue = null) {
+    if (this.playerQuests[questId]) {
+      const oldStatus = this.playerQuests[questId].status;
+      this.playerQuests[questId].status = newStatus;
+      if (progressValue !== null) {
+        this.playerQuests[questId].progress = progressValue;
+      }
+      console.log(`AppShell: Quest '${questId}' status updated from '${oldStatus}' to '${newStatus}'. Progress: ${progressValue}`);
+      this.dispatchEvent(new CustomEvent('quest-status-updated', {
+        detail: { questId, status: newStatus, progress: progressValue },
+        bubbles: true,
+        composed: true
+      }));
+      this._saveGameState(); // Save state after updating a quest
+      this.requestUpdate(); // Ensure UI reflects quest changes
+    } else {
+      console.warn(`AppShell: Attempted to update status for uninitialized quest '${questId}'.`);
+    }
+  }
+  // --- End Quest Management ---
+
+  // --- Companion Management ---
+  _setCompanion(npcId) {
+    const companionData = this.allNpcs.get(npcId)?.companionData;
+    if (companionData) { // Check if the NPC has companionData defined
+      this.activeCompanionId = npcId;
+      console.log(`AppShell: Companion set to ${npcId}.`);
+      this.dispatchEvent(new CustomEvent('companion-changed', {
+        detail: { activeCompanionId: this.activeCompanionId, companionData: companionData },
+        bubbles: true,
+        composed: true
+      }));
+      this._saveGameState();
+      this.requestUpdate();
+    } else {
+      console.warn(`AppShell: Attempted to set NPC ${npcId} as companion, but they have no companionData.`);
+    }
+  }
+
+  _removeCompanion() {
+    if (this.activeCompanionId) {
+      console.log(`AppShell: Companion ${this.activeCompanionId} removed.`);
+      this.activeCompanionId = null;
+      this.dispatchEvent(new CustomEvent('companion-changed', {
+        detail: { activeCompanionId: null, companionData: null },
+        bubbles: true,
+        composed: true
+      }));
+      this._saveGameState();
+      this.requestUpdate();
+    }
+  }
+  // --- End Companion Management ---
+
   async _loadAllNpcs() {
     try {
       const response = await fetch('data/npcs.json');
@@ -302,10 +382,19 @@ class AppShell extends LitElement {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const npcsArray = await response.json();
-      npcsArray.forEach(npc => this.allNpcs.set(npc.id, npc));
-      console.log('AppShell: All NPCs loaded:', this.allNpcs);
+      npcsArray.forEach(npc => {
+        this.allNpcs.set(npc.id, npc);
+        // Initialize quests defined for this NPC
+        if (npc.quests && Array.isArray(npc.quests)) {
+          npc.quests.forEach(quest => {
+            // Pass the whole quest object from npcs.json as questData
+            this._initializeQuest(quest.id, quest);
+          });
+        }
+      });
+      console.log('AppShell: All NPCs loaded and their quests initialized:', this.allNpcs, this.playerQuests);
     } catch (error) {
-      console.error("AppShell: Could not load NPCs:", error);
+      console.error("AppShell: Could not load NPCs or initialize their quests:", error);
       this.allNpcs = new Map();
     }
   }
@@ -347,11 +436,12 @@ class AppShell extends LitElement {
     }
   }
 
-  showPuzzle(puzzleId) {
+  showPuzzle(puzzleId, hint = null) { // Added hint parameter
     if (this.allPuzzles.has(puzzleId)) {
       this.activePuzzleId = puzzleId;
+      this.activePuzzleHint = hint; // Store the hint
       this.isPuzzleOverlayOpen = true;
-      console.log(`AppShell: Showing puzzle ${puzzleId}`);
+      console.log(`AppShell: Showing puzzle ${puzzleId}${hint ? ` with hint: ${hint}` : ''}`);
     } else {
       console.error(`AppShell: Puzzle with ID "${puzzleId}" not found.`);
     }
@@ -375,6 +465,7 @@ class AppShell extends LitElement {
       console.error(`AppShell: Puzzle data not found for ID ${puzzleId} after attempt.`);
     }
     this.activePuzzleId = null; // Clear active puzzle
+    this.activePuzzleHint = null; // Clear active hint
   }
 
   _handleTriggerPuzzle(event) {
@@ -414,6 +505,8 @@ class AppShell extends LitElement {
           this.playerInventory = savedState.playerInventory || [];
           // Restore playerResources, defaulting if not found in saved state
           this.playerResources = savedState.playerResources || { gold: 0, silver: 0, rum: 0 };
+          this.playerQuests = savedState.playerQuests || {}; // Load player quests
+          this.activeCompanionId = savedState.activeCompanionId || null; // Load active companion
           this.playerAlignment = savedState.playerAlignment || "neutral"; // Load player alignment
 
           if (savedState.currentLocationId) {
@@ -456,6 +549,8 @@ class AppShell extends LitElement {
       currentLocationId: this.currentLocationData ? this.currentLocationData.id : null,
       playerInventory: this.playerInventory,
       playerResources: this.playerResources, // Include playerResources in saved state
+      playerQuests: this.playerQuests, // Include playerQuests in saved state
+      activeCompanionId: this.activeCompanionId, // Include activeCompanionId in saved state
       playerAlignment: this.playerAlignment, // Include playerAlignment in saved state
       timestamp: Date.now()
     };
@@ -502,14 +597,153 @@ class AppShell extends LitElement {
     window.addEventListener('hashchange', this._boundHandleHashChange);
     window.addEventListener('beforeunload', this._boundSaveGameState);
     this.addEventListener('trigger-puzzle', this._handleTriggerPuzzle); // Listen for puzzle triggers
+    this.addEventListener('dialogue-choice', this._handleDialogueChoice); // Listen for dialogue choices
   }
 
   disconnectedCallback() {
     window.removeEventListener('hashchange', this._boundHandleHashChange);
     window.removeEventListener('beforeunload', this._boundSaveGameState);
     this.removeEventListener('trigger-puzzle', this._handleTriggerPuzzle); // Clean up listener
+    this.removeEventListener('dialogue-choice', this._handleDialogueChoice); // Clean up dialogue choice listener
     super.disconnectedCallback();
   }
+
+  // --- Dialogue and Effect Handling ---
+  _applyEffects(effects) {
+    if (!effects || !Array.isArray(effects)) {
+      return;
+    }
+
+    effects.forEach(effect => {
+      console.log('AppShell: Applying effect:', effect);
+      switch (effect.type) {
+        case 'ADD_ITEM':
+          if (effect.itemId) {
+            const itemToAdd = this.allItems.get(effect.itemId);
+            if (itemToAdd) {
+              this._handleAddToInventory({ detail: { item: itemToAdd } });
+            } else {
+              console.warn(`AppShell: Effect ADD_ITEM: Item ID "${effect.itemId}" not found.`);
+            }
+          } else {
+            console.warn('AppShell: Effect ADD_ITEM is missing itemId.');
+          }
+          break;
+        case 'REMOVE_ITEM':
+          if (effect.itemId) {
+            this._handleRemoveFromInventory({ detail: { itemId: effect.itemId } });
+          } else {
+            console.warn('AppShell: Effect REMOVE_ITEM is missing itemId.');
+          }
+          break;
+        case 'UPDATE_PLAYER_STAT': // Could be for XP, standing, etc.
+          // This is conceptual. Actual stats update logic would be needed.
+          console.log(`AppShell: Effect UPDATE_PLAYER_STAT: ${effect.stat} by ${effect.change}.`);
+          if (effect.stat === 'xp' && typeof effect.amount === 'number') { // Assuming ADD_XP is like this
+            // this.playerXP = (this.playerXP || 0) + effect.amount; // Example
+            console.log(`AppShell: Player XP changed by ${effect.amount}`);
+          } else if (effect.stat && typeof effect.change === 'number') {
+             // Generic stat update, could be standing.
+             // e.g., this.playerStats[effect.stat] = (this.playerStats[effect.stat] || 0) + effect.change;
+             console.log(`AppShell: Player stat '${effect.stat}' changed by ${effect.change}`);
+          } else if (effect.npcId && effect.stat === 'standing' && typeof effect.amount === 'number') { // From quest rewards
+            // Conceptual: this.updateNpcStanding(effect.npcId, effect.amount);
+             console.log(`AppShell: Player standing with '${effect.npcId}' changed by ${effect.amount}`);
+          }
+          this.requestUpdate();
+          break;
+        case 'ADD_XP': // Specific XP addition
+          if (typeof effect.amount === 'number') {
+            // this.playerXP = (this.playerXP || 0) + effect.amount; // Example
+            console.log(`AppShell: Player XP increased by ${effect.amount}`);
+            this.requestUpdate();
+          }
+          break;
+        case 'ADD_RESOURCE':
+             if (effect.resource && typeof effect.amount === 'number') {
+                const resourceChange = {};
+                resourceChange[effect.resource] = effect.amount;
+                this._updatePlayerResources(resourceChange);
+             } else {
+                console.warn('AppShell: Effect ADD_RESOURCE missing resource or amount.', effect);
+             }
+             break;
+        case 'ALIGNMENT_SHIFT':
+          // Conceptual: this.updateAlignment(effect.direction, effect.magnitude);
+          console.log(`AppShell: Alignment shift: ${effect.direction}, ${effect.magnitude}`);
+          break;
+        case 'TRIGGER_PUZZLE':
+          if (effect.puzzleId) {
+            let hint = null;
+            if (this.activeCompanionId && this.allNpcs.has(this.activeCompanionId)) {
+              const companion = this.allNpcs.get(this.activeCompanionId);
+              if (companion.companionData && companion.companionData.puzzleInteraction) {
+                const pInteraction = companion.companionData.puzzleInteraction;
+                if (pInteraction.puzzleId === effect.puzzleId && pInteraction.type === 'PROVIDES_HINT') {
+                  hint = pInteraction.hintText;
+                }
+              }
+            }
+            this.showPuzzle(effect.puzzleId, hint);
+          }
+          break;
+        // Quest Effects
+        case 'START_QUEST':
+          if (effect.questId) {
+            this._updateQuestStatus(effect.questId, "in_progress");
+          }
+          break;
+        case 'COMPLETE_QUEST':
+          if (effect.questId) {
+            this._updateQuestStatus(effect.questId, "completed");
+            // Rewards associated with completing this quest should be in the same effects block
+            // and will be processed by other cases (ADD_ITEM, ADD_XP, etc.)
+          }
+          break;
+        case 'FAIL_QUEST':
+          if (effect.questId) {
+            this._updateQuestStatus(effect.questId, "failed");
+          }
+          break;
+        case 'UPDATE_QUEST_PROGRESS':
+          if (effect.questId && effect.progress !== undefined) {
+            this._updateQuestStatus(effect.questId, "in_progress", effect.progress);
+          }
+          break;
+        case 'SET_QUEST_STATUS':
+             if (effect.questId && effect.status) {
+                this._updateQuestStatus(effect.questId, effect.status, effect.progress);
+             }
+             break;
+        case 'RECRUIT_COMPANION':
+            if (effect.npcId) { // Ensure npcId is provided in the effect
+              this._setCompanion(effect.npcId);
+            } else {
+              console.warn('AppShell: Effect RECRUIT_COMPANION missing npcId.');
+            }
+            break;
+        case 'DISMISS_COMPANION':
+            this._removeCompanion();
+            break;
+        default:
+          console.warn(`AppShell: Unknown effect type: ${effect.type}`);
+      }
+    });
+    this._saveGameState(); // Save after applying effects
+  }
+
+  _handleDialogueChoice(event) {
+    const { npcId, choice } = event.detail;
+    // Assuming 'choice' object has 'effects' and 'nextNodeId'
+    if (choice.effects) {
+      this._applyEffects(choice.effects);
+    }
+
+    // The game-interface-view would then use the nextNodeId to continue dialogue
+    // This app-shell part is primarily for handling global state changes from effects.
+    console.log(`AppShell: Dialogue choice made for NPC ${npcId}. Effects applied. Next node: ${choice.nextNodeId}`);
+  }
+  // --- End Dialogue and Effect Handling ---
 
   async _handleHashChange() {
     const validViews = ['map', 'game', 'inventory', 'research', 'menu', 'splash'];
@@ -793,6 +1027,7 @@ class AppShell extends LitElement {
       <placeholder-puzzle-overlay
         .puzzleId=${this.activePuzzleId}
         .description=${this.activePuzzleId && this.allPuzzles.has(this.activePuzzleId) ? this.allPuzzles.get(this.activePuzzleId).description : 'Loading puzzle...'}
+        .companionHint=${this.activePuzzleHint}
         ?open=${this.isPuzzleOverlayOpen}
         @puzzle-attempted=${this._handlePuzzleAttempted}
       ></placeholder-puzzle-overlay>
@@ -810,7 +1045,8 @@ class AppShell extends LitElement {
                     ></menu-view>`;
       case 'map':
         return html`<map-view 
-                    .playerInventory=${this.playerInventory} 
+                    .playerInventory=${this.playerInventory}
+                    /* .playerQuests=${this.playerQuests} /* Pass playerQuests Already applied in previous diff */
                     @navigate=${this._handleNavigate}
                   ></map-view>`;
       case 'game': // New case
@@ -818,6 +1054,9 @@ class AppShell extends LitElement {
                       .locationData=${this.currentLocationData}
                       .playerInventory=${this.playerInventory}
                       .playerResources=${this.playerResources} /* Pass playerResources */
+                      /* .playerQuests=${this.playerQuests} /* Pass playerQuests Already applied in previous diff */
+                      .activeCompanionId=${this.activeCompanionId} /* Pass active companion ID */
+                      .activeCompanionData=${this.activeCompanionId ? this.allNpcs.get(this.activeCompanionId)?.companionData : null} /* Pass active companion data */
                       .allItems=${this.allItems} /* Pass allItems */
                       .allNpcs=${this.allNpcs} /* Pass allNpcs */
                       .allDialogues=${this.allDialogues} /* Pass allDialogues */
@@ -826,11 +1065,13 @@ class AppShell extends LitElement {
                       @add-to-inventory=${this._handleAddToInventory}
                       @remove-from-inventory=${this._handleRemoveFromInventory}
                       @update-resources=${this._handleUpdateResources}
+                      /* @dialogue-choice=${this._handleDialogueChoice} /* Assume this event is fired by game-interface-view Already applied in previous diff */
                     ></game-interface-view>`;
       case 'inventory': // New case
         return html`<inventory-view
                       .items=${this.playerInventory}
                       .playerResources=${this.playerResources}
+                      /* .playerQuests=${this.playerQuests} /* Pass playerQuests Already applied in previous diff */
                       @navigate=${this._handleNavigate}
                     ></inventory-view>`;
       case 'research': // New case

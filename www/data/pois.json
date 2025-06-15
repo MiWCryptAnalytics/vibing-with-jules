@@ -1041,5 +1041,74 @@
         "targetView": "map"
       }
     ]
+  },
+  {
+    "id": "port_royal_docks",
+    "name": "Port Royal Docks",
+    "description": "The busy docks of Port Royal, filled with ships, sailors, and merchants. The air smells of salt, tar, and distant lands.",
+    "icon": "directions_boat",
+    "x": 300,
+    "y": 400,
+    "gameViewImage": "../www/assets/images/locations/port_royal_docks_placeholder.jpg",
+    "npcIds": ["npc_elena_rostova"],
+    "actions": [
+      {
+        "id": "action_goto_port_royal_market",
+        "label": "Go to Market",
+        "targetView": "game",
+        "targetLocationId": "port_royal_market"
+      },
+      {
+        "id": "action_salty_siren_tavern",
+        "label": "Visit Salty Siren Tavern",
+        "targetView": "game",
+        "targetLocationId": "poi_salty_siren_tavern"
+      },
+      {
+        "id": "action_return_map_pr_docks",
+        "label": "Return to Map",
+        "targetView": "map"
+      }
+    ]
+  },
+  {
+    "id": "poi_salty_siren_tavern",
+    "name": "Salty Siren Tavern",
+    "description": "A somewhat disreputable tavern near the docks, known for strong drinks and loose talk. The air is thick with the smell of stale rum and sea salt. A 'Crow's Nest' gallery overlooks the main room.",
+    "icon": "sports_bar",
+    "x": 320,
+    "y": 420,
+    "gameViewImage": "../www/assets/images/locations/salty_siren_tavern_placeholder.jpg",
+    "npcIds": [],
+    "hiddenObjects": [
+      {
+        "id": "salty_siren_crows_nest_interaction",
+        "name": "Crow's Nest Clutter",
+        "description": "The tavern's small upper gallery, known as the Crow's Nest, offers a view but is usually cluttered with old ropes and forgotten tankards.",
+        "icon": "search",
+        "position": {"x": "70%", "y": "30%"},
+        "triggersPuzzleId": "ROSTOVA_FIND_SPYGLASS_PUZZLE",
+        "condition": {
+          "questStatus": {
+            "questId": "ROSTOVA_LOST_SPYGLASS",
+            "status": "in_progress"
+          }
+        },
+        "foundMessage": "You start searching the Crow's Nest..."
+      }
+    ],
+    "actions": [
+      {
+        "id": "action_leave_salty_siren",
+        "label": "Leave Tavern",
+        "targetView": "game",
+        "targetLocationId": "port_royal_docks"
+      },
+      {
+        "id": "action_salty_siren_to_map",
+        "label": "Return to Map",
+        "targetView": "map"
+      }
+    ]
   }
 ]

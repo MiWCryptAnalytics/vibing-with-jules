@@ -32,8 +32,8 @@
     ],
     "data": {
       "cipherText": "GSV XLZGH GSZG WRHVXIV ORV RM HRLOVMXV",
-      "cipherType": "ATBASH", // Could also be "CAESAR", "SUBSTITUTION" etc.
-      "solution": "THE COAST THAT WHISPERS LIE IN SILENCE", // Example solution
+      "cipherType": "ATBASH",
+      "solution": "THE COAST THAT WHISPERS LIE IN SILENCE",
       "hints": [
         "Think of reversing the alphabet.",
         "A=Z, B=Y..."
@@ -61,7 +61,7 @@
         {"id": "suspect3", "name": "Lisette the Lucky", "clues": ["Boasts about connections in Port Royal.", "Avoids any talk of the Navy."]}
       ],
       "correctSuspectId": "suspect2",
-      "evidenceRequired": ["fancy_coat_proof", "ships_log_discrepancy"] // Hypothetical item/flag IDs
+      "evidenceRequired": ["fancy_coat_proof", "ships_log_discrepancy"]
     }
   },
   {
@@ -76,7 +76,7 @@
       {"type": "UPDATE_PLAYER_STAT", "stat": "standing_silas", "change": 1}
     ],
     "failureEffects": [
-      {"type": "REMOVE_ITEM", "itemId": "artifact_piece_1"}, // Or just make them unusable
+      {"type": "REMOVE_ITEM", "itemId": "artifact_piece_1"},
       {"type": "REMOVE_ITEM", "itemId": "artifact_piece_2"},
       {"type": "SET_GAME_STATE", "variable": "artifact_pieces_broken", "value": true}
     ],
@@ -87,7 +87,24 @@
         {"itemId": "artifact_piece_3", "description": "A pearl that hums with a faint energy."}
       ],
       "assembly_instructions_hint": "The obsidian forms the backing, the coral fits into its curve, and the pearl sits at the center.",
-      "correct_order_or_configuration": ["artifact_piece_1", "artifact_piece_2", "artifact_piece_3"] // Example
+      "correct_order_or_configuration": ["artifact_piece_1", "artifact_piece_2", "artifact_piece_3"]
+    }
+  },
+  {
+    "id": "ROSTOVA_FIND_SPYGLASS_PUZZLE",
+    "puzzle_type": "OBSERVATION",
+    "description": "Captain Rostova mentioned she was last enjoying the view from the 'Crow's Nest' at the 'Salty Siren Tavern'. She thinks her spyglass might have rolled under something there.",
+    "successDialogNodeId": "rostova_spyglass_puzzle_success_dialogue",
+    "failureDialogNodeId": "rostova_spyglass_puzzle_failure_dialogue",
+    "skipDialogNodeId": "rostova_spyglass_puzzle_skip_dialogue",
+    "successEffects": [
+      {"type": "ADD_ITEM", "itemId": "item_rostova_spyglass"},
+      {"type": "SET_GAME_STATE", "variable": "rostova_spyglass_found_puzzle_complete", "value": true}
+    ],
+    "data": {
+      "promptText": "You scan the Crow's Nest area of the Salty Siren Tavern. Amidst discarded tankards and old ropes, something glints under a loose floorboard. What do you try to retrieve?",
+      "correctAnswers": ["spyglass", "the spyglass", "retrieve spyglass", "look under floorboard", "glinting object", "retrieve the glinting object"],
+      "max_attempts": 1
     }
   }
 ]

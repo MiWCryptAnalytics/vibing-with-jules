@@ -10,7 +10,9 @@
     "position": {
       "x": "20%",
       "y": "50%"
-    }
+    },
+    "quests": [],
+    "companionData": null
   },
   {
     "id": "npc_mysterious_woman",
@@ -23,7 +25,9 @@
     "position": {
       "x": "75%",
       "y": "30%"
-    }
+    },
+    "quests": [],
+    "companionData": null
   },
   {
     "id": "npc_shady_merchant",
@@ -36,7 +40,9 @@
     "position": {
       "x": "50%",
       "y": "50%"
-    }
+    },
+    "quests": [],
+    "companionData": null
   },
   {
     "id": "npc_kraken_abyss",
@@ -49,7 +55,9 @@
     "position": {
       "x": "60%",
       "y": "70%"
-    }
+    },
+    "quests": [],
+    "companionData": null
   },
   {
     "id": "npc_cursed_galleon_graveyard",
@@ -62,7 +70,9 @@
     "position": {
       "x": "30%",
       "y": "40%"
-    }
+    },
+    "quests": [],
+    "companionData": null
   },
   {
     "id": "npc_mermaid_rock",
@@ -75,7 +85,9 @@
     "position": {
       "x": "80%",
       "y": "80%"
-    }
+    },
+    "quests": [],
+    "companionData": null
   },
   {
     "id": "npc_blackbeards_hidden_cache",
@@ -88,7 +100,9 @@
     "position": {
       "x": "45%",
       "y": "55%"
-    }
+    },
+    "quests": [],
+    "companionData": null
   },
   {
     "id": "npc_stormy_cape_of_no_return",
@@ -101,7 +115,9 @@
     "position": {
       "x": "25%",
       "y": "65%"
-    }
+    },
+    "quests": [],
+    "companionData": null
   },
   {
     "id": "npc_davy_jones_locker_entrance",
@@ -114,7 +130,9 @@
     "position": {
       "x": "50%",
       "y": "20%"
-    }
+    },
+    "quests": [],
+    "companionData": null
   },
   {
     "id": "npc_cannibal_island",
@@ -127,7 +145,9 @@
     "position": {
       "x": "70%",
       "y": "75%"
-    }
+    },
+    "quests": [],
+    "companionData": null
   },
   {
     "id": "npc_smugglers_secret_strait",
@@ -140,7 +160,9 @@
     "position": {
       "x": "15%",
       "y": "85%"
-    }
+    },
+    "quests": [],
+    "companionData": null
   },
   {
     "id": "npc_treasure_fleet_wreckage_site",
@@ -153,7 +175,9 @@
     "position": {
       "x": "65%",
       "y": "35%"
-    }
+    },
+    "quests": [],
+    "companionData": null
   },
   {
     "id": "npc_fort_caroline_ruins",
@@ -166,7 +190,9 @@
     "position": {
       "x": "40%",
       "y": "25%"
-    }
+    },
+    "quests": [],
+    "companionData": null
   },
   {
     "id": "npc_ship_trap_island",
@@ -179,7 +205,9 @@
     "position": {
       "x": "55%",
       "y": "45%"
-    }
+    },
+    "quests": [],
+    "companionData": null
   },
   {
     "id": "npc_marooners_rock",
@@ -192,7 +220,9 @@
     "position": {
       "x": "20%",
       "y": "70%"
-    }
+    },
+    "quests": [],
+    "companionData": null
   },
   {
     "id": "npc_the_leviathans_ribcage",
@@ -205,7 +235,9 @@
     "position": {
       "x": "80%",
       "y": "15%"
-    }
+    },
+    "quests": [],
+    "companionData": null
   },
   {
     "id": "npc_coral_reef_labyrinth",
@@ -218,7 +250,9 @@
     "position": {
       "x": "35%",
       "y": "80%"
-    }
+    },
+    "quests": [],
+    "companionData": null
   },
   {
     "id": "npc_skeleton_key_islet",
@@ -231,7 +265,9 @@
     "position": {
       "x": "60%",
       "y": "10%"
-    }
+    },
+    "quests": [],
+    "companionData": null
   },
   {
     "id": "npc_the_barnacle_bank",
@@ -244,7 +280,9 @@
     "position": {
       "x": "40%",
       "y": "60%"
-    }
+    },
+    "quests": [],
+    "companionData": null
   },
   {
     "id": "npc_ghost_ship_anchorage",
@@ -257,7 +295,9 @@
     "position": {
       "x": "70%",
       "y": "20%"
-    }
+    },
+    "quests": [],
+    "companionData": null
   },
   {
     "id": "npc_sea_serpents_pass",
@@ -270,7 +310,9 @@
     "position": {
       "x": "25%",
       "y": "30%"
-    }
+    },
+    "quests": [],
+    "companionData": null
   },
   {
     "id": "npc_dead_mans_chest_island",
@@ -283,7 +325,9 @@
     "position": {
       "x": "55%",
       "y": "75%"
-    }
+    },
+    "quests": [],
+    "companionData": null
   },
   {
     "id": "npc_rum_runners_rendezvous",
@@ -296,7 +340,9 @@
     "position": {
       "x": "10%",
       "y": "50%"
-    }
+    },
+    "quests": [],
+    "companionData": null
   },
   {
     "id": "npc_spyglass_hill",
@@ -309,7 +355,9 @@
     "position": {
       "x": "85%",
       "y": "40%"
-    }
+    },
+    "quests": [],
+    "companionData": null
   },
   {
     "id": "npc_mutineers_gallows",
@@ -322,7 +370,9 @@
     "position": {
       "x": "30%",
       "y": "90%"
-    }
+    },
+    "quests": [],
+    "companionData": null
   },
   {
     "id": "npc_buried_doubloon_beach",
@@ -335,7 +385,9 @@
     "position": {
       "x": "65%",
       "y": "5%"
-    }
+    },
+    "quests": [],
+    "companionData": null
   },
   {
     "id": "npc_captains_quarrel_cove",
@@ -348,7 +400,9 @@
     "position": {
       "x": "50%",
       "y": "65%"
-    }
+    },
+    "quests": [],
+    "companionData": null
   },
   {
     "id": "npc_wandering_bard",
@@ -360,7 +414,9 @@
     "position": {
       "x": "50%",
       "y": "50%"
-    }
+    },
+    "quests": [],
+    "companionData": null
   },
   {
     "id": "npc_shipwrecked_sailor",
@@ -372,7 +428,9 @@
     "position": {
       "x": "40%",
       "y": "60%"
-    }
+    },
+    "quests": [],
+    "companionData": null
   },
   {
     "id": "npc_helpful_islander",
@@ -384,7 +442,9 @@
     "position": {
       "x": "60%",
       "y": "40%"
-    }
+    },
+    "quests": [],
+    "companionData": null
   },
   {
     "id": "npc_retired_naval_officer",
@@ -396,7 +456,9 @@
     "position": {
       "x": "55%",
       "y": "45%"
-    }
+    },
+    "quests": [],
+    "companionData": null
   },
   {
     "id": "npc_traveling_merchant",
@@ -408,7 +470,9 @@
     "position": {
       "x": "45%",
       "y": "55%"
-    }
+    },
+    "quests": [],
+    "companionData": null
   },
   {
     "id": "npc_hermit_crab_collector",
@@ -420,7 +484,9 @@
     "position": {
       "x": "30%",
       "y": "70%"
-    }
+    },
+    "quests": [],
+    "companionData": null
   },
   {
     "id": "npc_castaway_cartographer",
@@ -432,7 +498,9 @@
     "position": {
       "x": "70%",
       "y": "30%"
-    }
+    },
+    "quests": [],
+    "companionData": null
   },
   {
     "id": "npc_superstitious_fisherman",
@@ -444,7 +512,9 @@
     "position": {
       "x": "20%",
       "y": "80%"
-    }
+    },
+    "quests": [],
+    "companionData": null
   },
   {
     "id": "npc_cutthroat_buccaneer",
@@ -456,7 +526,9 @@
     "position": {
       "x": "80%",
       "y": "20%"
-    }
+    },
+    "quests": [],
+    "companionData": null
   },
   {
     "id": "npc_deceptive_siren",
@@ -468,7 +540,9 @@
     "position": {
       "x": "75%",
       "y": "75%"
-    }
+    },
+    "quests": [],
+    "companionData": null
   },
   {
     "id": "npc_cursed_treasure_guardian",
@@ -480,7 +554,9 @@
     "position": {
       "x": "25%",
       "y": "25%"
-    }
+    },
+    "quests": [],
+    "companionData": null
   },
   {
     "id": "npc_ruthless_slave_trader",
@@ -492,7 +568,26 @@
     "position": {
       "x": "60%",
       "y": "60%"
-    }
+    },
+    "quests": [
+      {
+        "id": "SILAS_CURSED_ARTIFACT_PART",
+        "displayName": "The Missing Artifact Piece",
+        "description": "Silas Blackwood is searching for a rare component to complete a powerful, albeit cursed, artifact. He believes you might be able to acquire it for him.",
+        "status": "available",
+        "startDialogueNodeId": "silas_blackwood_start_quest_artifact",
+        "completionConditions": {
+          "itemDelivered": "item_shadow_gem"
+        },
+        "rewards": {
+          "items": ["item_cursed_doubloon_pouch"],
+          "xp": 75,
+          "standing_silas": 1,
+          "alignmentShift": "evil_small"
+        }
+      }
+    ],
+    "companionData": null
   },
   {
     "id": "npc_captain_isabella_moreau",
@@ -505,7 +600,9 @@
     "position": {
       "x": "30%",
       "y": "30%"
-    }
+    },
+    "quests": [],
+    "companionData": null
   },
   {
     "id": "npc_silas_blackwood",
@@ -518,7 +615,9 @@
     "position": {
       "x": "60%",
       "y": "60%"
-    }
+    },
+    "quests": [],
+    "companionData": null
   },
   {
     "id": "npc_esmeralda_valdez",
@@ -531,6 +630,48 @@
     "position": {
       "x": "80%",
       "y": "80%"
+    },
+    "quests": [],
+    "companionData": null
+  },
+  {
+    "id": "npc_elena_rostova",
+    "name": "Captain Elena Rostova",
+    "description": "Captain Rostova is a skilled navigator and leader, known for her fairness and courage. She commands the loyalty of her crew and is respected by her peers.",
+    "icon": "person",
+    "defaultLocationId": "port_royal_docks",
+    "portraitImage": "assets/images/portraits/npc_elena_rostova_portrait.jpg",
+    "alignment": "good",
+    "position": {
+      "x": "40%",
+      "y": "40%"
+    },
+    "quests": [
+      {
+        "id": "ROSTOVA_LOST_SPYGLASS",
+        "displayName": "The Captain's Lost Spyglass",
+        "description": "Captain Rostova has misplaced her favorite spyglass, a gift from her late father. She needs it back before she sets sail.",
+        "status": "available",
+        "startDialogueNodeId": "elena_rostova_start_quest_spyglass",
+        "completionConditions": {
+          "itemCollected": "item_rostova_spyglass"
+        },
+        "rewards": {
+          "items": ["item_gold_coins_medium"],
+          "xp": 50,
+          "standing_rostova": 2
+        }
+      }
+    ],
+    "companionData": {
+      "id": "npc_elena_rostova",
+      "name": "Captain Rostova",
+      "abilityDescription": "Captain Rostova's sharp eyes can spot details others miss, occasionally helping with perception-based puzzles or revealing hidden dialogue options.",
+      "puzzleInteraction": {
+        "type": "provides_hint",
+        "puzzleId": "ROSTOVA_FIND_SPYGLASS_PUZZLE",
+        "hintText": "Rostova squints, 'I remember being up in the Crow's Nest at the Salty Siren. Might've rolled under something up there...'"
+      }
     }
   }
 ]

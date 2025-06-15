@@ -384,18 +384,109 @@
       "playerChoices": [
         {
           "text": "What kind of 'unique' items do you deal in?",
-          "nextNodeId": "silas_unique_items",
-          "action": null
+          "nextNodeId": "silas_unique_items"
         },
         {
           "text": "Information is what I seek. About 'The Crimson Marauders'.",
-          "nextNodeId": "silas_crimson_marauders_info",
-          "action": null
+          "nextNodeId": "silas_crimson_ marauders_info"
         },
         {
           "text": "I'm just browsing, Mr. Blackwood.",
-          "nextNodeId": "END",
-          "action": null
+          "nextNodeId": "END"
+        },
+        {
+          "text": "Heard you might have a special task for someone capable?",
+          "nextNodeId": "silas_check_artifact_quest_availability",
+          "condition": {"questStatus": {"questId": "SILAS_CURSED_ARTIFACT_PART", "status": "available"}}
+        },
+        {
+          "text": "About that artifact piece you needed...",
+          "nextNodeId": "silas_check_artifact_return",
+          "condition": {
+            "questStatus": {"questId": "SILAS_CURSED_ARTIFACT_PART", "status": "in_progress"},
+            "hasItem": "item_shadow_gem"
+          }
+        }
+      ]
+    },
+    "silas_check_artifact_quest_availability": {
+      "id": "silas_check_artifact_quest_availability",
+      "npcText": "Sharp ears, I see. Indeed, I have a delicate matter that requires a certain... finesse. Are you interested?",
+      "playerChoices": [
+        {
+          "text": "Tell me more.",
+          "nextNodeId": "silas_blackwood_start_quest_artifact"
+        },
+        {
+          "text": "Perhaps another time.",
+          "nextNodeId": "silas_start"
+        }
+      ]
+    },
+    "silas_blackwood_start_quest_artifact": {
+      "id": "silas_blackwood_start_quest_artifact",
+      "npcText": "I am searching for a rare component, a Shadow Gem, to complete a rather... potent artifact. It's said to be found in the Sunken Spire. Acquire it for me, and you'll be handsomely rewarded.",
+      "playerChoices": [
+        {
+          "text": "I'll get your Shadow Gem.",
+          "nextNodeId": "silas_blackwood_accept_artifact_quest"
+        },
+        {
+          "text": "Sounds dangerous. I'll pass.",
+          "nextNodeId": "silas_blackwood_decline_artifact_quest"
+        }
+      ]
+    },
+    "silas_blackwood_accept_artifact_quest": {
+      "id": "silas_blackwood_accept_artifact_quest",
+      "npcText": "Excellent! The Sunken Spire is treacherous, so be wary. The Gem pulses with a faint shadow... you'll know it when you see it. Return it to me, and we'll discuss your reward.",
+      "effects": [{"type": "START_QUEST", "questId": "SILAS_CURSED_ARTIFACT_PART"}],
+      "playerChoices": [
+        {
+          "text": "I won't fail you, Silas.",
+          "nextNodeId": "END"
+        }
+      ]
+    },
+    "silas_blackwood_decline_artifact_quest": {
+      "id": "silas_blackwood_decline_artifact_quest",
+      "npcText": "A pity. Such opportunities don't come often. Perhaps another time, then.",
+      "playerChoices": [
+        {
+          "text": "Goodbye.",
+          "nextNodeId": "END"
+        }
+      ]
+    },
+    "silas_check_artifact_return": {
+      "id": "silas_check_artifact_return",
+      "npcText": "Ah, you've returned! And do I sense the lovely shimmer of a Shadow Gem about your person?",
+      "playerChoices": [
+        {
+          "text": "Indeed. Here is the Shadow Gem you requested.",
+          "nextNodeId": "silas_blackwood_return_artifact_part"
+        },
+        {
+          "text": "Not yet, still working on it.",
+          "nextNodeId": "END"
+        }
+      ]
+    },
+    "silas_blackwood_return_artifact_part": {
+      "id": "silas_blackwood_return_artifact_part",
+      "npcText": "Magnificent! Just as described. You've done splendidly, my friend. Here is your reward, as promised. And know that you have my gratitude... which can be quite valuable.",
+      "effects": [
+        {"type": "COMPLETE_QUEST", "questId": "SILAS_CURSED_ARTIFACT_PART"},
+        {"type": "REMOVE_ITEM", "itemId": "item_shadow_gem"},
+        {"type": "ADD_ITEM", "itemId": "item_cursed_doubloon_pouch"},
+        {"type": "ADD_XP", "amount": 75},
+        {"type": "ADD_STANDING", "npcId": "npc_silas_blackwood", "amount": 1},
+        {"type": "ALIGNMENT_SHIFT", "direction": "evil", "magnitude": "small"}
+      ],
+      "playerChoices": [
+        {
+          "text": "Pleasure doing business with you, Silas.",
+          "nextNodeId": "END"
         }
       ]
     },
@@ -405,18 +496,15 @@
       "playerChoices": [
         {
           "text": "What kind of favors?",
-          "nextNodeId": "silas_favors",
-          "action": null
+          "nextNodeId": "silas_favors"
         },
         {
           "text": "Let's talk about those secrets. Specifically, about a certain treasure.",
-          "nextNodeId": "silas_treasure_secrets",
-          "action": null
+          "nextNodeId": "silas_treasure_secrets"
         },
         {
           "text": "Show me one of these 'questionable' artifacts.",
-          "nextNodeId": "silas_artifact_assembly_prompt",
-          "action": null
+          "nextNodeId": "silas_artifact_assembly_prompt"
         }
       ]
     },
@@ -426,7 +514,6 @@
       "playerChoices": [
         {
           "text": "Let me try my hand at assembling it.",
-          "nextNodeId": null,
           "effects": [{ "type": "TRIGGER_PUZZLE", "puzzleId": "ANCIENT_ARTIFACT_ASSEMBLY" }]
         },
         {
@@ -462,13 +549,11 @@
       "playerChoices": [
         {
           "text": "I'm after a treasure they hid. I can offer a share.",
-          "nextNodeId": "silas_marauder_treasure_share",
-          "action": null
+          "nextNodeId": "silas_marauder_treasure_share"
         },
         {
           "text": "I need to know their weaknesses, their routines.",
-          "nextNodeId": "SILAS_MARAUDER_INTEL_1",
-          "action": null
+          "nextNodeId": "SILAS_MARAUDER_INTEL_1"
         }
       ]
     },
@@ -478,8 +563,7 @@
       "playerChoices": [
         {
           "text": "I'll keep that in mind.",
-          "nextNodeId": "END",
-          "action": null
+          "nextNodeId": "END"
         }
       ]
     },
@@ -489,8 +573,7 @@
       "playerChoices": [
         {
           "text": "Precisely! The Crimson Marauders' treasure.",
-          "nextNodeId": "silas_marauder_treasure_share",
-          "action": null
+          "nextNodeId": "silas_marauder_treasure_share"
         }
       ]
     },
@@ -500,13 +583,11 @@
       "playerChoices": [
         {
           "text": "Elias Thorne in Port Royal. That's a valuable lead.",
-          "nextNodeId": "SILAS_DEEPER_INFO_1",
-          "action": null
+          "nextNodeId": "SILAS_DEEPER_INFO_1"
         },
         {
           "text": "How do you know so much about this?",
-          "nextNodeId": "SILAS_DEEPER_INFO_2",
-          "action": null
+          "nextNodeId": "SILAS_DEEPER_INFO_2"
         }
       ]
     },
@@ -516,8 +597,7 @@
       "playerChoices": [
         {
           "text": "What are you looking for?",
-          "nextNodeId": "END",
-          "action": null
+          "nextNodeId": "END"
         }
       ]
     },
@@ -527,8 +607,7 @@
       "playerChoices": [
         {
           "text": "We'll see. Thanks for the information, Silas.",
-          "nextNodeId": "END",
-          "action": null
+          "nextNodeId": "END"
         }
       ]
     },
@@ -538,8 +617,224 @@
       "playerChoices": [
         {
           "text": "I see. Your discretion is appreciated.",
-          "nextNodeId": "END",
-          "action": null
+          "nextNodeId": "END"
+        }
+      ]
+    }
+  },
+  "npc_elena_rostova": {
+    "elena_rostova_start": {
+      "id": "elena_rostova_start",
+      "npcText": "Welcome aboard 'The Sea's Whisper'. I'm Captain Elena Rostova. What brings you to my ship?",
+      "playerChoices": [
+        {
+          "text": "I'm looking for work, Captain.",
+          "nextNodeId": "elena_rostova_looking_for_work"
+        },
+        {
+          "text": "Just admiring your vessel.",
+          "nextNodeId": "elena_rostova_admiring_ship"
+        },
+        {
+          "text": "Are you in need of assistance, Captain?",
+          "nextNodeId": "elena_rostova_check_spyglass_quest_availability",
+          "condition": {"questStatus": {"questId": "ROSTOVA_LOST_SPYGLASS", "status": "available"}}
+        },
+        {
+          "text": "Captain, about your spyglass...",
+          "nextNodeId": "elena_rostova_check_spyglass_return",
+          "condition": {
+            "questStatus": {"questId": "ROSTOVA_LOST_SPYGLASS", "status": "in_progress"},
+            "hasItem": "item_rostova_spyglass"
+          }
+        },
+        {
+          "text": "You seem like a capable ally. Would you consider sailing with me?",
+          "nextNodeId": "elena_rostova_companion_ask_initial",
+          "condition": {"questStatus": {"questId": "ROSTOVA_LOST_SPYGLASS", "status": "completed"}}
+        }
+      ]
+    },
+    "elena_rostova_looking_for_work": {
+      "id": "elena_rostova_looking_for_work",
+      "npcText": "I might have something for a skilled hand. For now, though, I'm a bit preoccupied. My favorite spyglass, a gift from my late father, has gone missing. Without it, I feel blind.",
+      "playerChoices": [
+        {
+          "text": "Perhaps I can help you find it?",
+          "nextNodeId": "elena_rostova_start_quest_spyglass",
+          "condition": {"questStatus": {"questId": "ROSTOVA_LOST_SPYGLASS", "status": "available"}}
+        },
+        {
+          "text": "A shame. Let me know if anything else comes up.",
+          "nextNodeId": "END"
+        }
+      ]
+    },
+    "elena_rostova_admiring_ship": {
+      "id": "elena_rostova_admiring_ship",
+      "npcText": "She's a fine ship, true enough. Fast and sturdy. But a captain's eyes are as important as her keel. Mine are hampered without my spyglass...",
+      "playerChoices": [
+        {
+          "text": "Is there anything I can do to help?",
+          "nextNodeId": "elena_rostova_start_quest_spyglass",
+          "condition": {"questStatus": {"questId": "ROSTOVA_LOST_SPYGLASS", "status": "available"}}
+        },
+        {
+          "text": "I hope you find it soon.",
+          "nextNodeId": "END"
+        }
+      ]
+    },
+    "elena_rostova_check_spyglass_quest_availability": {
+      "id": "elena_rostova_check_spyglass_quest_availability",
+      "npcText": "Assistance? Actually, yes. I've misplaced my spyglass. It's very important to me.",
+      "playerChoices": [
+        {
+          "text": "Tell me about it. Maybe I can find it.",
+          "nextNodeId": "elena_rostova_start_quest_spyglass"
+        },
+        {
+          "text": "Sorry, can't help with that now.",
+          "nextNodeId": "elena_rostova_start"
+        }
+      ]
+    },
+    "elena_rostova_start_quest_spyglass": {
+      "id": "elena_rostova_start_quest_spyglass",
+      "npcText": "It was a gift from my father, ornate brass with a mother-of-pearl inlay. I last recall having it near the docks, perhaps at the tavern 'The Salty Barnacle' or the harbormaster's office. I need it back before we set sail. Can you help?",
+      "playerChoices": [
+        {
+          "text": "I'll help you find it, Captain.",
+          "nextNodeId": "elena_rostova_accept_spyglass_quest"
+        },
+        {
+          "text": "Sorry, I don't have time for that right now.",
+          "nextNodeId": "elena_rostova_decline_spyglass_quest"
+        }
+      ]
+    },
+    "elena_rostova_accept_spyglass_quest": {
+      "id": "elena_rostova_accept_spyglass_quest",
+      "npcText": "Thank you! Your help is greatly appreciated. Check around the docks, the tavern, and the harbormaster. It must be somewhere there. It's quite distinctive.",
+      "effects": [{"type": "START_QUEST", "questId": "ROSTOVA_LOST_SPYGLASS"}],
+      "playerChoices": [
+        {
+          "text": "I'll let you know what I find.",
+          "nextNodeId": "END"
+        }
+      ]
+    },
+    "elena_rostova_decline_spyglass_quest": {
+      "id": "elena_rostova_decline_spyglass_quest",
+      "npcText": "A pity. Well, I suppose I'll have to search myself when I get a moment. Safe travels.",
+      "playerChoices": [
+        {
+          "text": "Goodbye, Captain.",
+          "nextNodeId": "END"
+        }
+      ]
+    },
+    "elena_rostova_check_spyglass_return": {
+      "id": "elena_rostova_check_spyglass_return",
+      "npcText": "You mentioned my spyglass... have you found it?",
+      "playerChoices": [
+        {
+          "text": "Yes, Captain! Here it is.",
+          "nextNodeId": "elena_rostova_return_spyglass"
+        },
+        {
+          "text": "Not yet, still searching.",
+          "nextNodeId": "END"
+        }
+      ]
+    },
+    "elena_rostova_return_spyglass": {
+      "id": "elena_rostova_return_spyglass",
+      "npcText": "My spyglass! You found it! Oh, thank you, you don't know how much this means to me. Please, take this for your troubles. You've earned it.",
+      "effects": [
+        {"type": "COMPLETE_QUEST", "questId": "ROSTOVA_LOST_SPYGLASS"},
+        {"type": "REMOVE_ITEM", "itemId": "item_rostova_spyglass"},
+        {"type": "ADD_ITEM", "itemId": "item_gold_coins_medium"},
+        {"type": "ADD_XP", "amount": 50},
+        {"type": "ADD_STANDING", "npcId": "npc_elena_rostova", "amount": 2}
+      ],
+      "playerChoices": [
+        {
+          "text": "Glad I could help, Captain.",
+          "nextNodeId": "elena_rostova_post_quest_chat"
+        }
+      ]
+    },
+    "elena_rostova_post_quest_chat": {
+      "id": "elena_rostova_post_quest_chat",
+      "npcText": "You've proven yourself reliable and resourceful. If you're ever looking for a trustworthy captain, or perhaps an ally on your own voyages, don't hesitate to speak with me again.",
+      "playerChoices": [
+        {
+          "text": "Thank you, Captain. I'll remember that.",
+          "nextNodeId": "elena_rostova_start"
+        },
+        {
+          "text": "Actually, about sailing together...",
+          "nextNodeId": "elena_rostova_companion_ask_initial"
+        }
+      ]
+    },
+    "elena_rostova_companion_ask_initial": {
+      "id": "elena_rostova_companion_ask_initial",
+      "npcText": "Sail with you? Hmm. I admit, your assistance with my spyglass was invaluable, and you carry yourself with a certain... competence. What exactly are you proposing?",
+      "playerChoices": [
+        {
+          "text": "I'm gathering a crew for my ship. I'd be honored to have you.",
+          "nextNodeId": "elena_rostova_recruit_companion_offer"
+        },
+        {
+          "text": "Just an idea. Perhaps another time.",
+          "nextNodeId": "elena_rostova_decline_companionship_initial"
+        }
+      ]
+    },
+    "elena_rostova_recruit_companion_offer": {
+      "id": "elena_rostova_recruit_companion_offer",
+      "npcText": "Join your crew... It's a significant decision. My own ship and crew would need a capable temporary commander. But, the allure of new adventures under a different flag... it has a certain appeal. And your actions speak well of your character. ",
+      "playerChoices": [
+        {
+          "text": "You'd be a great asset, Captain. We'd achieve much together.",
+          "nextNodeId": "elena_rostova_accept_companionship"
+        },
+        {
+          "text": "I understand it's a big step. No pressure.",
+          "nextNodeId": "elena_rostova_decline_companionship"
+        }
+      ]
+    },
+    "elena_rostova_accept_companionship": {
+      "id": "elena_rostova_accept_companionship",
+      "npcText": "Very well. For a time, I, Captain Elena Rostova, will sail under your command. May our voyages be prosperous and our names sung by bards across the seas! I'll make arrangements for 'The Sea's Whisper'.",
+      "effects": [{"type": "RECRUIT_COMPANION", "companionId": "npc_elena_rostova"}],
+      "playerChoices": [
+        {
+          "text": "Welcome aboard, Captain Rostova!",
+          "nextNodeId": "END"
+        }
+      ]
+    },
+    "elena_rostova_decline_companionship": {
+      "id": "elena_rostova_decline_companionship",
+      "npcText": "Perhaps you're right. The sea demands certainty. For now, I have my own responsibilities. But I won't forget your offer, or your help. Fair winds to you.",
+      "playerChoices": [
+        {
+          "text": "And to you, Captain.",
+          "nextNodeId": "END"
+        }
+      ]
+    },
+    "elena_rostova_decline_companionship_initial": {
+      "id": "elena_rostova_decline_companionship_initial",
+      "npcText": "As you wish. My spyglass is keen, and I'll keep an eye on your progress. Perhaps our paths will cross more formally in the future.",
+      "playerChoices": [
+        {
+          "text": "I hope so, Captain.",
+          "nextNodeId": "END"
         }
       ]
     }
@@ -551,18 +846,15 @@
       "playerChoices": [
         {
           "text": "Who are you? How do you know I'm a 'seeker'?",
-          "nextNodeId": "esmeralda_who_are_you",
-          "action": null
+          "nextNodeId": "esmeralda_who_are_you"
         },
         {
           "text": "I seek answers about a hidden treasure.",
-          "nextNodeId": "esmeralda_treasure_query",
-          "action": null
+          "nextNodeId": "esmeralda_treasure_query"
         },
         {
           "text": "I'm just exploring. This is an interesting cove.",
-          "nextNodeId": "END",
-          "action": null
+          "nextNodeId": "END"
         }
       ]
     },
@@ -572,13 +864,11 @@
       "playerChoices": [
         {
           "text": "Can you see my fate?",
-          "nextNodeId": "esmeralda_see_fate",
-          "action": null
+          "nextNodeId": "esmeralda_see_fate"
         },
         {
           "text": "I make my own fate.",
-          "nextNodeId": "END",
-          "action": null
+          "nextNodeId": "END"
         },
         {
           "text": "Offer me a riddle, Seer.",
@@ -592,7 +882,6 @@
       "playerChoices": [
         {
           "text": "I am ready to answer.",
-          "nextNodeId": null,
           "effects": [{"type": "TRIGGER_PUZZLE", "puzzleId": "ESMERALDA_MOON_RIDDLE"}]
         },
         {
@@ -628,13 +917,11 @@
       "playerChoices": [
         {
           "text": "Yes! The treasure hidden by The Crimson Marauders.",
-          "nextNodeId": "esmeralda_crimson_treasure",
-          "action": null
+          "nextNodeId": "esmeralda_crimson_treasure"
         },
         {
           "text": "What do you mean by 'truth that lies buried deeper'?",
-          "nextNodeId": "ESMERALDA_TRUTH_1",
-          "action": null
+          "nextNodeId": "ESMERALDA_TRUTH_1"
         }
       ]
     },
@@ -644,13 +931,11 @@
       "playerChoices": [
         {
           "text": "What kind of price?",
-          "nextNodeId": "ESMERALDA_PRICE_1",
-          "action": null
+          "nextNodeId": "ESMERALDA_PRICE_1"
         },
         {
           "text": "I'd rather not know.",
-          "nextNodeId": "END",
-          "action": null
+          "nextNodeId": "END"
         }
       ]
     },
@@ -660,13 +945,11 @@
       "playerChoices": [
         {
           "text": "'The Sunken Star'? What is that?",
-          "nextNodeId": "ESMERALDA_RIDDLE_1",
-          "action": null
+          "nextNodeId": "ESMERALDA_RIDDLE_1"
         },
         {
           "text": "How can a spirit hold a key?",
-          "nextNodeId": "ESMERALDA_RIDDLE_2",
-          "action": null
+          "nextNodeId": "ESMERALDA_RIDDLE_2"
         }
       ]
     },
@@ -676,8 +959,7 @@
       "playerChoices": [
         {
           "text": "You speak in riddles, Esmeralda.",
-          "nextNodeId": "esmeralda_crimson_treasure",
-          "action": null
+          "nextNodeId": "esmeralda_crimson_treasure"
         }
       ]
     },
@@ -687,13 +969,11 @@
       "playerChoices": [
         {
           "text": "I have a strange coin I found...",
-          "nextNodeId": "END",
-          "action": null
+          "nextNodeId": "END"
         },
         {
           "text": "I need to think about this.",
-          "nextNodeId": "END",
-          "action": null
+          "nextNodeId": "END"
         }
       ]
     },
@@ -703,8 +983,7 @@
       "playerChoices": [
         {
           "text": "A tavern in a shipwreck graveyard? Thank you, Seer.",
-          "nextNodeId": "END",
-          "action": null
+          "nextNodeId": "END"
         }
       ]
     },
@@ -714,8 +993,7 @@
       "playerChoices": [
         {
           "text": "I understand. I must find his spirit.",
-          "nextNodeId": "END",
-          "action": null
+          "nextNodeId": "END"
         }
       ]
     }
@@ -727,18 +1005,15 @@
       "playerChoices": [
         {
           "text": "Who are you, if I may ask?",
-          "nextNodeId": "mysterious_who",
-          "action": null
+          "nextNodeId": "mysterious_who"
         },
         {
           "text": "Just admiring the tranquility of this place.",
-          "nextNodeId": "mysterious_admire",
-          "action": null
+          "nextNodeId": "mysterious_admire"
         },
         {
           "text": "What kind of secrets does this lagoon hold?",
-          "nextNodeId": "mysterious_lagoon_secrets",
-          "action": null
+          "nextNodeId": "mysterious_lagoon_secrets"
         }
       ]
     },
@@ -748,13 +1023,11 @@
       "playerChoices": [
         {
           "text": "I understand. I mean no harm.",
-          "nextNodeId": "END",
-          "action": null
+          "nextNodeId": "END"
         },
         {
           "text": "What does it mean to 'keep its balance'?",
-          "nextNodeId": "mysterious_balance_explained",
-          "action": null
+          "nextNodeId": "mysterious_balance_explained"
         }
       ]
     },
@@ -764,8 +1037,7 @@
       "playerChoices": [
         {
           "text": "I'll keep that in mind.",
-          "nextNodeId": "END",
-          "action": null
+          "nextNodeId": "END"
         }
       ]
     },
@@ -775,8 +1047,7 @@
       "playerChoices": [
         {
           "text": "I will be respectful.",
-          "nextNodeId": "END",
-          "action": null
+          "nextNodeId": "END"
         }
       ]
     },
@@ -786,8 +1057,7 @@
       "playerChoices": [
         {
           "text": "A vital role, it seems.",
-          "nextNodeId": "END",
-          "action": null
+          "nextNodeId": "END"
         }
       ]
     }
@@ -799,18 +1069,15 @@
       "playerChoices": [
         {
           "text": "What kind of 'special' items are we talking about?",
-          "nextNodeId": "shady_items_query",
-          "action": null
+          "nextNodeId": "shady_items_query"
         },
         {
           "text": "No thanks, I'm just browsing.",
-          "nextNodeId": "shady_browsing",
-          "action": null
+          "nextNodeId": "shady_browsing"
         },
         {
           "text": "You look like you've seen a few things. Ever have a deal go sour?",
-          "nextNodeId": "shady_deal_gone_sour",
-          "action": null
+          "nextNodeId": "shady_deal_gone_sour"
         }
       ]
     },
@@ -820,18 +1087,15 @@
       "playerChoices": [
         {
           "text": "Maybe another time. My coin purse is light.",
-          "nextNodeId": "END",
-          "action": null
+          "nextNodeId": "END"
         },
         {
           "text": "(Lie) I'm not afraid of a high price for true value.",
-          "nextNodeId": "shady_lie_price",
-          "action": null
+          "nextNodeId": "shady_lie_price"
         },
         {
           "text": "I'm looking for something... powerful. Perhaps even cursed?",
-          "nextNodeId": "shady_cursed_relics",
-          "action": null
+          "nextNodeId": "shady_cursed_relics"
         }
       ]
     },
@@ -841,8 +1105,7 @@
       "playerChoices": [
         {
           "text": "I will.",
-          "nextNodeId": "END",
-          "action": null
+          "nextNodeId": "END"
         }
       ]
     },
@@ -852,8 +1115,7 @@
       "playerChoices": [
         {
           "text": "Intriguing. I might just do that.",
-          "nextNodeId": "END",
-          "action": null
+          "nextNodeId": "END"
         }
       ]
     },
@@ -863,8 +1125,7 @@
       "playerChoices": [
         {
           "text": "Interesting. I'll consider it.",
-          "nextNodeId": "END",
-          "action": null
+          "nextNodeId": "END"
         }
       ]
     },
@@ -874,8 +1135,7 @@
       "playerChoices": [
         {
           "text": "A valuable lesson, indeed.",
-          "nextNodeId": "END",
-          "action": null
+          "nextNodeId": "END"
         }
       ]
     }
@@ -887,8 +1147,7 @@
       "playerChoices": [
         {
           "text": "Perhaps you are right.",
-          "nextNodeId": "END",
-          "action": null
+          "nextNodeId": "END"
         }
       ]
     }
