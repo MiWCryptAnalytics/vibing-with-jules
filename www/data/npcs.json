@@ -580,7 +580,9 @@
           "itemDelivered": "item_shadow_gem"
         },
         "rewards": {
-          "items": ["item_cursed_doubloon_pouch"],
+          "items": [
+            "item_cursed_doubloon_pouch"
+          ],
           "xp": 75,
           "standing_silas": 1,
           "alignmentShift": "evil_small"
@@ -657,7 +659,9 @@
           "itemCollected": "item_rostova_spyglass"
         },
         "rewards": {
-          "items": ["item_gold_coins_medium"],
+          "items": [
+            "item_gold_coins_medium"
+          ],
           "xp": 50,
           "standing_rostova": 2
         }
