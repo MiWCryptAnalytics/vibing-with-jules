@@ -270,20 +270,55 @@ class GameInterfaceView extends LitElement {
     }
 
     if (nextNodeId) {
-      // Ensure the dialogue system is active or re-activated correctly.
-      // If a puzzle was triggered mid-dialogue, _activeDialogueNpcId should still be set.
-      // If not, this call to _handlePlayerChoice might not work as expected without an active NPC.
-      // This assumes puzzles are typically triggered when a dialogue is already active with an NPC.
-      if (this._activeDialogueNpcId) {
-        this._handlePlayerChoice({ nextNodeId: nextNodeId });
-      } else {
-        console.warn(`GameInterfaceView: Puzzle resolved, but no active NPC dialogue to navigate to node ${nextNodeId}.`);
-        // Potentially, a puzzle could resolve and NOT lead to a dialogue node but some other game state change.
-        // Or, if it MUST lead to a dialogue, an NPC context might need to be re-established.
+      // If there's a nextNodeId, we attempt to show it.
+      // If _activeDialogueNpcId is null (e.g., puzzle triggered from environment),
+      // _handlePlayerChoice might need to gracefully handle this.
+      // For now, we'll proceed. The dialogue nodes for such puzzles should be simple informational messages.
+      // A future enhancement could be to assign a 'narrator' NPC to the puzzle outcome if needed.
+
+      // If puzzle.dialogOwnerNpcId is defined in puzzles.json, use it.
+      // This is a hypothetical property we might add later.
+      // if (puzzle.dialogOwnerNpcId && !this._activeDialogueNpcId) {
+      //   this._activeDialogueNpcId = puzzle.dialogOwnerNpcId;
+      //   // We also need to ensure allDialogues has this NPC's tree loaded, which might not be the case
+      //   // if the player isn't at the same location as the dialogOwnerNpcId.
+      //   // This implies a need for global access to all dialogues if this pattern is used.
+      // }
+
+      if (!this._activeDialogueNpcId) {
+        console.warn(`GameInterfaceView: Puzzle resolved with nextNodeId "${nextNodeId}", but no _activeDialogueNpcId. The dialogue node might not display correctly if it expects an NPC context (e.g. speaker name).`);
+        // For now, we will attempt to show the dialogue anyway.
+        // npc-dialog-overlay.js should ideally handle a null npcDetails gracefully (e.g. show "System Message").
+        // We'll proceed to call _handlePlayerChoice. It will try to find the dialogue node
+        // using this._activeDialogueNpcId. If it's null, it might fail to find a dialogue tree.
+        // A more robust solution might involve a generic "SYSTEM" dialogue tree for such cases,
+        // or the puzzle definition could specify the NPC ID for the dialogue.
+        // For the current task, let's assume _handlePlayerChoice will be called, and if _activeDialogueNpcId is null,
+        // the npc-dialog-overlay will show the text without an NPC name.
+        // This relies on the dialogue node ID being globally unique or accessible in a general pool if no NPC is active.
+        // This is a simplification. A better way would be for nextNodeId to be part of a specific NPC's dialogue tree,
+        // and that NPC's ID should be set as _activeDialogueNpcId here.
+        // For ROSTOVA_FIND_SPYGLASS_PUZZLE, success node is 'rostova_spyglass_puzzle_success_dialogue'.
+        // This node should be part of Rostova's dialogue tree.
+        // So, we should try to set _activeDialogueNpcId to the puzzle's associated NPC if available.
+
+        if (puzzle.npcId && this.allDialogues[puzzle.npcId] && this.allDialogues[puzzle.npcId][nextNodeId]) {
+            this._activeDialogueNpcId = puzzle.npcId;
+            console.log(`GameInterfaceView: Set _activeDialogueNpcId to puzzle.npcId: ${puzzle.npcId} for dialogue node ${nextNodeId}`);
+        } else {
+            console.warn(`GameInterfaceView: Cannot determine active NPC for puzzle dialogue node ${nextNodeId}. Dialogue may not display as expected.`);
+            // If we cannot determine an NPC, and the node is generic, we might need a way to display it without an NPC.
+            // For now, _handlePlayerChoice will proceed with _activeDialogueNpcId as null if not set.
+        }
       }
+      // Now, _activeDialogueNpcId might be set if puzzle.npcId was valid.
+      this._handlePlayerChoice({ nextNodeId: nextNodeId });
+
     } else {
-      // If no nextNodeId (e.g. puzzle ends interaction), ensure dialogue is closed.
-      this._endDialogue();
+      // If no nextNodeId (e.g. puzzle ends interaction), ensure dialogue is closed if one was active.
+      if (this._activeDialogueNpcId) {
+        this._endDialogue();
+      }
     }
   }
 
@@ -506,8 +541,81 @@ class GameInterfaceView extends LitElement {
     console.log('GameInterface: Hidden object clicked:', clickedObject);
     let messageToDisplay = '';
 
-    // Check if it's an interactable feature AND it hasn't been handled yet
-    if (clickedObject.isInteractableFeature && clickedObject.interaction && !clickedObject.isHandledInteractable) {
+    // New: Check for puzzle triggers first
+    if (clickedObject.triggersPuzzleId) {
+      let conditionsMet = true;
+      let conditionFailureMessage = clickedObject.conditionNotMetMessage || msg("You feel this isn't important right now.", { id: 'condition-not-met-generic' });
+
+      if (clickedObject.condition) {
+        const condition = clickedObject.condition;
+
+        // Check quest status
+        if (condition.questStatus) {
+          const questId = condition.questStatus.questId;
+          const requiredStatus = condition.questStatus.status;
+          const currentQuest = this.playerQuests[questId];
+
+          if (!currentQuest) {
+            conditionsMet = false;
+          } else {
+            if (Array.isArray(requiredStatus)) {
+              if (!requiredStatus.includes(currentQuest.status)) {
+                conditionsMet = false;
+              }
+            } else {
+              if (currentQuest.status !== requiredStatus) {
+                conditionsMet = false;
+              }
+            }
+          }
+          // More specific message if quest condition failed (optional, could be too revealing)
+          // if (!conditionsMet) conditionFailureMessage = `You need to advance further in the '${questId}' quest.`;
+        }
+
+        // Check for required item
+        if (conditionsMet && condition.hasItem) {
+          if (!this.playerInventory.some(item => item.id === condition.hasItem)) {
+            conditionsMet = false;
+            // More specific message (optional)
+            // const item = this.allItems.get(condition.hasItem);
+            // if (item) conditionFailureMessage = `You are missing a ${item.name}.`;
+          }
+        }
+
+        // Check for lacking item (player should NOT have this item)
+        if (conditionsMet && condition.lacksItem) {
+          if (this.playerInventory.some(item => item.id === condition.lacksItem)) {
+            conditionsMet = false;
+            // More specific message (optional)
+            // const item = this.allItems.get(condition.lacksItem);
+            // if (item) conditionFailureMessage = `You should not be carrying a ${item.name}.`;
+          }
+        }
+      }
+
+      if (conditionsMet) {
+        this.dispatchEvent(new CustomEvent('trigger-puzzle', {
+          detail: { puzzleId: clickedObject.triggersPuzzleId },
+          bubbles: true,
+          composed: true,
+        }));
+        messageToDisplay = clickedObject.foundMessage || msg("You start investigating...", { id: 'puzzle-trigger-investigate' });
+        // Potentially mark the object as "puzzle triggered" if it shouldn't trigger again
+        // For now, puzzles can be re-triggered unless their own logic prevents it (e.g., by setting a game state)
+      } else {
+        messageToDisplay = conditionFailureMessage;
+      }
+
+      // Display message and return, preventing further processing for this click
+      if (messageToDisplay) {
+        this._lastFoundMessage = messageToDisplay;
+        setTimeout(() => { this._lastFoundMessage = ''; this.requestUpdate(); }, 3000);
+      }
+      this.requestUpdate();
+      return; // Important: Stop further processing
+    }
+    // Existing checks continue if not a puzzle trigger or if puzzle conditions not met (though 'return' above handles that)
+    else if (clickedObject.isInteractableFeature && clickedObject.interaction && !clickedObject.isHandledInteractable) { // Note the 'else if'
       const interaction = clickedObject.interaction;
       const requiredItem = this.playerInventory.find(invItem => invItem.id === interaction.requiredItemId);
 
@@ -560,8 +668,8 @@ class GameInterfaceView extends LitElement {
       // Object is an interactable that has already been successfully handled
       messageToDisplay = `${clickedObject.name}: ${clickedObject.description}`;
       // No further action needed, it's just a visual element.
-    } 
-    // Check if the object grants resources (and isn't an interactable feature already handled by above block)
+    }
+    // Check if the object grants resources (and isn't an interactable feature already handled by above block, nor a puzzle)
     else if (clickedObject.grantsResources && !clickedObject.isHandledInteractable) {
       this.dispatchEvent(new CustomEvent('update-resources', {
         detail: clickedObject.grantsResources,

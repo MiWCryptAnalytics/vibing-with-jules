@@ -262,6 +262,12 @@
           "y": "80%"
         },
         "foundMessage": "You recovered a heavy Cannonball."
+      },
+      {
+        "itemId": "artifact_piece_1_obsidian",
+        "position": { "x": "55%", "y": "40%" },
+        "foundMessage": "Wedged between cooling lava rocks, you find a strange Curved Obsidian Shard!",
+        "condition": { "questInProgress": "SILAS_SUNKEN_STAR_AMULET_QUEST", "questObjectiveIncomplete": "find_obsidian_shard" }
       }
     ],
     "actions": [
@@ -307,6 +313,12 @@
           "y": "40%"
         },
         "foundMessage": "A colorful parrot squawks and lands on your shoulder!"
+      },
+      {
+        "itemId": "artifact_piece_2_coral",
+        "position": { "x": "35%", "y": "80%" },
+        "foundMessage": "Half-buried in the sand near an ancient stone, you uncover a Sun-Bleached Coral Fragment.",
+        "condition": { "questInProgress": "SILAS_SUNKEN_STAR_AMULET_QUEST", "questObjectiveIncomplete": "find_coral_fragment" }
       }
     ],
     "actions": [
@@ -1113,7 +1125,8 @@
             "status": "in_progress"
           }
         },
-        "foundMessage": "You start searching the Crow's Nest..."
+        "foundMessage": "You peer into the clutter of the Crow's Nest, looking for anything unusual...",
+        "conditionNotMetMessage": "There's nothing of interest here right now. Perhaps you should speak to Captain Rostova if you're looking for something specific."
       }
     ],
     "actions": [

@@ -153,5 +153,37 @@
     "type": "currency_item",
     "value": 100,
     "cursed": true
+  },
+  {
+    "id": "artifact_piece_1_obsidian",
+    "name": "Curved Obsidian Shard",
+    "description": "A shard of volcanic glass, cool to the touch, with faint, almost invisible carvings. It feels ancient.",
+    "icon": "broken_image",
+    "itemImage": "../www/assets/images/items/obsidian_shard_piece_icon.png",
+    "type": "quest_component"
+  },
+  {
+    "id": "artifact_piece_2_coral",
+    "name": "Sun-Bleached Coral Fragment",
+    "description": "A piece of coral, bleached white by the sun and sea. It has an unusual, smooth indentation.",
+    "icon": "filter_vintage",
+    "itemImage": "../www/assets/images/items/coral_fragment_piece_icon.png",
+    "type": "quest_component"
+  },
+  {
+    "id": "artifact_piece_3_pearl",
+    "name": "Humming Pearl",
+    "description": "A lustrous pearl that seems to hum with a faint, internal energy. It feels warm in your palm.",
+    "icon": "lens_blur",
+    "itemImage": "../www/assets/images/items/humming_pearl_piece_icon.png",
+    "type": "quest_component"
+  },
+  {
+    "id": "amulet_sunken_star_complete",
+    "name": "Amulet of the Sunken Star",
+    "description": "The reassembled Amulet of the Sunken Star. It hums with a subtle energy, hinting at forgotten power.",
+    "icon": "auto_awesome",
+    "itemImage": "../www/assets/images/items/amulet_sunken_star_complete_icon.png",
+    "type": "artifact_quest_reward"
   }
 ]

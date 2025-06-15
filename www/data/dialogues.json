@@ -192,6 +192,11 @@
           "text": "Heard any whispers about 'The Crimson Marauders'?",
           "nextNodeId": "moreau_crimson_marauders_intro",
           "action": null
+        },
+        {
+          "text": "Heard you might have a sensitive problem needing discretion?",
+          "nextNodeId": "moreau_spy_investigation_intro",
+          "condition": {"questStatus": {"questId": "MOREAU_TORTUGA_SPY_QUEST", "status": "available"}}
         }
       ]
     },
@@ -325,7 +330,10 @@
         {
           "text": "Let me see the coded message.",
           "nextNodeId": null,
-          "effects": [{ "type": "TRIGGER_PUZZLE", "puzzleId": "CRIMSON_MAP_CIPHER" }]
+          "effects": [
+            {"type": "TRIGGER_PUZZLE", "puzzleId": "CRIMSON_MAP_CIPHER"},
+            {"type": "START_QUEST", "questId": "MOREAU_CRIMSON_MAP_QUEST"}
+          ]
         },
         {
           "text": "On second thought, perhaps not now.",
@@ -375,6 +383,45 @@
           "action": null
         }
       ]
+    },
+    "moreau_spy_investigation_intro": {
+      "id": "moreau_spy_investigation_intro",
+      "npcText": "Indeed. I have a rat problem. A spy in Tortuga feeding information to the Royal Navy. This compromises my operations, and I need it dealt with. Think you can handle such a delicate task?",
+      "playerChoices": [
+        {
+          "text": "I'm good at uncovering secrets. Tell me more.",
+          "nextNodeId": "moreau_spy_investigation_start"
+        },
+        {
+          "text": "Sounds too risky for me, Captain.",
+          "nextNodeId": "END"
+        }
+      ]
+    },
+    "moreau_spy_investigation_start": {
+      "id": "moreau_spy_investigation_start",
+      "npcText": "Alright. I have a few suspects. This requires sharp deduction, not just brute force. Listen carefully...",
+      "effects": [
+        {"type": "TRIGGER_PUZZLE", "puzzleId": "TORTUGA_SPY_DEDUCTION"},
+        {"type": "START_QUEST", "questId": "MOREAU_TORTUGA_SPY_QUEST"}
+      ],
+      "playerChoices": [
+        { "text": "I'm ready. Present the suspects and clues.", "nextNodeId": "END" }
+      ]
+    },
+    "MOREAU_SPY_IDENTIFIED_SUCCESS": {
+      "id": "MOREAU_SPY_IDENTIFIED_SUCCESS",
+      "npcText": "Excellent work. You've sniffed out the rat. My operations are secure once more, thanks to you. You've earned this.",
+      "playerChoices": [
+        { "text": "Glad I could be of service, Captain.", "nextNodeId": "END" }
+      ]
+    },
+    "MOREAU_SPY_IDENTIFIED_FAILURE": {
+      "id": "MOREAU_SPY_IDENTIFIED_FAILURE",
+      "npcText": "Wrong suspect! Or perhaps you took too long... The real spy has slipped through our fingers, and my operations are at greater risk. Disappointing.",
+      "playerChoices": [
+        { "text": "My apologies, Captain.", "nextNodeId": "END" }
+      ]
     }
   },
   "npc_silas_blackwood": {
@@ -406,7 +453,84 @@
             "questStatus": {"questId": "SILAS_CURSED_ARTIFACT_PART", "status": "in_progress"},
             "hasItem": "item_shadow_gem"
           }
+        },
+        {
+          "text": "You mentioned 'unique items'. Are any truly legendary?",
+          "nextNodeId": "silas_intro_sunken_star_quest_check",
+          "condition": {"questStatus": {"questId": "SILAS_SUNKEN_STAR_AMULET_QUEST", "status": "available"}}
         }
+      ]
+    },
+    "silas_intro_sunken_star_quest_check": {
+      "id": "silas_intro_sunken_star_quest_check",
+      "npcText": "Legendary, you say? I might just have something that piques your interest. It involves a bit of... legwork, but the rewards could be substantial. Are you intrigued?",
+      "playerChoices": [
+        { "text": "My interest is piqued. Tell me more, Silas.", "nextNodeId": "silas_intro_sunken_star_quest" },
+        { "text": "Perhaps another time. What else do you have?", "nextNodeId": "silas_unique_items" }
+      ]
+    },
+    "silas_intro_sunken_star_quest": {
+      "id": "silas_intro_sunken_star_quest",
+      "npcText": "It's the Amulet of the Sunken Star, an artifact of considerable power. Alas, it's broken. I need someone... resourceful... to find its three pieces. The first, a Curved Obsidian Shard, is said to lie hidden amongst the fiery rocks of Volcano Island. The second, a Sun-Bleached Coral Fragment, was last seen near the Hidden Lagoon; look for where the water meets ancient stone. Find these two, bring them to me, and I shall provide the third piece, a Humming Pearl only I can procure.",
+      "effects": [{"type": "START_QUEST", "questId": "SILAS_SUNKEN_STAR_AMULET_QUEST"}],
+      "playerChoices": [
+        { "text": "I'll find these pieces for you, Silas.", "nextNodeId": "silas_check_amulet_pieces" }, // Changed to lead to check node
+        { "text": "That sounds like a lot of trouble.", "nextNodeId": "END" }
+      ]
+    },
+    "silas_check_amulet_pieces": {
+      "id": "silas_check_amulet_pieces",
+      "npcText": "Ah, back so soon? Any luck with the amulet pieces?",
+      "playerChoices": [
+        {
+          "text": "I found the Obsidian Shard from Volcano Island.",
+          "nextNodeId": "silas_receive_obsidian_shard",
+          "condition": { "hasItem": "artifact_piece_1_obsidian", "questInProgress": "SILAS_SUNKEN_STAR_AMULET_QUEST" }
+        },
+        {
+          "text": "I found the Coral Fragment from the Hidden Lagoon.",
+          "nextNodeId": "silas_receive_coral_fragment",
+          "condition": { "hasItem": "artifact_piece_2_coral", "questInProgress": "SILAS_SUNKEN_STAR_AMULET_QUEST" }
+        },
+        {
+          "text": "I have both the Shard and the Fragment!",
+          "nextNodeId": "silas_has_both_pieces_provide_pearl",
+          "condition": { "hasItems": ["artifact_piece_1_obsidian", "artifact_piece_2_coral"], "questInProgress": "SILAS_SUNKEN_STAR_AMULET_QUEST" }
+        },
+        { "text": "Still working on it, Silas.", "nextNodeId": "END" },
+        { "text": "I want to talk about something else.", "nextNodeId": "silas_start"} // Allow to go back to main options
+      ]
+    },
+    "silas_receive_obsidian_shard": {
+      "id": "silas_receive_obsidian_shard",
+      "npcText": "Excellent! This obsidian is just as I envisioned. One step closer. Now, what about the coral fragment?",
+      "effects": [{"type": "UPDATE_QUEST_OBJECTIVE", "questId": "SILAS_SUNKEN_STAR_AMULET_QUEST", "objectiveId": "find_obsidian_shard", "isCompleted": true}],
+      "playerChoices": [
+        {"text": "I'm still looking for the Coral Fragment.", "nextNodeId": "silas_check_amulet_pieces"},
+        {"text": "I actually have the Coral Fragment too.", "nextNodeId": "silas_has_both_pieces_provide_pearl", "condition": {"hasItem": "artifact_piece_2_coral"}}
+      ]
+    },
+    "silas_receive_coral_fragment": {
+      "id": "silas_receive_coral_fragment",
+      "npcText": "Splendid! This coral has the exact markings I was told of. Very good. And the obsidian shard?",
+      "effects": [{"type": "UPDATE_QUEST_OBJECTIVE", "questId": "SILAS_SUNKEN_STAR_AMULET_QUEST", "objectiveId": "find_coral_fragment", "isCompleted": true}],
+      "playerChoices": [
+        {"text": "I'm still looking for the Obsidian Shard.", "nextNodeId": "silas_check_amulet_pieces"},
+        {"text": "I actually have the Obsidian Shard too.", "nextNodeId": "silas_has_both_pieces_provide_pearl", "condition": {"hasItem": "artifact_piece_1_obsidian"}}
+      ]
+    },
+    "silas_has_both_pieces_provide_pearl": {
+      "id": "silas_has_both_pieces_provide_pearl",
+      "npcText": "Magnificent! You've found both the Obsidian Shard and the Coral Fragment! You've proven your worth. As promised, here is the Humming Pearl. With all three pieces, you should now be able to attempt the reassembly. Be careful, it's a delicate process.",
+      "effects": [
+        {"type": "UPDATE_QUEST_OBJECTIVE", "questId": "SILAS_SUNKEN_STAR_AMULET_QUEST", "objectiveId": "find_obsidian_shard", "isCompleted": true},
+        {"type": "UPDATE_QUEST_OBJECTIVE", "questId": "SILAS_SUNKEN_STAR_AMULET_QUEST", "objectiveId": "find_coral_fragment", "isCompleted": true},
+        {"type": "ADD_ITEM", "itemId": "artifact_piece_3_pearl"},
+        {"type": "UPDATE_QUEST_OBJECTIVE", "questId": "SILAS_SUNKEN_STAR_AMULET_QUEST", "objectiveId": "obtain_humming_pearl", "isCompleted": true}
+      ],
+      "playerChoices": [
+        { "text": "Thank you, Silas. I'll try to assemble it now.", "nextNodeId": "silas_trigger_assembly_prompt" },
+        { "text": "I need a moment before I try.", "nextNodeId": "END"}
       ]
     },
     "silas_check_artifact_quest_availability": {
@@ -509,7 +633,7 @@
       ]
     },
     "silas_artifact_assembly_prompt": {
-      "id": "silas_artifact_assembly_prompt",
+      "id": "silas_artifact_assembly_prompt", // This node might be kept for other scenarios or removed if only quest-driven
       "npcText": "Eager, are we? Very well. I recently acquired... or rather, *liberated*... these fragments. They are said to form the Amulet of the Sunken Star. See if you can piece it together. Its value would increase significantly if complete.",
       "playerChoices": [
         {
@@ -522,18 +646,62 @@
         }
       ]
     },
+    "silas_artifact_assembly_prompt_conditional": {
+      "id": "silas_trigger_assembly_prompt",
+      "npcText": "You have all three pieces of the Sunken Star Amulet. The moment of truth. Are you ready to attempt the reassembly? Remember, it requires a keen eye and a steady hand.",
+      "condition": { // This condition could also be on the player choice in silas_check_amulet_pieces leading here
+        "questInProgress": "SILAS_SUNKEN_STAR_AMULET_QUEST",
+        "questObjectiveCompleted": "obtain_humming_pearl",
+        "hasItems": ["artifact_piece_1_obsidian", "artifact_piece_2_coral", "artifact_piece_3_pearl"]
+      },
+      "playerChoices": [
+        {
+          "text": "Yes, I'm ready. Let's do this.",
+          "effects": [{"type": "TRIGGER_PUZZLE", "puzzleId": "ANCIENT_ARTIFACT_ASSEMBLY"}]
+        },
+        { "text": "I need more time to prepare.", "nextNodeId": "END" }
+      ]
+    },
     "silas_artifact_assembly_success": {
       "id": "silas_artifact_assembly_success",
-      "npcText": "Remarkable! You have a keen eye and steady hands. The Amulet of the Sunken Star, whole once more! This changes things... for both of us.",
+      "npcText": "Remarkable! You've done it! The Amulet of the Sunken Star, whole once more! Its power... palpable. You've exceeded my expectations. As per our arrangement, your reward.",
       "playerChoices": [
-        { "text": "What do you propose, Silas?", "nextNodeId": "END" }
+        { "text": "It was a challenge, but worth it.", "nextNodeId": "silas_discuss_amulet_future" }
       ]
+    },
+    "silas_discuss_amulet_future": {
+      "id": "silas_discuss_amulet_future",
+      "npcText": "Indeed. Now, about the amulet itself. It's quite valuable. I could take it off your hands for a handsome sum of additional gold... say, 500 pieces? Or perhaps you'd prefer to keep it? It might have... unforeseen benefits for its owner.",
+      "playerChoices": [
+        {
+          "text": "Sell it to Silas for 500 Gold.",
+          "effects": [
+            {"type": "REMOVE_ITEM", "itemId": "amulet_sunken_star_complete"},
+            {"type": "ADD_RESOURCE", "resource": "gold", "amount": 500}
+          ],
+          "nextNodeId": "silas_amulet_sold"
+        },
+        {
+          "text": "I think I'll keep the Amulet.",
+          "nextNodeId": "silas_amulet_kept"
+        }
+      ]
+    },
+    "silas_amulet_sold": {
+      "id": "silas_amulet_sold",
+      "npcText": "A wise choice. Pleasure doing business with you, as always. The gold is yours. I have... plans for this.",
+      "playerChoices": [ {"text": "Farewell, Silas.", "nextNodeId": "END"} ]
+    },
+    "silas_amulet_kept": {
+      "id": "silas_amulet_kept",
+      "npcText": "Holding onto it, eh? Bold. May it serve you well... or lead you to interesting places. Do let me know if it reveals any peculiar properties.",
+      "playerChoices": [ {"text": "I will. Goodbye, Silas.", "nextNodeId": "END"} ]
     },
     "silas_artifact_assembly_failure": {
       "id": "silas_artifact_assembly_failure",
-      "npcText": "A pity. It seems the amulet is more complex than it appears, or perhaps some pieces are still missing or damaged beyond repair. It's just a collection of pretty rocks now.",
+      "npcText": "A disaster! The pieces have shattered beyond repair! All that effort... wasted. I suppose not everyone has the delicate touch required for such ancient mechanisms. A true pity.",
       "playerChoices": [
-        { "text": "Unfortunate.", "nextNodeId": "END" }
+        { "text": "A most unfortunate outcome.", "nextNodeId": "END" }
       ]
     },
     "silas_artifact_assembly_skip": {
@@ -837,6 +1005,36 @@
           "nextNodeId": "END"
         }
       ]
+    },
+    "rostova_spyglass_puzzle_success_dialogue": {
+      "id": "rostova_spyglass_puzzle_success_dialogue",
+      "npcText": "Aha! Tucked away under a loose floorboard, you spot it - Captain Rostova's distinctive spyglass! It seems to be in good condition.",
+      "playerChoices": [
+        {
+          "text": "Excellent. Now to return it to her.",
+          "nextNodeId": "END"
+        }
+      ]
+    },
+    "rostova_spyglass_puzzle_failure_dialogue": {
+      "id": "rostova_spyglass_puzzle_failure_dialogue",
+      "npcText": "Despite your best efforts, you can't seem to locate the spyglass here. Perhaps it's truly lost, or somewhere else entirely.",
+      "playerChoices": [
+        {
+          "text": "Unfortunate.",
+          "nextNodeId": "END"
+        }
+      ]
+    },
+    "rostova_spyglass_puzzle_skip_dialogue": {
+      "id": "rostova_spyglass_puzzle_skip_dialogue",
+      "npcText": "You decide to stop searching for now. The clutter is overwhelming.",
+      "playerChoices": [
+        {
+          "text": "Maybe later.",
+          "nextNodeId": "END"
+        }
+      ]
     }
   },
   "npc_esmeralda_valdez": {
@@ -882,7 +1080,10 @@
       "playerChoices": [
         {
           "text": "I am ready to answer.",
-          "effects": [{"type": "TRIGGER_PUZZLE", "puzzleId": "ESMERALDA_MOON_RIDDLE"}]
+          "effects": [
+            {"type": "TRIGGER_PUZZLE", "puzzleId": "ESMERALDA_MOON_RIDDLE"},
+            {"type": "START_QUEST", "questId": "ESMERALDA_INSIGHT_QUEST"}
+          ]
         },
         {
           "text": "My mind is clouded today, another time perhaps.",
@@ -892,9 +1093,12 @@
     },
     "esmeralda_moon_riddle_success": {
       "id": "esmeralda_moon_riddle_success",
-      "npcText": "Impressive, child. Your spirit is keen, like the sliver of a new moon. The path you seek begins to clear. The tides of fortune favor the wise.",
+      "npcText": "Impressive, child. Your spirit is keen, like the sliver of a new moon. The path you seek begins to clear. The tides of fortune favor the wise. With this clarity, perhaps you are ready to understand more about the whispers of the deep.",
       "playerChoices": [
-        {"text": "Thank you, Esmeralda. What now?", "nextNodeId": "ESMERALDA_RIDDLE_1"}
+        {
+          "text": "What whispers do you speak of, Esmeralda?",
+          "nextNodeId": "esmeralda_deeper_lore_1"
+        }
       ]
     },
     "esmeralda_moon_riddle_failure": {
@@ -977,22 +1181,26 @@
         }
       ]
     },
-    "ESMERALDA_RIDDLE_1": {
-      "id": "ESMERALDA_RIDDLE_1",
-      "npcText": "'The Sunken Star' is not a celestial body, but a tavern in a place of bones, where ships go to die. Finnigan's whispers can be heard there if one knows how to listen... or has something of his to offer his restless shade.",
+    "esmeralda_deeper_lore_1": {
+      "id": "esmeralda_deeper_lore_1",
+      "npcText": "The currents speak of an ancient power stirring, a relic of the old gods tied to the very heart of these islands. They say it was shattered, its pieces scattered by a forgotten cataclysm. One who is wise and observant might perceive its echoes.",
       "playerChoices": [
         {
-          "text": "A tavern in a shipwreck graveyard? Thank you, Seer.",
+          "text": "A shattered relic? That sounds significant.",
+          "nextNodeId": "esmeralda_deeper_lore_2"
+        },
+        {
+          "text": "Thank you for this insight, Esmeralda.",
           "nextNodeId": "END"
         }
       ]
     },
-    "ESMERALDA_RIDDLE_2": {
-      "id": "ESMERALDA_RIDDLE_2",
-      "npcText": "Memories are keys that unlock forgotten paths. Finnigan's memory of betrayal, his knowledge of Varkos's secrets... these are the 'key.' Appease his spirit, learn what he knew. Only then will the path to the treasure become clearer.",
+    "esmeralda_deeper_lore_2": {
+      "id": "esmeralda_deeper_lore_2",
+      "npcText": "Indeed. Keep your eyes open, seeker. The world is older and more mysterious than most pirates dream. What you have learned today is but a drop in the ocean of knowledge. Seek wisdom in all things.",
       "playerChoices": [
         {
-          "text": "I understand. I must find his spirit.",
+          "text": "I will. Farewell for now.",
           "nextNodeId": "END"
         }
       ]
