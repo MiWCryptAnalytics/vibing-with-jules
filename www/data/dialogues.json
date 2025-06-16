@@ -474,7 +474,7 @@
       "npcText": "It's the Amulet of the Sunken Star, an artifact of considerable power. Alas, it's broken. I need someone... resourceful... to find its three pieces. The first, a Curved Obsidian Shard, is said to lie hidden amongst the fiery rocks of Volcano Island. The second, a Sun-Bleached Coral Fragment, was last seen near the Hidden Lagoon; look for where the water meets ancient stone. Find these two, bring them to me, and I shall provide the third piece, a Humming Pearl only I can procure.",
       "effects": [{"type": "START_QUEST", "questId": "SILAS_SUNKEN_STAR_AMULET_QUEST"}],
       "playerChoices": [
-        { "text": "I'll find these pieces for you, Silas.", "nextNodeId": "silas_check_amulet_pieces" }, // Changed to lead to check node
+        { "text": "I'll find these pieces for you, Silas.", "nextNodeId": "silas_check_amulet_pieces" },
         { "text": "That sounds like a lot of trouble.", "nextNodeId": "END" }
       ]
     },
@@ -498,7 +498,7 @@
           "condition": { "hasItems": ["artifact_piece_1_obsidian", "artifact_piece_2_coral"], "questInProgress": "SILAS_SUNKEN_STAR_AMULET_QUEST" }
         },
         { "text": "Still working on it, Silas.", "nextNodeId": "END" },
-        { "text": "I want to talk about something else.", "nextNodeId": "silas_start"} // Allow to go back to main options
+        { "text": "I want to talk about something else.", "nextNodeId": "silas_start"}
       ]
     },
     "silas_receive_obsidian_shard": {
@@ -633,7 +633,7 @@
       ]
     },
     "silas_artifact_assembly_prompt": {
-      "id": "silas_artifact_assembly_prompt", // This node might be kept for other scenarios or removed if only quest-driven
+      "id": "silas_artifact_assembly_prompt",
       "npcText": "Eager, are we? Very well. I recently acquired... or rather, *liberated*... these fragments. They are said to form the Amulet of the Sunken Star. See if you can piece it together. Its value would increase significantly if complete.",
       "playerChoices": [
         {
@@ -646,10 +646,10 @@
         }
       ]
     },
-    "silas_artifact_assembly_prompt_conditional": {
+    "silas_trigger_assembly_prompt": {
       "id": "silas_trigger_assembly_prompt",
       "npcText": "You have all three pieces of the Sunken Star Amulet. The moment of truth. Are you ready to attempt the reassembly? Remember, it requires a keen eye and a steady hand.",
-      "condition": { // This condition could also be on the player choice in silas_check_amulet_pieces leading here
+      "condition": {
         "questInProgress": "SILAS_SUNKEN_STAR_AMULET_QUEST",
         "questObjectiveCompleted": "obtain_humming_pearl",
         "hasItems": ["artifact_piece_1_obsidian", "artifact_piece_2_coral", "artifact_piece_3_pearl"]
@@ -1361,3 +1361,5 @@
     }
   }
 }
+
+[end of www/data/dialogues.json]
