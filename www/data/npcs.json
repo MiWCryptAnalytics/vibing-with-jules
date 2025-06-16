@@ -86,7 +86,24 @@
       "x": "80%",
       "y": "80%"
     },
-    "quests": [],
+    "quests": [
+      {
+        "id": "ESMERALDA_INSIGHT_QUEST",
+        "displayName": "Esmeralda's Insight",
+        "description": "Esmeralda the Seer has offered a riddle. Solving it might grant valuable insight or unlock further wisdom from her.",
+        "status": "available",
+        "startDialogueNodeId": "esmeralda_moon_riddle_prompt",
+        "objectives": [
+          { "id": "solve_riddle", "text": "Solve Esmeralda's riddle about the moon.", "isCompleted": false }
+        ],
+        "completionConditions": {
+          "gameStateSet": "esmeralda_moon_riddle_solved"
+        },
+        "rewards": {
+          "xp": 25
+        }
+      }
+    ],
     "companionData": null
   },
   {
@@ -603,7 +620,44 @@
       "x": "30%",
       "y": "30%"
     },
-    "quests": [],
+    "quests": [
+      {
+        "id": "MOREAU_CRIMSON_MAP_QUEST",
+        "displayName": "The Crimson Cipher",
+        "description": "Captain Moreau has a coded message from the Crimson Marauders. Deciphering it might reveal valuable information about their activities or Varkos's hidden treasure.",
+        "status": "available",
+        "startDialogueNodeId": "moreau_cipher_challenge_prompt",
+        "objectives": [
+          { "id": "decipher_message", "text": "Successfully decipher the Crimson Marauders' coded message.", "isCompleted": false }
+        ],
+        "completionConditions": {
+          "gameStateSet": "map_fragment_1_found"
+        },
+        "rewards": {
+          "xp": 75,
+          "standing_moreau": 1
+        }
+      },
+      {
+        "id": "MOREAU_TORTUGA_SPY_QUEST",
+        "displayName": "The Tortuga Rat",
+        "description": "Captain Moreau suspects a spy in Tortuga is leaking information to the Royal Navy. She needs help identifying the culprit from a list of suspects.",
+        "status": "available",
+        "startDialogueNodeId": "moreau_spy_investigation_start",
+        "objectives": [
+          { "id": "identify_spy", "text": "Identify the Royal Navy spy in Tortuga.", "isCompleted": false }
+        ],
+        "completionConditions": {
+          "questOutcome": "spy_identified_correctly"
+        },
+        "failureConditions": {
+          "questOutcome": "spy_identified_incorrectly_or_escaped"
+        },
+        "rewards": {
+          "xp": 100
+        }
+      }
+    ],
     "companionData": null
   },
   {
@@ -618,7 +672,26 @@
       "x": "60%",
       "y": "60%"
     },
-    "quests": [],
+    "quests": [
+      {
+        "id": "SILAS_SUNKEN_STAR_AMULET_QUEST",
+        "displayName": "The Sunken Star Amulet",
+        "description": "Silas Blackwood desires the legendary Amulet of the Sunken Star. He believes you can find its scattered pieces and reassemble it for him.",
+        "status": "available",
+        "startDialogueNodeId": "silas_intro_sunken_star_quest",
+        "objectives": [
+          { "id": "find_obsidian_shard", "text": "Find the Curved Obsidian Shard.", "isCompleted": false },
+          { "id": "find_coral_fragment", "text": "Find the Sun-Bleached Coral Fragment.", "isCompleted": false },
+          { "id": "obtain_humming_pearl", "text": "Obtain the Humming Pearl from Silas.", "isCompleted": false },
+          { "id": "assemble_amulet", "text": "Assemble the Amulet of the Sunken Star.", "isCompleted": false }
+        ],
+        "rewards": {
+          "xp": 200,
+          "gold": 250,
+          "standing_silas": 3
+        }
+      }
+    ],
     "companionData": null
   },
   {
