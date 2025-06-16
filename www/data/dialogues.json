@@ -646,7 +646,7 @@
         }
       ]
     },
-    "silas_artifact_assembly_prompt_conditional": {
+    "silas_trigger_assembly_prompt": {
       "id": "silas_trigger_assembly_prompt",
       "npcText": "You have all three pieces of the Sunken Star Amulet. The moment of truth. Are you ready to attempt the reassembly? Remember, it requires a keen eye and a steady hand.",
       "condition": {
@@ -1361,3 +1361,5 @@
     }
   }
 }
+
+[end of www/data/dialogues.json]
