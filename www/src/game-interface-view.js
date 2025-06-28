@@ -171,6 +171,8 @@ class GameInterfaceView extends LitElement {
     allNpcs: { type: Object },      // Added for NPC data
     allDialogues: { type: Object }, // Added for dialogue data
     playerAlignment: { type: String }, // Added for player alignment
+    playerFlagDesign: { type: Object },
+    playerFearFactor: { type: Number },
     _lastFoundMessage: { type: String, state: true },
     _activeDialogueNpcId: { type: String, state: true },
     _currentDialogueNodeId: { type: String, state: true },
@@ -189,6 +191,8 @@ class GameInterfaceView extends LitElement {
     this.allNpcs = new Map();      // Initialize allNpcs
     this.allDialogues = {};    // Initialize allDialogues
     this.playerAlignment = "neutral"; // Initialize player alignment
+    this.playerFlagDesign = {};
+    this.playerFearFactor = 0;
     this._lastFoundMessage = '';
     this._activeDialogueNpcId = null;
     this._currentDialogueNodeId = null;
@@ -897,7 +901,9 @@ class GameInterfaceView extends LitElement {
             playerInventory: this.playerInventory,
             playerResources: this.playerResources,
             playerAlignment: this.playerAlignment,
-            activeCompanionId: this.activeCompanionId
+            activeCompanionId: this.activeCompanionId,
+            playerFlagDesign: this.playerFlagDesign, // Ensure this is passed
+            playerFearFactor: this.playerFearFactor  // Ensure this is passed
             // Other relevant gameState properties from GameInterfaceView can be added here
             // For example, if there are global flags not part of playerQuests:
             // worldFlags: this.worldFlags, (assuming this.worldFlags exists)

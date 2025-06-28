@@ -1,0 +1,38 @@
+[
+  {
+    "id": "color_black_abyss",
+    "name": "Abyss Black",
+    "hexCode": "#000000",
+    "fearFactorEffect": 3
+  },
+  {
+    "id": "color_red_blood",
+    "name": "Blood Red",
+    "hexCode": "#8B0000",
+    "fearFactorEffect": 4
+  },
+  {
+    "id": "color_white_bone",
+    "name": "Bone White",
+    "hexCode": "#F5F5DC",
+    "fearFactorEffect": 1
+  },
+  {
+    "id": "color_blue_sea",
+    "name": "Deep Sea Blue",
+    "hexCode": "#000080",
+    "fearFactorEffect": 0
+  },
+  {
+    "id": "color_gold_doubloon",
+    "name": "Doubloon Gold",
+    "hexCode": "#FFD700",
+    "fearFactorEffect": 2
+  },
+  {
+    "id": "color_grey_storm",
+    "name": "Storm Grey",
+    "hexCode": "#708090",
+    "fearFactorEffect": 1
+  }
+]

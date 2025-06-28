@@ -10,6 +10,7 @@ import './game-interface-view.js';
 import './inventory-view.js';
 import './research-view.js';
 import './placeholder-puzzle-overlay.js'; // Import the puzzle overlay
+import './flag-customization-view.js';
 
 class AppShell extends LitElement {
   static styles = css`
@@ -116,6 +117,11 @@ class AppShell extends LitElement {
     allNpcs: { type: Object, state: true }, // To store all NPC definitions
     allDialogues: { type: Object, state: true }, // To store all dialogues
     allPuzzles: { type: Object, state: true }, // To store all puzzle definitions
+    allFlagSymbols: { type: Array, state: true },
+    allFlagColors: { type: Array, state: true },
+    allFlagPatterns: { type: Array, state: true },
+    playerFlagDesign: { type: Object },
+    playerFearFactor: { type: Number },
     activePuzzleId: { type: String },
     activePuzzleHint: { type: String, state: true }, // For companion hints
     isPuzzleOverlayOpen: { type: Boolean },
@@ -144,6 +150,11 @@ class AppShell extends LitElement {
     this.allNpcs = new Map(); // Initialize allNpcs as a Map
     this.allDialogues = {}; // Initialize allDialogues as an Object
     this.allPuzzles = new Map(); // Initialize allPuzzles as a Map
+    this.allFlagSymbols = [];
+    this.allFlagColors = [];
+    this.allFlagPatterns = [];
+    this.playerFlagDesign = { symbolId: 'symbol_skull_crossbones', primaryColorId: 'color_black_abyss', secondaryColorId: 'color_red_blood', patternId: 'pattern_solid' };
+    this.playerFearFactor = 0;
     this.activePuzzleId = null;
     this.activePuzzleHint = null; // Initialize hint
     this.isPuzzleOverlayOpen = false;
@@ -156,10 +167,39 @@ class AppShell extends LitElement {
     this._boundHandleHashChange = this._handleHashChange.bind(this);
     this._boundSaveGameState = this._saveGameState.bind(this); // For beforeunload
 
-    this._initializeGame().catch(error => {
+    // Initialize game and then calculate fear factor.
+    // Note: _initializeGame is async, so _calculateFearFactor might run before all data is loaded if not careful.
+    // It's called again at the end of _initializeGame to ensure correctness.
+    this._initializeGame().then(() => {
+      // This initial call might be too early if data isn't loaded yet,
+      // but _initializeGame will call it again.
+      this._calculateFearFactor();
+    }).catch(error => {
       console.error("AppShell: Critical error during game initialization:", error);
       // You could set a specific error view here if you have one: this.currentView = 'error-view';
     });
+  }
+
+  _calculateFearFactor() {
+    if (!this.playerFlagDesign || !this.allFlagSymbols?.length || !this.allFlagColors?.length || !this.allFlagPatterns?.length) {
+      console.warn('AppShell: Cannot calculate fear factor - flag design or component data not ready.');
+      this.playerFearFactor = 0;
+      return;
+    }
+    let fear = 0;
+    const symbol = this.allFlagSymbols.find(s => s.id === this.playerFlagDesign.symbolId);
+    const primaryColor = this.allFlagColors.find(c => c.id === this.playerFlagDesign.primaryColorId);
+    const secondaryColor = this.allFlagColors.find(c => c.id === this.playerFlagDesign.secondaryColorId);
+    const pattern = this.allFlagPatterns.find(p => p.id === this.playerFlagDesign.patternId);
+    if (symbol) fear += (symbol.fearFactorEffect || 0);
+    if (primaryColor) fear += (primaryColor.fearFactorEffect || 0);
+    if (secondaryColor && this.playerFlagDesign.primaryColorId !== this.playerFlagDesign.secondaryColorId) { // Only add secondary if different
+      fear += (secondaryColor.fearFactorEffect || 0);
+    }
+    if (pattern) fear += (pattern.fearFactorEffect || 0);
+    this.playerFearFactor = fear;
+    console.log('AppShell: Player Fear Factor calculated:', this.playerFearFactor);
+    this.requestUpdate(); // If fear factor is displayed in UI directly
   }
 
   async _initializeGame() {
@@ -168,7 +208,10 @@ class AppShell extends LitElement {
       this._loadAllItems(),
       this._loadAllNpcs(),
       this._loadAllDialogues(),
-      this._loadAllPuzzles() // Add puzzle loading
+      this._loadAllPuzzles(), // Add puzzle loading
+      this._loadAllFlagSymbols(),
+      this._loadAllFlagColors(),
+      this._loadAllFlagPatterns()
     ];
     
     // Attempt to load game state while data files are being fetched.
@@ -186,6 +229,7 @@ class AppShell extends LitElement {
       this.activeCompanionId = null; // Ensure no active companion for a new game
       this.currentLocationData = null; // No specific location initially
       this.playerAlignment = "neutral"; // Default alignment
+      this.playerFlagDesign = { symbolId: 'symbol_skull_crossbones', primaryColorId: 'color_black_abyss', secondaryColorId: 'color_red_blood', patternId: 'pattern_solid' }; // Default flag design
 
       console.log('AppShell: New game started. Initial state set:', {
         inventory: this.playerInventory,
@@ -193,11 +237,12 @@ class AppShell extends LitElement {
         quests: this.playerQuests,
         activeCompanionId: this.activeCompanionId,
         location: this.currentLocationData,
-        alignment: this.playerAlignment
+        alignment: this.playerAlignment,
+        flagDesign: this.playerFlagDesign
       });
 
       // Determine initial view
-      const validViews = ['map', 'game', 'inventory', 'research', 'menu', 'splash'];
+      const validViews = ['map', 'game', 'inventory', 'research', 'menu', 'splash', 'flag-customization'];
       const hash = window.location.hash.substring(1); // Should be empty after reset
       if (hash && validViews.includes(hash)) {
         this.currentView = hash;
@@ -237,6 +282,7 @@ class AppShell extends LitElement {
       window.location.hash = this.currentView;
     }
 
+    this._calculateFearFactor(); // Calculate initial fear factor for new game or after state load.
     this.requestUpdate(); // Ensure UI reflects the fully initialized state
   }
 
@@ -468,6 +514,48 @@ class AppShell extends LitElement {
     this.activePuzzleHint = null; // Clear active hint
   }
 
+  async _loadAllFlagSymbols() {
+    try {
+      const response = await fetch('data/flag_symbols.json');
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      this.allFlagSymbols = await response.json();
+      console.log('AppShell: All Flag Symbols loaded:', this.allFlagSymbols);
+    } catch (error) {
+      console.error("AppShell: Could not load Flag Symbols:", error);
+      this.allFlagSymbols = []; // Ensure it's an empty array on error
+    }
+  }
+
+  async _loadAllFlagColors() {
+    try {
+      const response = await fetch('data/flag_colors.json');
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      this.allFlagColors = await response.json();
+      console.log('AppShell: All Flag Colors loaded:', this.allFlagColors);
+    } catch (error) {
+      console.error("AppShell: Could not load Flag Colors:", error);
+      this.allFlagColors = []; // Ensure it's an empty array on error
+    }
+  }
+
+  async _loadAllFlagPatterns() {
+    try {
+      const response = await fetch('data/flag_patterns.json');
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      this.allFlagPatterns = await response.json();
+      console.log('AppShell: All Flag Patterns loaded:', this.allFlagPatterns);
+    } catch (error) {
+      console.error("AppShell: Could not load Flag Patterns:", error);
+      this.allFlagPatterns = []; // Ensure it's an empty array on error
+    }
+  }
+
   _handleTriggerPuzzle(event) {
     const puzzleId = event.detail.puzzleId;
     if (puzzleId) {
@@ -508,6 +596,8 @@ class AppShell extends LitElement {
           this.playerQuests = savedState.playerQuests || {}; // Load player quests
           this.activeCompanionId = savedState.activeCompanionId || null; // Load active companion
           this.playerAlignment = savedState.playerAlignment || "neutral"; // Load player alignment
+          this.playerFlagDesign = savedState.playerFlagDesign || { symbolId: 'symbol_skull_crossbones', primaryColorId: 'color_black_abyss', secondaryColorId: 'color_red_blood', patternId: 'pattern_solid' };
+          this.playerFearFactor = savedState.playerFearFactor || 0; // Will be recalculated
 
           if (savedState.currentLocationId) {
             // POIs might not be loaded yet. If so, store ID to resolve later.
@@ -552,6 +642,8 @@ class AppShell extends LitElement {
       playerQuests: this.playerQuests, // Include playerQuests in saved state
       activeCompanionId: this.activeCompanionId, // Include activeCompanionId in saved state
       playerAlignment: this.playerAlignment, // Include playerAlignment in saved state
+      playerFlagDesign: this.playerFlagDesign,
+      playerFearFactor: this.playerFearFactor,
       timestamp: Date.now()
     };
     try {
@@ -598,6 +690,7 @@ class AppShell extends LitElement {
     window.addEventListener('beforeunload', this._boundSaveGameState);
     this.addEventListener('trigger-puzzle', this._handleTriggerPuzzle); // Listen for puzzle triggers
     this.addEventListener('dialogue-choice', this._handleDialogueChoice); // Listen for dialogue choices
+    this.addEventListener('update-player-flag', this._handleUpdatePlayerFlag);
   }
 
   disconnectedCallback() {
@@ -605,7 +698,20 @@ class AppShell extends LitElement {
     window.removeEventListener('beforeunload', this._boundSaveGameState);
     this.removeEventListener('trigger-puzzle', this._handleTriggerPuzzle); // Clean up listener
     this.removeEventListener('dialogue-choice', this._handleDialogueChoice); // Clean up dialogue choice listener
+    this.removeEventListener('update-player-flag', this._handleUpdatePlayerFlag);
     super.disconnectedCallback();
+  }
+
+  _handleUpdatePlayerFlag(event) {
+    const newFlagDesign = event.detail.flagDesign;
+    if (newFlagDesign) {
+      this.playerFlagDesign = { ...newFlagDesign }; // Create a new object to ensure Lit updates
+      this._calculateFearFactor(); // Recalculate fear factor
+      this._saveGameState(); // Save changes
+      console.log('AppShell: Player flag design updated and saved:', this.playerFlagDesign);
+      // Potentially navigate away or show a confirmation message
+      // For now, the view itself handles navigation on save.
+    }
   }
 
   // --- Dialogue and Effect Handling ---
@@ -746,7 +852,7 @@ class AppShell extends LitElement {
   // --- End Dialogue and Effect Handling ---
 
   async _handleHashChange() {
-    const validViews = ['map', 'game', 'inventory', 'research', 'menu', 'splash'];
+    const validViews = ['map', 'game', 'inventory', 'research', 'menu', 'splash', 'flag-customization'];
     const hash = window.location.hash;
     if (hash && hash.length > 1) {
       const hashView = hash.substring(1); // Remove '#'
@@ -1005,6 +1111,7 @@ class AppShell extends LitElement {
           <a href="#" @click=${(e) => this._handleNavClick(e, 'game')}>${msg('Game', {id: 'nav-game'})}</a>
           <a href="#" @click=${(e) => this._handleNavClick(e, 'inventory')}>${msg('Inventory', {id: 'nav-inventory'})}</a>
           <a href="#" @click=${(e) => this._handleNavClick(e, 'research')}>${msg('Research', {id: 'nav-research'})}</a>
+          <a href="#" @click=${(e) => this._handleNavClick(e, 'flag-customization')}>${msg('Customize Flag', {id: 'nav-flag-customize'})}</a>
           <a href="#" @click=${(e) => this._handleNavClick(e, 'menu')}>${msg('Main Menu', {id: 'nav-main-menu'})}</a>
         </nav>
       ` : ''}
@@ -1061,6 +1168,8 @@ class AppShell extends LitElement {
                       .allNpcs=${this.allNpcs} /* Pass allNpcs */
                       .allDialogues=${this.allDialogues} /* Pass allDialogues */
                       .playerAlignment=${this.playerAlignment} /* Pass playerAlignment */
+                      .playerFlagDesign=${this.playerFlagDesign} // Add this
+                      .playerFearFactor=${this.playerFearFactor} // Add this
                       @navigate=${this._handleNavigate}
                       @add-to-inventory=${this._handleAddToInventory}
                       @remove-from-inventory=${this._handleRemoveFromInventory}
@@ -1076,6 +1185,15 @@ class AppShell extends LitElement {
                     ></inventory-view>`;
       case 'research': // New case
         return html`<research-view @navigate=${this._handleNavigate}></research-view>`;
+      case 'flag-customization':
+        return html`<flag-customization-view
+                    .allFlagSymbols=${this.allFlagSymbols}
+                    .allFlagColors=${this.allFlagColors}
+                    .allFlagPatterns=${this.allFlagPatterns}
+                    .currentPlayerFlagDesign=${this.playerFlagDesign}
+                    @update-player-flag=${this._handleUpdatePlayerFlag}
+                    @navigate=${this._handleNavigate}
+                  ></flag-customization-view>`;
       default:
         return html`<p>${msg('Unknown view:', {id: 'unknown-view-prefix'})} ${this.currentView}. ${msg('Implement corresponding -view.js and update AppShell.', {id: 'unknown-view-suffix'})}</p>`;
     }

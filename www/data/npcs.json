@@ -11,6 +11,8 @@
       "x": "20%",
       "y": "50%"
     },
+    "factionAffinity": "IndependentPirate",
+    "personalityTraits": ["grizzled", "neutral_towards_player", "storyteller"],
     "quests": [],
     "companionData": null
   },
@@ -41,6 +43,8 @@
       "x": "50%",
       "y": "50%"
     },
+    "factionAffinity": "UnderworldSyndicate",
+    "personalityTraits": ["greedy", "opportunistic", "cowardly_if_threatened"],
     "quests": [],
     "companionData": null
   },
@@ -620,6 +624,8 @@
       "x": "30%",
       "y": "30%"
     },
+    "factionAffinity": "MoreauCommand",
+    "personalityTraits": ["calculating", "vengeful", "resourceful"],
     "quests": [
       {
         "id": "MOREAU_CRIMSON_MAP_QUEST",
@@ -721,6 +727,8 @@
       "x": "40%",
       "y": "40%"
     },
+    "factionAffinity": "RostovaTraders",
+    "personalityTraits": ["honorable", "brave", "fair"],
     "quests": [
       {
         "id": "ROSTOVA_LOST_SPYGLASS",
@@ -750,5 +758,19 @@
         "hintText": "Rostova squints, 'I remember being up in the Crow's Nest at the Salty Siren. Might've rolled under something up there...'"
       }
     }
+  },
+  {
+    "id": "npc_royal_navy_officer",
+    "name": "Lt. Davies",
+    "description": "A stern-looking Royal Navy officer, always vigilant.",
+    "icon": "military_tech",
+    "defaultLocationId": "port_royal_docks",
+    "portraitImage": "assets/images/portraits/npc_royal_navy_officer_portrait.png",
+    "alignment": "good",
+    "position": { "x": "70%", "y": "20%" },
+    "factionAffinity": "RoyalNavy",
+    "personalityTraits": ["stern", "lawful", "suspicious_of_pirates"],
+    "quests": [],
+    "companionData": null
   }
 ]

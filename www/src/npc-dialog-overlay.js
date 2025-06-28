@@ -147,63 +147,122 @@ class NpcDialogOverlay extends LitElement {
     this._isReady = false;
   }
 
-  _isChoiceAvailable(choice) {
-    if (!choice.condition || Object.keys(choice.condition).length === 0) {
-      return true;
+  // _isChoiceAvailable(choice) { // Old method, replaced by _isChoiceVisible
+  //   if (!choice.condition || Object.keys(choice.condition).length === 0) {
+  //     return true;
+  //   }
+  //   for (const type in choice.condition) {
+  //     const conditionDetails = choice.condition[type];
+  //     let conditionMet = false;
+  //     switch (type) {
+  //       case 'playerStat': {
+  //         const { stat, value, operator = '===' } = conditionDetails;
+  //         if (this.playerStats && typeof this.playerStats[stat] !== 'undefined') {
+  //           const statValue = this.playerStats[stat];
+  //           switch (operator) {
+  //             case '===': conditionMet = statValue === value; break;
+  //             case '>=': conditionMet = statValue >= value; break;
+  //             case '<=': conditionMet = statValue <= value; break;
+  //             case '>': conditionMet = statValue > value; break;
+  //             case '<': conditionMet = statValue < value; break;
+  //             case '!==': conditionMet = statValue !== value; break;
+  //             default: console.warn(`Unsupported operator: ${operator} for playerStat`); conditionMet = false;
+  //           }
+  //         } else { console.warn(`Player stat ${stat} not found.`); conditionMet = false; }
+  //         break;
+  //       }
+  //       case 'gameState': {
+  //         const { variable, value, operator = '===' } = conditionDetails;
+  //         if (this.gameState && typeof this.gameState[variable] !== 'undefined') {
+  //           const stateValue = this.gameState[variable];
+  //           switch (operator) {
+  //             case '===': conditionMet = stateValue === value; break;
+  //             case '!==': conditionMet = stateValue !== value; break;
+  //             default: console.warn(`Unsupported operator: ${operator} for gameState`); conditionMet = false;
+  //           }
+  //         } else { console.warn(`Game state variable ${variable} not found.`); conditionMet = false; }
+  //         break;
+  //       }
+  //       case 'hasItem': {
+  //         // This check was simplified and might not work if conditionDetails is just an ID string.
+  //         // It should be: this.gameState.playerInventory.some(item => item.id === conditionDetails)
+  //         if (this.gameState && this.gameState.playerInventory) {
+  //            conditionMet = this.gameState.playerInventory.some(item => item.id === conditionDetails);
+  //         } else { console.warn('Player inventory not available in gameState.'); conditionMet = false; }
+  //         break;
+  //       }
+  //       case 'questStatus': {
+  //         const { questId, status } = conditionDetails;
+  //         if (this.gameState && this.gameState.playerQuests) {
+  //           conditionMet = this.gameState.playerQuests[questId]?.status === status;
+  //         } else { console.warn('Player quests not available in gameState.'); conditionMet = false; }
+  //         break;
+  //       }
+  //       default: console.warn(`Unknown condition type: ${type}`); return false;
+  //     }
+  //     if (!conditionMet) return false;
+  //   }
+  //   return true;
+  // }
+
+  _isChoiceVisible(choice) {
+    if (!choice.condition) {
+      return true; // No conditions, choice is visible
     }
-    for (const type in choice.condition) {
-      const conditionDetails = choice.condition[type];
-      let conditionMet = false;
-      switch (type) {
-        case 'playerStat': {
-          const { stat, value, operator = '===' } = conditionDetails;
-          if (this.playerStats && typeof this.playerStats[stat] !== 'undefined') {
-            const statValue = this.playerStats[stat];
-            switch (operator) {
-              case '===': conditionMet = statValue === value; break;
-              case '>=': conditionMet = statValue >= value; break;
-              case '<=': conditionMet = statValue <= value; break;
-              case '>': conditionMet = statValue > value; break;
-              case '<': conditionMet = statValue < value; break;
-              case '!==': conditionMet = statValue !== value; break;
-              default: console.warn(`Unsupported operator: ${operator} for playerStat`); conditionMet = false;
-            }
-          } else { console.warn(`Player stat ${stat} not found.`); conditionMet = false; }
+
+    const conditions = choice.condition;
+    for (const conditionType in conditions) {
+      const conditionValue = conditions[conditionType]; // This is the value associated with the conditionType key
+      switch (conditionType) {
+        case 'hasItem':
+          if (!this.gameState || !this.gameState.playerInventory || !this.gameState.playerInventory.some(item => item.id === conditionValue)) {
+            return false;
+          }
           break;
-        }
-        case 'gameState': {
-          const { variable, value, operator = '===' } = conditionDetails;
-          if (this.gameState && typeof this.gameState[variable] !== 'undefined') {
-            const stateValue = this.gameState[variable];
-            switch (operator) {
-              case '===': conditionMet = stateValue === value; break;
-              case '!==': conditionMet = stateValue !== value; break;
-              default: console.warn(`Unsupported operator: ${operator} for gameState`); conditionMet = false;
-            }
-          } else { console.warn(`Game state variable ${variable} not found.`); conditionMet = false; }
+        case 'lacksItem':
+          if (this.gameState && this.gameState.playerInventory && this.gameState.playerInventory.some(item => item.id === conditionValue)) {
+            return false;
+          }
           break;
-        }
-        case 'hasItem': {
-          if (this.gameState && this.gameState.playerInventory) {
-            conditionMet = this.gameState.playerInventory.includes(conditionDetails);
-          } else { console.warn('Player inventory not available in gameState.'); conditionMet = false; }
+        case 'questStatus':
+          const quest = this.gameState && this.gameState.playerQuests ? this.gameState.playerQuests[conditionValue.questId] : null;
+          if (!quest || quest.status !== conditionValue.status) {
+            return false;
+          }
           break;
-        }
-        case 'questStatus': {
-          const { questId, status } = conditionDetails;
-          if (this.gameState && this.gameState.playerQuests) {
-            conditionMet = this.gameState.playerQuests[questId]?.status === status;
-          } else { console.warn('Player quests not available in gameState.'); conditionMet = false; }
+        case 'gameStateSet': // Assuming gameState.gameFlags exists
+          if (!this.gameState || !this.gameState.gameFlags || !this.gameState.gameFlags[conditionValue]) {
+             return false;
+          }
           break;
-        }
-        default: console.warn(`Unknown condition type: ${type}`); return false;
+        case 'playerFlag':
+          if (!this.gameState || !this.gameState.playerFlagDesign || typeof this.gameState.playerFearFactor === 'undefined') {
+            console.warn('NpcDialogOverlay: Player flag data not available in gameState for condition check.');
+            return false;
+          }
+          const flagDesign = this.gameState.playerFlagDesign;
+          const fearFactor = this.gameState.playerFearFactor;
+
+          if (conditionValue.symbolId && flagDesign.symbolId !== conditionValue.symbolId) {
+            return false;
+          }
+          if (typeof conditionValue.fearFactorMin === 'number' && fearFactor < conditionValue.fearFactorMin) {
+            return false;
+          }
+          if (typeof conditionValue.fearFactorMax === 'number' && fearFactor > conditionValue.fearFactorMax) {
+            return false;
+          }
+          break;
+        // Add other condition types like playerStat if needed, following the same pattern
+        default:
+          console.warn(`NpcDialogOverlay: Unknown condition type: ${conditionType}`);
+          return false; // Or handle as appropriate for unknown conditions
       }
-      if (!conditionMet) return false;
     }
-    return true;
+    return true; // All specified conditions passed
   }
 
-  firstUpdated() { // Note: This is not async as per provided final code.
+  firstUpdated() {
     // firstUpdated runs once after the first render. It checks the initial
     // state of the md-dialog (which diagnostics showed should be closed),
     // sets the _isReady flag to true, and if 'this.open' is already true
@@ -375,7 +434,7 @@ class NpcDialogOverlay extends LitElement {
           </div>
         </form>
         <div slot="actions">
-          ${this.dialogueNode.playerChoices?.filter(choice => this._isChoiceAvailable(choice)).map(
+          ${this.dialogueNode.playerChoices?.filter(choice => this._isChoiceVisible(choice)).map(
             (choice) => html`
               <md-text-button
                 form="dialog-form"

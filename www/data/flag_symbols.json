@@ -1,0 +1,37 @@
+[
+  {
+    "id": "symbol_skull_crossbones",
+    "name": "Classic Skull & Crossbones",
+    "imageUrl": "assets/images/flag_parts/symbols/skull_crossbones.png",
+    "fearFactorEffect": 5,
+    "alignmentAffinity": "pirate"
+  },
+  {
+    "id": "symbol_kraken_embrace",
+    "name": "Kraken's Embrace",
+    "imageUrl": "assets/images/flag_parts/symbols/kraken_embrace.png",
+    "fearFactorEffect": 7,
+    "alignmentAffinity": "mythical"
+  },
+  {
+    "id": "symbol_crossed_cutlasses",
+    "name": "Crossed Cutlasses",
+    "imageUrl": "assets/images/flag_parts/symbols/crossed_cutlasses.png",
+    "fearFactorEffect": 4,
+    "alignmentAffinity": "pirate"
+  },
+  {
+    "id": "symbol_sea_serpent",
+    "name": "Sea Serpent's Coil",
+    "imageUrl": "assets/images/flag_parts/symbols/sea_serpent.png",
+    "fearFactorEffect": 6,
+    "alignmentAffinity": "mythical"
+  },
+  {
+    "id": "symbol_anchor_foul",
+    "name": "Fouled Anchor",
+    "imageUrl": "assets/images/flag_parts/symbols/anchor_foul.png",
+    "fearFactorEffect": 2,
+    "alignmentAffinity": "neutral"
+  }
+]

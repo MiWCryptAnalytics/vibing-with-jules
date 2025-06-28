@@ -37,8 +37,7 @@
       "playerChoices": [
         {
           "text": "Thanks for the advice.",
-          "nextNodeId": "END",
-          "action": null
+          "nextNodeId": "jack_flag_comment_check"
         }
       ]
     },
@@ -48,13 +47,11 @@
       "playerChoices": [
         {
           "text": "Perhaps you're right.",
-          "nextNodeId": "END",
-          "action": null
+          "nextNodeId": "jack_flag_comment_check"
         },
         {
           "text": "Sounds like a challenge!",
-          "nextNodeId": "jack_challenge_accepted",
-          "action": null
+          "nextNodeId": "jack_challenge_accepted"
         }
       ]
     },
@@ -64,13 +61,11 @@
       "playerChoices": [
         {
           "text": "Solid advice, thank you.",
-          "nextNodeId": "END",
-          "action": null
+          "nextNodeId": "jack_flag_comment_check"
         },
         {
           "text": "Heard of any legendary treasures still out there?",
-          "nextNodeId": "jack_legendary_treasure",
-          "action": null
+          "nextNodeId": "jack_legendary_treasure"
         }
       ]
     },
@@ -80,8 +75,7 @@
       "playerChoices": [
         {
           "text": "Farewell, Jack.",
-          "nextNodeId": "END",
-          "action": null
+          "nextNodeId": "jack_flag_comment_check"
         }
       ]
     },
@@ -134,8 +128,7 @@
       "playerChoices": [
         {
           "text": "See you around, Jack.",
-          "nextNodeId": "END",
-          "action": null
+          "nextNodeId": "jack_flag_comment_check"
         }
       ]
     },
@@ -145,9 +138,75 @@
       "playerChoices": [
         {
           "text": "Understood. Thanks for the story!",
-          "nextNodeId": "END",
-          "action": null
+          "nextNodeId": "jack_flag_comment_check"
         }
+      ]
+    },
+    "jack_flag_comment_check": {
+      "id": "jack_flag_comment_check",
+      "npcText": "...",
+      "playerChoices": [
+        {
+          "text": "Continue...",
+          "nextNodeId": "jack_flag_reaction_skull",
+          "condition": {
+            "playerFlag": { "symbolId": "symbol_skull_crossbones" }
+          }
+        },
+        {
+          "text": "Continue...",
+          "nextNodeId": "jack_flag_reaction_kraken",
+          "condition": {
+            "playerFlag": { "symbolId": "symbol_kraken_embrace" }
+          }
+        },
+        {
+          "text": "Continue...",
+          "nextNodeId": "jack_flag_reaction_high_fear",
+          "condition": {
+            "playerFlag": { "fearFactorMin": 6 }
+          }
+        },
+        {
+          "text": "Continue...",
+          "nextNodeId": "jack_flag_reaction_low_fear",
+          "condition": {
+            "playerFlag": { "fearFactorMax": 2 }
+          }
+        },
+        {
+          "text": "Continue...",
+          "nextNodeId": "jack_look_around"
+        }
+      ],
+      "isSilent": true
+    },
+    "jack_flag_reaction_skull": {
+      "id": "jack_flag_reaction_skull",
+      "npcText": "That's a classic banner ye fly! The skull and bones... strikes fear in the hearts of landlubbers, it does. Good choice for these waters.",
+      "playerChoices": [
+        { "text": "Glad you approve.", "nextNodeId": "END" }
+      ]
+    },
+    "jack_flag_reaction_kraken": {
+      "id": "jack_flag_reaction_kraken",
+      "npcText": "A Kraken's Embrace, eh? Ambitious. Some say those beasts are just myths... others know better. That flag will make sailors think twice, that's for sure.",
+      "playerChoices": [
+        { "text": "Let them think what they will.", "nextNodeId": "END" }
+      ]
+    },
+    "jack_flag_reaction_high_fear": {
+      "id": "jack_flag_reaction_high_fear",
+      "npcText": "By the barnacles on Neptune's beard, that's a fearsome flag! You ain't here to make friends, are ye? I like yer style.",
+      "playerChoices": [
+        { "text": "Friends are a luxury I can't afford.", "nextNodeId": "END" }
+      ]
+    },
+    "jack_flag_reaction_low_fear": {
+      "id": "jack_flag_reaction_low_fear",
+      "npcText": "Your flag... it's rather... quaint. Trying a more subtle approach, are we? Might work, might just make ye look like an easy target.",
+      "playerChoices": [
+        { "text": "Time will tell.", "nextNodeId": "END" }
       ]
     },
     "jack_eyepatch_story": {
@@ -156,8 +215,7 @@
       "playerChoices": [
         {
           "text": "A kraken! Sounds thrilling.",
-          "nextNodeId": "END",
-          "action": null
+          "nextNodeId": "jack_flag_comment_check"
         }
       ]
     },
@@ -167,8 +225,7 @@
       "playerChoices": [
         {
           "text": "Fascinating. Maybe I'll look into it.",
-          "nextNodeId": "END",
-          "action": null
+          "nextNodeId": "jack_flag_comment_check"
         }
       ]
     }

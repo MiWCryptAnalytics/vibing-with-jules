@@ -1,0 +1,37 @@
+[
+  {
+    "id": "pattern_solid",
+    "name": "Solid Color",
+    "cssRepresentation": "solid",
+    "imageUrl": "assets/images/flag_parts/patterns/solid.png",
+    "fearFactorEffect": 0
+  },
+  {
+    "id": "pattern_stripes_sinister",
+    "name": "Sinister Stripes",
+    "cssRepresentation": "stripes-sinister",
+    "imageUrl": "assets/images/flag_parts/patterns/stripes_sinister.png",
+    "fearFactorEffect": 2
+  },
+  {
+    "id": "pattern_border_jagged",
+    "name": "Jagged Border",
+    "cssRepresentation": "border-jagged",
+    "imageUrl": "assets/images/flag_parts/patterns/border_jagged.png",
+    "fearFactorEffect": 1
+  },
+  {
+    "id": "pattern_half_vertical",
+    "name": "Vertical Half",
+    "cssRepresentation": "half-vertical",
+    "imageUrl": "assets/images/flag_parts/patterns/half_vertical.png",
+    "fearFactorEffect": 0
+  },
+  {
+    "id": "pattern_saltire",
+    "name": "Saltire (Cross)",
+    "cssRepresentation": "saltire",
+    "imageUrl": "assets/images/flag_parts/patterns/saltire.png",
+    "fearFactorEffect": 1
+  }
+]
